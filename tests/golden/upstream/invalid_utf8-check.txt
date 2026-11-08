@@ -1,0 +1,7 @@
+=== step 1: --dutch invalid_utf8.input -c
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file invalid_utf8.input: The file is not legal UTF-8.
+

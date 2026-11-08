@@ -1,0 +1,11 @@
+=== step 1: --dutch xxa_blank_entry.input -p out.txt
+exit: 0
+--- stdout
+
+--- stderr
+
+--- file out.txt
+2
+1 2
+3 4
+

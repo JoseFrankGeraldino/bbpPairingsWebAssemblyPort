@@ -25,18 +25,20 @@ def main() -> int:
     parser.add_argument("--gcovr", default="gcovr")
     parser.add_argument("--min-lines", type=float, required=True)
     parser.add_argument("--engine-dir", required=True)
-    parser.add_argument("--object-dir", required=True)
+    parser.add_argument("--object-dir", action="append", required=True,
+                        help="object directory of an instrumented build (repeatable)")
     parser.add_argument("--report-dir", required=True)
     args = parser.parse_args()
 
     engine_dir = Path(args.engine_dir).resolve()
-    object_dir = Path(args.object_dir).resolve()
+    object_dirs = [Path(d).resolve() for d in args.object_dir]
     report_dir = Path(args.report_dir).resolve()
 
-    gcda = list(object_dir.rglob("*.gcda")) if object_dir.is_dir() else []
-    if not gcda:
-        print("COVERAGE GATE FAILED: no coverage data (.gcda) found under %s" % object_dir)
-        return 1
+    for object_dir in object_dirs:
+        gcda = list(object_dir.rglob("*.gcda")) if object_dir.is_dir() else []
+        if not gcda:
+            print("COVERAGE GATE FAILED: no coverage data (.gcda) found under %s" % object_dir)
+            return 1
 
     report_dir.mkdir(parents=True, exist_ok=True)
     summary_json = report_dir / "summary.json"
@@ -51,7 +53,7 @@ def main() -> int:
         "--json", str(full_json),
         "--cobertura", str(report_dir / "cobertura.xml"),
         "--txt", str(report_dir / "summary.txt"),
-        str(object_dir),
+        *[str(d) for d in object_dirs],
     ]
     print("+ " + " ".join(command))
     result = subprocess.run(command)

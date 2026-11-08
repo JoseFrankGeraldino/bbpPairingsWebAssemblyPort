@@ -12,7 +12,7 @@ outside `third_party/`. The components below keep their own licences.
 | Copyright | Copyright 2016-2026 Jeremy Bierema |
 | Upstream | https://github.com/BieremaBoyzProgramming/bbpPairings |
 | Our fork (the source we build) | https://github.com/JoseFrankGeraldino/bbpPairings, branch `master` |
-| Pinned commit | `8f9e3c5ffdc4d7a08a33d31c6fb49b4e7acef4d5` (upstream master = tag v6.0.0 + 5 TRF-26 fix commits; suggested fork tag `v6.0.0-lessader.1`) |
+| Pinned commit | `0ee9df74304a8ba7febb84811c2771ab1c8def6e`: fork baseline `8f9e3c5` (upstream master = tag v6.0.0 + 5 TRF-26 fix commits, fork tag `v6.0.0-lessader.1`) + 6 bugfix commits of ours (Apache 2.0, as the rest of the fork) |
 | Shipped as | compiled binary in `dist/native-linux-x64/`, with the fork's `LICENSE.txt`, `Apache-2.0.txt` and our `NOTICE` next to it |
 
 ## Test data

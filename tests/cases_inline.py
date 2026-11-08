@@ -196,6 +196,47 @@ def feature_cases() -> list[dict]:
     return cases
 
 
+# --- limits -------------------------------------------------------------------
+
+
+def limit_cases() -> list[dict]:
+    """Cases for the engine built with Makefile LIMITS_VARS: max_players=40,
+    max_points=99, max_rating=255, max_rounds=9 (all 8-bit types), without the
+    checker and generator (engine_comparison=no)."""
+    def small(players=None, header=None, footer=None, **kw):
+        if players is None:
+            players = base_players()
+            for p in players:
+                p.rating = 250 - 10 * p.pid
+        return build(players, HEADER if header is None else header, footer, **kw)
+
+    cases = [
+        pair_error("small-tournament-pairs", small(), exit=(0,)),
+        pair_error("rating-beyond-type", base(), exit=(4,)),
+        pair_error("player-id-beyond-type",
+                   small(players=[Player(1, 200), Player(300, 190)]), exit=(4,)),
+        # 41 players: one more than max_players, but still within the 8-bit type.
+        pair_error("player-count-above-max-players",
+                   small(players=[Player(pid, 250 - pid) for pid in range(1, 42)],
+                         header=["012 x", "XXR 5", "XXC white1"]), exit=(0, 4)),
+        pair_error("score-beyond-type",
+                   small(players=[Player(1, 200, points="30.0"), Player(2, 190)]), exit=(4,)),
+        pair_error("rounds-beyond-type", small(header=["012 x", "XXR 300", "XXC white1"]), exit=(4,)),
+    ]
+    # Valid per-line scores whose sum overflows the 8-bit points type.
+    wins = [Player(1, 200, [(2, "w", "1"), (3, "b", "1")], points=" 0.0"),
+            Player(2, 190, [(1, "b", "0"), None]),
+            Player(3, 180, [None, (1, "w", "0")]),
+            Player(4, 170)]
+    cases.append(pair_error("score-sum-beyond-type",
+                            small(players=wins, header=["012 x", "XXR 5", "XXC white1", "BBW 20.0"]),
+                            exit=(4,)))
+    # Modes that this configuration does not include.
+    cases.append(pair_error("checker-not-built", small(), mode="-c", exit=(3,)))
+    cases.append(case("generator-not-built", [["--dutch", "-g", "-o", "o.trf", "-s", "1"]], exit=(3,)))
+    return cases
+
+
 # --- errors -------------------------------------------------------------------
 
 
@@ -289,10 +330,7 @@ def error_cases(fixtures) -> list[dict]:
                       {"in.trf": base(footer=["XXP 99999"])}, exit=(4,)))
 
     # TRF syntax errors (one defect per case).
-    # Pinned behaviour at 8f9e3c5: std::wstring_convert throws before the
-    # engine's own "not legal UTF-8" check runs, so this ends as an unexpected
-    # error (exit 2). Reported as a fork fix candidate; a fix changes this golden.
-    cases.append(pair_error("trf-invalid-utf8", base() + b"012 \xff\xfe\n", exit=(2,)))
+    cases.append(pair_error("trf-invalid-utf8", base() + b"012 \xff\xfe\n"))
     cases.append(pair_error("trf-player-line-too-short", base(footer=["001    5"])))
     cases.append(pair_error("trf-player-id-zero", base(players=base_players() + [Player(0, 2000)])))
     cases.append(pair_error("trf-player-id-not-a-number",

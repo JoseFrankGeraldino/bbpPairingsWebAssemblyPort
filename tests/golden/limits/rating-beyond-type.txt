@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 4
+--- stdout
+
+--- stderr
+Error processing file in.trf: This build only supports ratings up to 255.
+

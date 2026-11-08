@@ -1,0 +1,9 @@
+=== step 1: invalid_utf8.input
+exit: 0
+--- stdout
+file: invalid_utf8.input
+read: format error: The file is not legal UTF-8.
+round-trip: not possible, the engine cannot read this file
+
+--- stderr
+

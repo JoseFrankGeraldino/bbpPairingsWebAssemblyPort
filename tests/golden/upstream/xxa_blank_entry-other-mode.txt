@@ -1,0 +1,7 @@
+=== step 1: --dutch xxa_blank_entry.input -c
+exit: 0
+--- stdout
+
+
+--- stderr
+

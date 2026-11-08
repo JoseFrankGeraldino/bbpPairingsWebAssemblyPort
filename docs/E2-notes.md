@@ -26,11 +26,11 @@ done in E1.
   only**, while FIDE TEC endorsement also needs the **checker** (`-c`) and the
   **random tournament generator** (`-g`): our build must expose all three
   modes (simplest: build `main.cpp` as is and drive it with `callMain`).
-- Hypothesis worth testing first: the out-of-bounds report may be the UB this
-  suite found at `src/swisssystems/dutch.cpp:723-724` (`*sortedPlayers.front()`
-  with nothing left to pair, see README "Known engine issues" 1). The release
-  native build survives it by chance; a WASM build may not. Fix it in the fork
-  before or as part of E2.
+- Hypothesis worth checking: the out-of-bounds report may be the UB this suite
+  found at `src/swisssystems/dutch.cpp:723-724` (`*sortedPlayers.front()` with
+  nothing left to pair). The release native build survived it by chance; a
+  WASM build may not. Fixed in the fork (`32155a7`, pinned since `0ee9df7`), so
+  our WASM build starts without it.
 
 ## Makefile flags to revisit for emcc
 
@@ -51,8 +51,9 @@ done in E1.
   `errors/trf-xxr-out-of-range` (prints `maxRounds`). Decide whether E2 adds
   a per-target golden overlay for such limit messages or normalises them.
 - Compile-time limits (`max_players`, `max_points`, `max_rating`,
-  `max_rounds`): keep the defaults. Custom limits do not even build natively
-  at `8f9e3c5` (README "Known engine issues" 4).
+  `max_rounds`): keep the defaults for the product build. The `limits` test
+  group needs a WASM build with `LIMITS_VARS` too (passed as `ENGINE_LIMITS`);
+  that configuration builds since fork commit `14efd0e`.
 - `git describe` in the Makefile sets `VERSION_INFO`; it is normalised by the
   suite, but the WASM build should embed the same pinned commit information.
 
@@ -67,8 +68,10 @@ done in E1.
   **committed** generated TRFs (the `gen.trf` blocks in `tests/golden/generated/`)
   with both builds; treat generator output as a separate, library-dependent
   comparison.
-- **Uninitialised `bool roundsLine`** in the model-preserving TRF writer
-  (`trf.cpp`): output depends on the build (README "Known engine issues" 2).
+- Build-dependent output from uninitialised state was found once (`bool
+  roundsLine` in the model-preserving TRF writer, fixed in fork commit
+  `472cbbc`). Parity failures that differ between optimisation levels point
+  to this kind of UB first.
 - Floating point: the generator uses `float` draws; check that emcc does not
   change rounding (it should not with default flags).
 - Memory: large generated tournaments (150 players in

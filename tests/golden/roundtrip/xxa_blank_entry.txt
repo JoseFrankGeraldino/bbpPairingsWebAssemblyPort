@@ -1,0 +1,23 @@
+=== step 1: xxa_blank_entry.input
+exit: 0
+--- stdout
+file: xxa_blank_entry.input
+read: ok (4 player slots, 0 rounds played, 5 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: unsupported: Outputting accelerations is not currently supported.
+model-write: 8 input lines, 7 output lines, 6 not reproduced verbatim
+  - 012 XXA blank entry test
+  - XXC white1
+  - 001    1      Player 0001                       2350                             0.0
+  - 001    2      Player 0002                       2300                             0.0
+  - 001    3      Player 0003                       2250                             0.0
+  - 001    4      Player 0004                       2200                             0.0
+  + ### 012 XXA blank entry test
+  + 001    1      Player 0001                       2350                             0.0    1
+  + 001    2      Player 0002                       2300                             0.0    2
+  + 001    3      Player 0003                       2250                             0.0    3
+  + 001    4      Player 0004                       2200                             0.0    4
+model-reread: ok (equality not checked, canonical write unsupported)
+
+--- stderr
+

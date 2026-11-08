@@ -1,0 +1,24 @@
+=== step 1: --dutch model_without_rounds_line.input -c
+exit: 0
+--- stdout
+model_without_rounds_line: Round #1
+  Checker pairings        Tournament pairings 
+      1 -   4                  1 -   6
+      3 -   6                  3 -   4
+
+model_without_rounds_line: Round #2
+  Checker pairings        Tournament pairings 
+      4 -   5                  6 -   4
+      2 -   1                  5 -   1
+      6 -   3                  3 -   2
+
+model_without_rounds_line: Round #3
+  Checker pairings        Tournament pairings 
+      4 -   5                  3 -   5
+      1 -   3                  1 -   4
+      2 -   6                  6 -   2
+
+
+
+--- stderr
+

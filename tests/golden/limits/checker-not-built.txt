@@ -1,0 +1,11 @@
+=== step 1: --dutch in.trf -c
+exit: 3
+--- stdout
+
+--- stderr
+BBP Pairings <build info>
+
+Command line argument syntax:
+<engine> [-r]
+<engine> [-r] (--dutch | --burstein) input-file -p [output-file] [-l [check-list-file]]
+

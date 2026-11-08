@@ -24,6 +24,7 @@ Case groups:
   features    synthetic TRFs for each input feature (tests/cases_inline.py)
   errors      malformed input, missing files, limits, bad arguments (golden)
   roundtrip   TRF read -> write -> read through tests/roundtrip (golden)
+  limits      build-limit errors, against --engine-limits (golden)
 """
 
 from __future__ import annotations
@@ -50,25 +51,25 @@ UPSTREAM_TEST_DATA = ROOT / "third_party" / "bbpPairings" / "test" / "tests"
 sys.path.insert(0, str(TESTS))
 import cases_inline  # noqa: E402  (tests/cases_inline.py)
 
-STEP_TIMEOUT_SECONDS = 900
+STEP_TIMEOUT_SECONDS = 300
 
 # Seeds whose generated tournaments are golden (the "fixed subset").
 GOLDEN_GENERATED_SEEDS = range(1, 21)
 GOLDEN_GENERATED_BURSTEIN_SEEDS = range(1, 6)
 
-# Cases whose input hits undefined behaviour in the pinned engine (README.md,
-# "Known engine issues"). They always run, golden-compared, against release
-# builds. On an unoptimized instrumented build the UB crashes the engine, so
-# --instrumented excludes them and prints them in the summary. Remove an entry
-# when the fork fixes the bug (reviewed pin bump).
-KNOWN_ENGINE_UB = {
-    "features/history10-bye-column-dutch-check":
-        "dutch.cpp:723 dereferences sortedPlayers.front() when no player is left to pair",
-    "upstream/dutch_2025_C5-other-mode":
-        "dutch.cpp:723 dereferences sortedPlayers.front() when no player is left to pair",
-    "generator/model-issue_15-dutch":
-        "trf.cpp writeFile(model) reads the uninitialised 'bool roundsLine': the release"
-        " build omits the '142' line, unoptimized builds write it",
+# Cases whose input hits known undefined behaviour in the pinned engine
+# (case name -> description). They always run, golden-compared, against
+# release builds; --instrumented (unoptimized coverage build, where UB tends to
+# crash) excludes them and names them in the summary. Add an entry only
+# together with a fork fix in progress, and remove it with the pin bump.
+# Empty since the fixes in fix/e1-engine-defects (README.md, "Engine fixes in
+# the fork").
+KNOWN_ENGINE_UB: dict[str, str] = {}
+
+# Inputs the engine rejects on purpose; they cannot serve as generator models.
+UNREADABLE_INPUTS = {
+    "synthetic-trf2026-team-swiss",  # team tournaments are not supported
+    "invalid_utf8",  # upstream-style regression test for invalid UTF-8
 }
 
 BUILD_INFO_RE = re.compile(
@@ -184,16 +185,17 @@ def same_as_upstream_expected(expected: bytes, to_stdout: bool):
     return check
 
 
-def upstream_command(test_source: str, input_name: str) -> tuple[list[str], bool]:
+def upstream_command(test_source: str, input_name: str) -> Optional[tuple[list[str], bool]]:
     """Mirror the command in an upstream test/tests/*.cpp: system flag and mode.
 
-    Returns (arguments, output goes to stdout)."""
+    Returns (arguments, output goes to stdout), or None when the test is not a
+    plain "pair or check, compare with .output.expected" test."""
     system = "--burstein" if '" --burstein "' in test_source else "--dutch"
     if '" -c > "' in test_source:
         return [system, input_name, "-c"], True
     if '" -p "' in test_source:
         return [system, input_name, "-p", "out.txt"], False
-    raise ValueError("unrecognised upstream test command")
+    return None
 
 
 def roundtrip_ok(results, _files):
@@ -237,10 +239,25 @@ def sample_cases() -> list[Case]:
 def upstream_cases() -> list[Case]:
     cases = []
     for path in sorted(UPSTREAM_TEST_DATA.glob("*.input")):
-        expected = read_bytes(path.with_suffix(".output.expected"))
-        source = path.with_suffix(".cpp").read_text()
-        args, to_stdout = upstream_command(source, path.name)
         name = path.stem
+        expected_path = path.with_suffix(".output.expected")
+        source = path.with_suffix(".cpp").read_text()
+        command = upstream_command(source, path.name) if expected_path.exists() else None
+        if command is None:
+            # A test with its own checks (error output, generator, ...): the
+            # fork's test suite runs it; here both modes are golden-compared.
+            for mode, label in (("-p", "pair"), ("-c", "check")):
+                cases.append(
+                    Case(
+                        "upstream/%s-%s" % (name, label),
+                        [["--dutch", path.name, mode]],
+                        {path.name: read_bytes(path)},
+                        check=expect_exit(0, 1, 3),
+                    )
+                )
+            continue
+        expected = read_bytes(expected_path)
+        args, to_stdout = command
         cases.append(
             Case(
                 "upstream/%s-as-upstream" % name,
@@ -309,8 +326,8 @@ def generator_cases() -> list[Case]:
         UPSTREAM_TEST_DATA.glob("*.input")
     )
     for path in models:
-        if path.name.startswith("synthetic-trf2026-team"):
-            continue  # team tournaments cannot be read (see errors group)
+        if path.stem in UNREADABLE_INPUTS:
+            continue  # cannot serve as a model; covered by other groups
         cases.append(
             Case(
                 "generator/model-%s-dutch" % path.stem,
@@ -326,13 +343,14 @@ def generator_cases() -> list[Case]:
     return cases
 
 
-def inline_cases(group: str, specs: list[dict]) -> list[Case]:
+def inline_cases(group: str, specs: list[dict], tool: str = "engine") -> list[Case]:
     return [
         Case(
             "%s/%s" % (group, spec["name"]),
             spec["steps"],
             spec["inputs"],
             outputs=spec["outputs"],
+            tool=tool,
             check=expect_exit(*spec["exit"]),
         )
         for spec in specs
@@ -423,6 +441,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--engine", required=True, help="engine executable under test")
     parser.add_argument(
+        "--engine-limits",
+        default="",
+        help="the engine built with small compile-time limits (Makefile LIMITS_VARS);"
+        " empty = limits group not run",
+    )
+    parser.add_argument(
         "--roundtrip",
         default="",
         help="trf-roundtrip helper (white-box); empty = round-trip group not run",
@@ -460,6 +484,15 @@ def main() -> int:
         ("features", inline_cases("features", cases_inline.feature_cases())),
         ("errors", inline_cases("errors", cases_inline.error_cases(FIXTURES))),
     ]
+    if args.engine_limits:
+        limits = Path(args.engine_limits).resolve()
+        if not limits.is_file() or not os.access(limits, os.X_OK):
+            print("limits engine not found or not executable: %s" % limits, file=sys.stderr)
+            return 2
+        tools["limits"] = limits
+        groups.append(("limits", inline_cases("limits", cases_inline.limit_cases(), "limits")))
+    else:
+        print("NOTE: limits group NOT RUN (no --engine-limits build given)")
     if args.roundtrip:
         roundtrip = Path(args.roundtrip).resolve()
         if not roundtrip.is_file():
@@ -506,6 +539,7 @@ def main() -> int:
         not pattern
         and args.generated_count >= max(GOLDEN_GENERATED_SEEDS)
         and "roundtrip" in tools
+        and "limits" in tools
     )
     if complete:
         expected = {c.name for c in all_cases + excluded if c.golden}

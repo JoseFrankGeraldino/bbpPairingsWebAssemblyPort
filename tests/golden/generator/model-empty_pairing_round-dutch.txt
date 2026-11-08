@@ -1,0 +1,19 @@
+=== step 1: --dutch empty_pairing_round.input -g -o gen.trf -s 7
+exit: 0
+--- stdout
+
+--- stderr
+
+=== step 2: --dutch gen.trf -c
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+gen: Round #4
+
+
+--- stderr
+
+--- file gen.trf
+012 AutoTest Tournament 7### 012 Empty pairing round testXXR 7001    1      Player 0001                       2450                             2.0    2     5 w 1     7 b =  0000 - Z     4 w =001    2      Player 0002                       2400                             1.0    6     6 b =  0000 - Z     5 w =  0000 - Z001    3      Player 0003                       2350                             2.0    3     8 w =     5 b =  0000 - Z     7 w 1001    4      Player 0004                       2300                             2.5    1     9 b 1  0000 - Z     6 w 1     1 b =001    5      Player 0005                       2250                             1.5    5     1 b 0     3 w =     2 b =     8 w =001    6      Player 0006                       2200                             0.5   10     2 w =  0000 - Z     4 b 0  0000 - Z001    7      Player 0007                       2150                             1.0    7  0000 - H     1 w =  0000 - Z     3 b 0001    8      Player 0008                       2100                             2.0    4     3 b =  0000 - Z    10 w 1     5 b =001    9      Player 0009                       2050                             1.0    8     4 w 0    10 b 1  0000 - Z  0000 - Z001   10      Player 0010                       2000                             1.0    9  0000 - Z     9 w 0     8 b 0  0000 - U

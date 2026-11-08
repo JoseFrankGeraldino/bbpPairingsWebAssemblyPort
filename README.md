@@ -47,11 +47,11 @@ suite; see [docs/E2-notes.md](docs/E2-notes.md).
 |---|---|
 | Submodule | `third_party/bbpPairings` |
 | Fork (the source we build) | https://github.com/JoseFrankGeraldino/bbpPairings |
-| Branch | `master` |
-| Pinned commit | **`8f9e3c5ffdc4d7a08a33d31c6fb49b4e7acef4d5`** (`8f9e3c5`) |
-| Suggested fork tag | `v6.0.0-lessader.1` (not created yet; nothing here depends on it, `VERSION` records `engine_tag_present=no` until it exists) |
+| Branch | `master` (the fixes below are on `fix/e1-engine-defects` until merged into `master` by fast-forward) |
+| Pinned commit | **`0ee9df74304a8ba7febb84811c2771ab1c8def6e`** (`0ee9df7`) = baseline + 6 fix commits (see "Engine fixes in the fork") |
+| Baseline | `8f9e3c5` = upstream `master`, tagged **`v6.0.0-lessader.1`** in the fork; golden files were first recorded there |
 | Upstream | https://github.com/BieremaBoyzProgramming/bbpPairings |
-| Upstream base | tag **v6.0.0** + 5 commits (TRF-26 fixes: line 162 absence points, 2026 tournament type codes); `8f9e3c5` = upstream `master` |
+| Upstream base | tag **v6.0.0** + 5 commits (TRF-26 fixes: line 162 absence points, 2026 tournament type codes) |
 
 Rules:
 
@@ -82,7 +82,8 @@ git clone --recurse-submodules https://github.com/JoseFrankGeraldino/bbpPairings
 cd ~/src/bbpPairingsWebAssemblyPort
 
 make native                                 # -> build/native/bbpPairings
-make test ENGINE=build/native/bbpPairings   # full suite (300 generated tournaments)
+make test ENGINE=build/native/bbpPairings   # full suite (300 generated tournaments);
+                                            # also builds build/native-limits (test only)
 BBP_GENERATED_COUNT=20 make test            # quicker local run
 make coverage                               # instrumented build + suite + report + gate
 make dist                                   # -> dist/native-linux-x64/
@@ -106,12 +107,13 @@ the engine's own path in usage messages) is normalised first.
 | Group | What | Golden |
 |---|---|---|
 | `samples` | every TRF in `tests/fixtures/samples`, Dutch and Burstein: pair to stdout, pair to a file with checklist, check (`-c`) with checklist | all |
-| `upstream` | the engine's own regression inputs (`third_party/bbpPairings/test/tests`, read in place): the upstream command must reproduce upstream's `.output.expected`, plus the other mode | all |
+| `upstream` | the engine's own regression inputs (`third_party/bbpPairings/test/tests`, read in place): where a test compares with `.output.expected`, the same command must reproduce it, plus the other mode; tests with their own checks (e.g. error output) are run in both modes | all |
 | `generated` | `-g` with fixed seeds 1..N (N = `BBP_GENERATED_COUNT`, default 300) for Dutch, N/10 for Burstein; every generated tournament is re-checked with `-c` and must show no discrepancy | seeds 1-20 (Dutch), 1-5 (Burstein) |
 | `generator` | `-g` with the configuration files in `tests/fixtures/generator` and with model files; each result checked with `-c` | all |
 | `features` | synthetic TRFs for each input feature: 192 type codes incl. Baku acceleration, XXC/152 colours, XXC rank, 162 and BB* point systems, 250/XXA accelerations, 260/XXP forbidden pairs, 240 byes, result codes, CR/CRLF, UTF-8 names, no valid pairing | all |
 | `errors` | bad arguments, missing/unwritable files, malformed TRF (one defect per case), generator configuration errors, values beyond the build's type limits; exit codes and messages | all |
 | `roundtrip` | TRF read -> write -> read for every sample and upstream input (see below) | all |
+| `limits` | against `ENGINE_LIMITS`, the engine built with small compile-time limits (`LIMITS_VARS` in the Makefile: `max_players=40 max_points=99 max_rating=255 max_rounds=9`, no checker/generator): player IDs, ratings, scores, score sums and rounds beyond the build's types; modes left out of that build | all |
 
 The Burstein system is exercised only because its code is part of the
 coverage scope; it is not FIDE-endorsed and not in our product scope.
@@ -121,11 +123,15 @@ missing golden file and on a golden file that no longer has a case.
 
 ### Golden files
 
-Recorded once from the **native release build of the pinned commit**
-(`8f9e3c5`) and changed only by a reviewed decision (a pin bump):
+Recorded from the **native release build of the pinned commit** and changed
+only by a reviewed decision (a pin bump). First recorded at the baseline
+`8f9e3c5`; the bump to `0ee9df7` changed exactly two of them
+(`errors/trf-invalid-utf8`, `generator/model-issue_15-dutch`), both as the
+fixes intend, and added cases for the new upstream-style tests and the
+limits group.
 
 ```bash
-make golden-record CONFIRM=8f9e3c5   # refuses unless CONFIRM equals the submodule's short SHA
+make golden-record CONFIRM=0ee9df7   # refuses unless CONFIRM equals the submodule's short SHA
 ```
 
 `tests/fixtures/**` and `tests/golden/**` are `-text` in `.gitattributes`
@@ -154,7 +160,7 @@ not skipped — what the engine's TRF writers do **not** preserve:
   kept); opponent numbers are re-padded (`0005` -> `   5`); points, rank and
   round columns of `001` lines are rewritten from the model; rounds a player
   did not play become explicit `0000 - Z` blocks; a missing `142`/`XXR` line is
-  appended only in some builds (see Known engine issues).
+  appended as `142 <rounds>`.
 - **Team tournaments** (`synthetic-trf2026-team-swiss.trf`, tag `192
   FIDE_TEAM_BAKU`, lines `013`/`310`) cannot be read at all: the engine pairs
   individual Swiss events only. Expected; the sample stays as an error case.
@@ -165,53 +171,54 @@ not skipped — what the engine's TRF writers do **not** preserve:
   (`.cpp` and `.h`), nothing excluded; our `tests/` are not in the scope.
 - **Build:** the engine's own Makefile with `optimize=no` (drops `-O3` and
   `-flto`) and `CXX="g++ --coverage -D_GLIBCXX_NO_ASSERTIONS"`, objects in
-  `build/obj/coverage`. Every other flag is the engine's release configuration.
-  No out-of-tree compile with our own flags. `-D_GLIBCXX_NO_ASSERTIONS` keeps
-  the unoptimised build's library behaviour equal to the release build (GCC 15
-  enables libstdc++ assertions by default only when not optimising).
-- **Run:** the full suite against the instrumented binary (and the round-trip
-  helper linked to the instrumented objects), with `--instrumented`: the cases
-  listed in `KNOWN_ENGINE_UB` (run_tests.py) are excluded there **and named in
-  the output**; they still run, strictly, against release builds.
+  `build/obj/coverage`; the same again with `LIMITS_VARS` in
+  `build/obj/coverage-limits`. Every other flag is the engine's release
+  configuration. No out-of-tree compile with our own flags.
+  `-D_GLIBCXX_NO_ASSERTIONS` keeps the unoptimised build's library behaviour
+  equal to the release build (GCC 15 enables libstdc++ assertions by default
+  only when not optimising).
+- **Run:** the full suite against the instrumented binaries (and the round-trip
+  helper linked to the instrumented objects); gcovr merges both builds. With
+  `--instrumented`, cases listed in `KNOWN_ENGINE_UB` (run_tests.py) would be
+  excluded there **and named in the output**; the list is empty since the fork
+  fixes.
 - **Report:** `build/coverage/report/` — `index.html` (HTML details),
   `summary.json`, `summary.txt`, `cobertura.xml`, `per-file.txt`,
   `uncovered-lines.txt`; uploaded as a CI artifact.
 - **Gates** (`tests/coverage_gate.py`): fails when no `.gcda` data exists or
   gcovr measures zero lines, and when line coverage is below 90%.
-- Result at `8f9e3c5`: see the CI artifact; locally (GCC 15.2) about 92.9%
-  of lines.
+- Result at `0ee9df7`: see the CI artifact; locally (GCC 15.2) 92.7% of
+  lines, nothing excluded.
 
-## Known engine issues (found by this suite at `8f9e3c5`)
+## Engine fixes in the fork
 
-All belong in the fork as reviewed commits, followed by a pin bump; nothing is
-patched here.
+Found by this suite at the baseline `8f9e3c5`, fixed in the fork on branch
+`fix/e1-engine-defects` (one commit each, each with an upstream-style
+regression test in the fork's `test/tests/` where a default build can reach
+it), then pinned here:
 
-1. **UB in `src/swisssystems/dutch.cpp:723-724`**: `computeMatching` takes
-   `*sortedPlayers.front()` without checking that any player is left to pair
-   (e.g. checking a file whose last round holds only pre-entered byes, or
-   upstream's `dutch_2025_C5.input` with `-c`). The release build happens to
-   work; an unoptimised build segfaults (or aborts with libstdc++ assertions).
-   Cases: `features/history10-bye-column-dutch-check`,
-   `upstream/dutch_2025_C5-other-mode`.
-2. **UB in `src/fileformats/trf.cpp`, model-preserving `writeFile`**: `bool
-   roundsLine;` is never initialised, so whether `142 <rounds>` is appended
-   depends on the build. The release build omits it (the generated TRF then
-   lacks the total number of rounds). Case: `generator/model-issue_15-dutch`.
-3. **Invalid UTF-8 input ends as "Unexpected error (please report):
-   wstring_convert::from_bytes"** (exit 2): `std::wstring_convert` throws
-   before the engine's own "The file is not legal UTF-8." check. Case:
-   `errors/trf-invalid-utf8` (pins the current behaviour).
-4. **Custom compile-time limits do not build** with `-Werror` (GCC 15):
-   setting more than one of `max_players`/`max_points`/`max_rating`/`max_rounds`
-   redefines `CUSTOM_BUILD` (`-Werror=unused-macros`); small `max_players` or
-   `max_points` trip `-Werror=type-limits`; `max_rounds` breaks a `std::min`
-   in `trf.cpp:474`; `max_rating` below 2800 fails a `static_assert` in
-   `generator.h`. Limit errors are therefore tested only with values beyond the
-   default types (huge `XXR`, `XXP`, scores, seeds, generator settings).
-5. Probable bug, not yet shown by a test: `readPlayerAccelerationsXxa`
-   (`trf.cpp`) checks for a blank entry with `line.substr(startIndex,
-   startIndex + 4)`, passing an end index where `substr` expects a length, so a
-   blank entry that is not the last one on an `XXA` line is not recognised.
+| Fork commit | Defect | Seen as |
+|---|---|---|
+| `32155a7` | `dutch.cpp` dereferenced `sortedPlayers.front()` when no player was left to pair (UB; unoptimised builds crashed) | `features/history10-bye-column-dutch-check`, `upstream/dutch_2025_C5-other-mode` |
+| `472cbbc` | model-based TRF writer read an uninitialised `bool roundsLine`; release builds dropped the `142` line | `generator/model-issue_15-dutch` |
+| `bcffb41` | invalid UTF-8 ended as "Unexpected error (please report)" (exit 2) instead of a format error (exit 3) | `errors/trf-invalid-utf8` |
+| `d3bf93f` | a blank `XXA` entry was only accepted as the last entry (`substr` length vs end index) | `upstream/xxa_blank_entry-*` |
+| `14efd0e` | builds with custom limits or `burstein=no` / `dutch=no` / `engine_comparison=no` did not compile under `-Werror` | `limits` group (the build itself) |
+| `0ee9df7` | limit messages for types narrower than `int` (`toString(~T{ })` = `toString(-1)`) looped forever | `limits/rating-beyond-type` |
+
+## Known engine limitations (not fixed)
+
+- **Small `max_players` / `max_rounds` need `engine_comparison=no`**: the
+  generator asserts at compile time that its random ranges fit (ratings up to
+  2800, up to 15 rounds, its player counts). Intended, not a defect.
+- **`engine_comparison=no` with `optimize=yes`** fails at the LTO link with a
+  GCC 15 `-Wstrict-overflow` diagnostic inside libstdc++ (`stl_deque.h`), a
+  compiler false positive turned into an error by `-Werror`. The limits build
+  therefore uses `optimize=no`. Changing the engine's warning set is a fork
+  decision.
+- **`max_players` sizes a type, it is not a hard cap**: with `max_players=40`
+  the build pairs 41 players (`limits/player-count-above-max-players`) and only
+  rejects IDs beyond the 8-bit type, while the message says "up to 40".
 
 ## Packaging (`make dist`)
 
@@ -222,7 +229,7 @@ patched here.
 | `bbpPairings` | the native release binary |
 | `LICENSE.txt`, `Apache-2.0.txt` | the engine's licence, copied from the fork |
 | `NOTICE` | our notice, crediting BBP Pairings |
-| `VERSION` | fork URL, branch, commit SHA, tag name (+ whether it exists), upstream base, this repository's commit (`-dirty` if uncommitted changes) |
+| `VERSION` | fork URL, branch, commit SHA, fork tag at that commit (or `none`), the baseline tag, upstream base, this repository's commit (`-dirty` if uncommitted changes) |
 
 This is the shape the main app consumes for its server.
 

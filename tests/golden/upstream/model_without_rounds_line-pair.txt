@@ -1,0 +1,7 @@
+=== step 1: --dutch model_without_rounds_line.input -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file model_without_rounds_line.input: The total number of rounds in the tournament must be specified.
+

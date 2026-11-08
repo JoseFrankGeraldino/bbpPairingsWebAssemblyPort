@@ -1,7 +1,7 @@
 === step 1: --dutch in.trf -p
-exit: 2
+exit: 3
 --- stdout
 
 --- stderr
-Unexpected error (please report): wstring_convert::from_bytes
+Error parsing file in.trf: The file is not legal UTF-8.
 

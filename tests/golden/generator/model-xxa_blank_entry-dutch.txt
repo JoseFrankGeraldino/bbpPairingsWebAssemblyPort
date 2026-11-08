@@ -1,0 +1,15 @@
+=== step 1: --dutch xxa_blank_entry.input -g -o gen.trf -s 7
+exit: 0
+--- stdout
+
+--- stderr
+
+=== step 2: --dutch gen.trf -c
+exit: 0
+--- stdout
+
+
+--- stderr
+
+--- file gen.trf
+012 AutoTest Tournament 7### 012 XXA blank entry testXXR 5XXA    1  1.0       1.0001    1      Player 0001                       2350                             0.0    1001    2      Player 0002                       2300                             0.0    2001    3      Player 0003                       2250                             0.0    3001    4      Player 0004                       2200                             0.0    4
