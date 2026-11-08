@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 2
+--- stdout
+
+--- stderr
+Unexpected error (please report): wstring_convert::from_bytes
+

@@ -1,0 +1,7 @@
+=== step 1: --dutch dir -p
+exit: 5
+--- stdout
+
+--- stderr
+Error reading file dir: The file could not be loaded.
+

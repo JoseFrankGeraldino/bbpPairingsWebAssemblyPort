@@ -1,0 +1,9 @@
+=== step 1: --dutch in.trf -c -l nodir/x.list
+exit: 0
+--- stdout
+in: Round #1
+
+
+--- stderr
+The checklist file (nodir/x.list) could not be opened.
+

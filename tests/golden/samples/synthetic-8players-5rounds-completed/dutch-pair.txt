@@ -1,0 +1,7 @@
+=== step 1: --dutch synthetic-8players-5rounds-completed.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file synthetic-8players-5rounds-completed.trf: The number of rounds is larger than the reported number of rounds.
+

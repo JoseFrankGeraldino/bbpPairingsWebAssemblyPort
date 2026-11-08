@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: Invalid line (round index of 0) "240 H   0    1"
+

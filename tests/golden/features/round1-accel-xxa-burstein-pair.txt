@@ -1,0 +1,33 @@
+=== step 1: --burstein in.trf -p -l in.list
+exit: 0
+--- stdout
+6
+1 6
+5 2
+3 4
+7 12
+11 8
+9 10
+
+--- stderr
+
+--- file in.list
+
+ID	Pts	-	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		
+
+ 1	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (6W)		
+ 2	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (5B)		
+ 3	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (4W)		
+ 4	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (3B)		
+ 5	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (2W)		
+ 6	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (1B)		
+
+ 7	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(12W)		
+ 8	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(11B)		
+ 9	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(10W)		
+10	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (9B)		
+11	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (8W)		
+12	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (7B)		
+
+
+BBP Pairings <build info>

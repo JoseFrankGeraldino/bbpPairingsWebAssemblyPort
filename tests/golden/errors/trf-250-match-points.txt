@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: Invalid line (match points must be empty) "250  1.0  1.0   1   2    1    2"
+

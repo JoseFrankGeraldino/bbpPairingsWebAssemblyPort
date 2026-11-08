@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: The score for player 1 does not match the game results.
+

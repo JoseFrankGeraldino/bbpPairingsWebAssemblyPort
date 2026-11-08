@@ -1,0 +1,9 @@
+=== step 1: --burstein synthetic-trf2026-team-swiss.trf -c -l check.list
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file synthetic-trf2026-team-swiss.trf: Invalid line (unsupported tournament type) "192 FIDE_TEAM_BAKU"
+
+--- file check.list
+<missing>

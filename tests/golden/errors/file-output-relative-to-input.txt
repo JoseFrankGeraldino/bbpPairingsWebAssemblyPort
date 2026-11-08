@@ -1,0 +1,11 @@
+=== step 1: --dutch sub/in.trf -p out.txt
+exit: 0
+--- stdout
+
+--- stderr
+
+--- file sub/out.txt
+2
+4 1
+2 3
+

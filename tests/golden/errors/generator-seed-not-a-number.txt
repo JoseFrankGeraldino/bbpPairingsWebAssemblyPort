@@ -1,0 +1,7 @@
+=== step 1: --dutch -g -o o.trf -s abc
+exit: 2
+--- stdout
+
+--- stderr
+Unexpected error (please report): 
+

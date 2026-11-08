@@ -1,0 +1,11 @@
+=== step 1: --dutch synthetic-trf2026-team-swiss.trf -p pairs.txt -l
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file synthetic-trf2026-team-swiss.trf: Invalid line (unsupported tournament type) "192 FIDE_TEAM_BAKU"
+
+--- file pairs.txt
+<missing>
+--- file synthetic-trf2026-team-swiss.list
+<missing>

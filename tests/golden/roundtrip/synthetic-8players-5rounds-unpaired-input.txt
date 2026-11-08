@@ -1,0 +1,16 @@
+=== step 1: synthetic-8players-5rounds-unpaired-input.trf
+exit: 0
+--- stdout
+file: synthetic-8players-5rounds-unpaired-input.trf
+read: ok (8 player slots, 0 rounds played, 5 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: ok
+canonical-stable: yes
+model-write: 25 input lines, 24 output lines, 2 not reproduced verbatim
+  - 012 BBP Reference Tournament
+  - XXC white1
+  + ### 012 BBP Reference Tournament
+model-reread-equal: yes
+
+--- stderr
+

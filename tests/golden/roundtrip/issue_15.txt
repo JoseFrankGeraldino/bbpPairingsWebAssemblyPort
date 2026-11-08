@@ -1,0 +1,16 @@
+=== step 1: issue_15.input
+exit: 0
+--- stdout
+file: issue_15.input
+read: ok (180 player slots, 11 rounds played, 11 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: ok
+canonical-stable: yes
+model-write: 181 input lines, 182 output lines, 1 not reproduced verbatim
+  - 012 AutoTest Tournament 716150162
+  + ### 012 AutoTest Tournament 716150162
+  + 142 11
+model-reread-equal: yes
+
+--- stderr
+

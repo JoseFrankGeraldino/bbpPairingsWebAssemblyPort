@@ -1,0 +1,7 @@
+=== step 1: --dutch -g c.cfg -o o.trf -s 3
+exit: 4
+--- stdout
+
+--- stderr
+Error processing configuration file c.cfg: The value for parameter "PlayersNumber" in the configuration file is not supported by this build.
+

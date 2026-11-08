@@ -1,0 +1,10 @@
+=== step 1: --dutch dutch_2025_C5.input -c
+exit: 0
+--- stdout
+dutch_2025_C5: Round #1
+dutch_2025_C5: Round #2
+dutch_2025_C5: Round #3
+
+
+--- stderr
+

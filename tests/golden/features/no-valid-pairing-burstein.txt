@@ -1,0 +1,7 @@
+=== step 1: --burstein in.trf -p
+exit: 1
+--- stdout
+
+--- stderr
+Error while pairing in.trf: No valid pairing exists: The non-bye players cannot be simultaneously paired without violating the absolute criteria.
+

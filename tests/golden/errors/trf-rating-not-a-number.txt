@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: Invalid line "001    1      Player 0001                       24x0                             1.0          3 w 1"
+

@@ -1,0 +1,7 @@
+=== step 1: --dutch -g c.cfg -o o.trf -s 3
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing configuration file c.cfg: Unexpected parameter "Players" in configuration file.
+

@@ -1,0 +1,9 @@
+=== step 1: --dutch in.trf -p
+exit: 0
+--- stdout
+2
+4 1
+2 3
+
+--- stderr
+

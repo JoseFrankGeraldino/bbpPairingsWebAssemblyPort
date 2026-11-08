@@ -1,0 +1,7 @@
+=== step 1: 
+exit: 0
+--- stdout
+BBP Pairings <build info>
+
+--- stderr
+

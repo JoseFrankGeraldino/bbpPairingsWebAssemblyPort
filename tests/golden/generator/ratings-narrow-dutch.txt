@@ -1,0 +1,228 @@
+=== step 1: --dutch -g ratings-narrow.cfg -o gen.trf -s 20261108 -l
+exit: 0
+--- stdout
+
+--- stderr
+
+=== step 2: --dutch gen.trf -c
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+gen: Round #4
+gen: Round #5
+gen: Round #6
+
+
+--- stderr
+
+--- file gen.list
+Round #1.
+
+ID	Pts	-	Pref	C2	C14	C16	  Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(13W)		
+ 2	0.0	 	  A 	 Y	   	   	(14B)		
+ 3	0.0	 	  A 	 Y	   	   	(15W)		
+ 4	0.0	 	  A 	 Y	   	   	(16B)		
+ 5	0.0	 	  A 	 Y	   	   	(17W)		
+ 6	0.0	 	  A 	 Y	   	   	(18B)		
+ 7	0.0	 	  A 	 Y	   	   	(19W)		
+ 8	0.0	 	  A 	 Y	   	   	(20B)		
+ 9	0.0	 	  A 	 Y	   	   	(21W)		
+10	0.0	 	  A 	 Y	   	   	(22B)		
+11	0.0	 	  A 	 Y	   	   	(23W)		
+12	0.0	 	  A 	 Y	   	   	(24B)		
+13	0.0	 	  A 	 Y	   	   	 (1B)		
+14	0.0	 	  A 	 Y	   	   	 (2W)		
+15	0.0	 	  A 	 Y	   	   	 (3B)		
+16	0.0	 	  A 	 Y	   	   	 (4W)		
+17	0.0	 	  A 	 Y	   	   	 (5B)		
+18	0.0	 	  A 	 Y	   	   	 (6W)		
+19	0.0	 	  A 	 Y	   	   	 (7B)		
+20	0.0	 	  A 	 Y	   	   	 (8W)		
+21	0.0	 	  A 	 Y	   	   	 (9B)		
+22	0.0	 	  A 	 Y	   	   	(10W)		
+23	0.0	 	  A 	 Y	   	   	(11B)		
+24	0.0	 	  A 	 Y	   	   	(12W)		
+
+
+Round #2.
+
+ID	Pts	--	Pref	C2	C14	C16	  Cur		R1	
+
+ 5	1.0	 W	 (B)	 Y	   	   	(12B)		17	
+ 6	1.0	 B	 (W)	 Y	   	   	(11W)		18	
+ 7	1.0	 W	 (B)	 Y	   	   	(13B)		19	
+ 8	1.0	 B	 (W)	 Y	   	   	(15W)		20	
+10	1.0	 B	 (W)	 Y	   	   	(16W)		22	
+11	1.0	 W	 (B)	 Y	   	   	 (6B)		23	
+12	1.0	 B	 (W)	 Y	   	   	 (5W)		24	
+13	1.0	 B	 (W)	 Y	   	   	 (7W)		 1	
+15	1.0	 B	 (W)	 Y	   	   	 (8B)		 3	
+16	1.0	 W	 (B)	 Y	   	   	(10B)		 4	
+
+ 2	0.5	 B	 (W)	 Y	   	   	 (9W)		14	
+ 9	0.5	 W	 (B)	 Y	   	   	 (2B)		21	
+14	0.5	 W	 (B)	 Y	   	   	(21B)		 2	
+21	0.5	 B	 (W)	 Y	   	   	(14W)		 9	
+
+ 1	0.0	 W	 (B)	 Y	   	   	(19B)		13	
+ 3	0.0	 W	 (B)	 Y	   	   	(20B)		15	
+ 4	0.0	 B	 (W)	 Y	   	   	(22W)		16	
+17	0.0	 B	 (W)	 Y	   	   	(24W)		 5	
+18	0.0	 W	 (B)	 Y	   	   	(23B)		 6	
+19	0.0	 B	 (W)	 Y	   	   	 (1W)		 7	
+20	0.0	 W	 (B)	 Y	   	   	 (3W)		 8	
+22	0.0	 W	 (B)	 Y	   	   	 (4B)		10	
+23	0.0	 B	 (W)	 Y	   	   	(18W)		11	
+24	0.0	 W	 (B)	 Y	   	   	(17B)		12	
+
+
+Round #3.
+
+ID	Pts	---	Pref	C2	C14	C16	  Cur		R1	R2	
+
+ 5	2.0	 WB	  w 	 Y	   	   	(10W)		17	12	
+ 8	2.0	 BW	  b 	 Y	   	   	(11B)		20	15	
+10	2.0	 BW	  b 	 Y	   	   	 (5B)		22	16	
+11	2.0	 WB	  w 	 Y	   	   	 (8W)		23	 6	
+13	2.0	 BW	  b 	 Y	   	   	 (2B)		 1	 7	
+
+ 2	1.5	 BW	  b 	 Y	   	   	(13W)		14	 9	
+21	1.5	 BW	  b 	 Y	   	   	 (1W)		 9	14	
+
+ 1	1.0	  W	 (B)	 N	  D	   	(21B)		13	  	
+ 4	1.0	 BW	  b 	 Y	   	   	(15B)		16	22	
+ 6	1.0	 BW	  b 	 Y	   	   	(16B)		18	11	
+ 7	1.0	 WB	  w 	 Y	   	   	(17W)		19	13	
+12	1.0	 BW	  b 	 Y	   	   	(18B)		24	 5	
+15	1.0	 BB	  W 	 Y	   	   	 (4W)		 3	 8	
+16	1.0	 WB	  w 	 Y	   	   	 (6W)		 4	10	
+17	1.0	 BW	  b 	 Y	   	   	 (7B)		 5	24	
+18	1.0	 WB	  w 	 Y	   	   	(12W)		 6	23	
+
+ 3	0.5	 WB	  w 	 Y	   	   	(14W)		15	20	
+ 9	0.5	 WB	  w 	 Y	   	   	(20W)		21	 2	
+14	0.5	 WB	  w 	 Y	   	   	 (3B)		 2	21	
+20	0.5	 WW	  B 	 Y	   	   	 (9B)		 8	 3	
+
+19	0.0	  B	 (W)	 Y	   	   	(23W)		 7	  	
+22	0.0	 WB	  w 	 Y	   	   	(24W)		10	 4	
+23	0.0	 BW	  b 	 Y	   	   	(19B)		11	18	
+24	0.0	 WB	  w 	 Y	   	   	(22B)		12	17	
+
+
+Round #4.
+
+ID	Pts	----	Pref	C2	C14	C16	  Cur		R1	R2	R3	
+
+ 5	3.0	  WB	  w 	 N	  D	   	(11W)		17	12	  	
+11	3.0	 WBW	 (B)	 Y	   	   	 (5B)		23	 6	 8	
+13	3.0	 BWB	 (W)	 Y	  D	   	(10W)		 1	 7	 2	
+
+ 1	2.0	  WB	  w 	 N	  U	  D	(16W)		13	  	21	
+ 7	2.0	 WBW	 (B)	 Y	   	   	(15B)		19	13	17	
+ 8	2.0	 BWB	 (W)	 Y	   	   	(18W)		20	15	11	
+10	2.0	  BW	  b 	 Y	   	   	(13B)		22	16	  	
+15	2.0	 BBW	 (W)	 Y	   	   	 (7W)		 3	 8	 4	
+16	2.0	 WBW	 (B)	 Y	   	   	 (1B)		 4	10	 6	
+18	2.0	 WBW	 (B)	 Y	   	   	 (8B)		 6	23	12	
+
+ 2	1.5	 BWW	  B 	 Y	  U	   	 (4B)		14	 9	13	
+ 3	1.5	 WBW	 (B)	 Y	   	   	(21W)		15	20	14	
+ 9	1.5	 WBW	 (B)	 Y	   	   	 (6B)		21	 2	20	
+21	1.5	 BWW	  B 	 Y	  D	   	 (3B)		 9	14	 1	
+
+ 4	1.0	 BWB	 (W)	 Y	   	   	 (2W)		16	22	15	
+ 6	1.0	 BWB	 (W)	 Y	   	   	 (9W)		18	11	16	
+12	1.0	 BWB	 (W)	 Y	   	   	(19W)		24	 5	18	
+17	1.0	 BWB	 (W)	 Y	   	   	(22W)		 5	24	 7	
+19	1.0	  BW	  b 	 Y	   	   	(12B)		 7	  	23	
+22	1.0	 WBW	 (B)	 Y	   	   	(17B)		10	 4	24	
+
+14	0.5	 WBB	  W 	 Y	   	   	(20W)		 2	21	 3	
+20	0.5	 WWB	 (B)	 Y	   	   	(14B)		 8	 3	 9	
+
+23	0.0	 BWB	 (W)	 Y	   	   	(24B)		11	18	19	
+24	0.0	 WBB	  W 	 Y	   	   	(23W)		12	17	22	
+
+
+Round #5.
+
+ID	Pts	-----	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	
+
+11	4.0	 WBWB	  w 	 Y	   	   	(13W)		23	 6	 8	 5	
+
+ 5	3.0	  WBW	 (B)	 N	   	  D	(10B)		17	12	  	11	
+ 8	3.0	 BWBW	  b 	 Y	   	   	(16B)		20	15	11	18	
+10	3.0	  BWB	 (W)	 Y	  U	   	 (5W)		22	16	  	13	
+13	3.0	 BWBW	  b 	 Y	  D	  D	(11B)		 1	 7	 2	10	
+15	3.0	 BBWW	  B 	 Y	   	   	 (9B)		 3	 8	 4	 7	
+16	3.0	 WBWB	  w 	 Y	   	   	 (8W)		 4	10	 6	 1	
+
+ 9	2.5	 WBWB	  w 	 Y	  D	   	(15W)		21	 2	20	 6	
+
+ 1	2.0	  WBW	 (B)	 N	   	  U	(18B)		13	  	21	16	
+ 3	2.0	 WBWW	  B 	 Y	   	   	(19B)		15	20	14	21	
+ 4	2.0	 BWBW	  b 	 Y	  U	   	(21B)		16	22	15	 2	
+ 7	2.0	 WBWB	  w 	 Y	   	   	(22W)		19	13	17	15	
+18	2.0	 WBWB	  w 	 Y	   	   	 (1W)		 6	23	12	 8	
+19	2.0	  BWB	 (W)	 Y	   	   	 (3W)		 7	  	23	12	
+21	2.0	 BWWB	  w 	 Y	   	  D	 (4W)		 9	14	 1	 3	
+22	2.0	 WBWB	  w 	 Y	   	   	 (7B)		10	 4	24	17	
+
+ 2	1.5	 BWWB	  w 	 Y	  D	  U	(12W)		14	 9	13	 4	
+14	1.5	 WBBW	  b 	 Y	   	   	(17W)		 2	21	 3	20	
+
+ 6	1.0	 BWBW	  b 	 Y	  U	   	(23B)		18	11	16	 9	
+12	1.0	 BWBW	  b 	 Y	   	   	 (2B)		24	 5	18	19	
+17	1.0	 BWBW	  b 	 Y	   	   	(14B)		 5	24	 7	22	
+24	1.0	 WBBW	  b 	 Y	   	   	(20B)		12	17	22	23	
+
+20	0.5	 WWBB	  W 	 Y	   	   	(24W)		 8	 3	 9	14	
+
+23	0.0	 BWBB	  W 	 Y	   	   	 (6W)		11	18	19	24	
+
+
+Round #6.
+
+ID	Pts	------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	
+
+ 8	4.0	 BWBWB	 (W)	 Y	   	   	(13W)		20	15	11	18	16	
+11	4.0	 WBWBW	 (B)	 Y	  D	   	(10B)		23	 6	 8	 5	13	
+13	4.0	 BWBWB	 (W)	 Y	  U	  D	 (8B)		 1	 7	 2	10	11	
+
+ 5	3.5	  WBWB	  w 	 N	   	   	 (9W)		17	12	  	11	10	
+ 9	3.5	 WBWBW	 (B)	 Y	  U	  D	 (5B)		21	 2	20	 6	15	
+10	3.5	  BWBW	  b 	 Y	   	  U	(11W)		22	16	  	13	 5	
+
+ 1	3.0	  WBWB	  w 	 N	   	   	 (7W)		13	  	21	16	18	
+ 4	3.0	 BWBWB	 (W)	 Y	   	  U	 (3W)		16	22	15	 2	21	
+ 7	3.0	 WBWBW	 (B)	 Y	   	   	 (1B)		19	13	17	15	22	
+15	3.0	 BBWWB	 (W)	 Y	  D	   	(16W)		 3	 8	 4	 7	 9	
+16	3.0	 WBWBW	 (B)	 Y	   	   	(15B)		 4	10	 6	 1	 8	
+
+ 3	2.5	 WBWWB	 (B)	 Y	   	   	 (4B)		15	20	14	21	19	
+19	2.5	  BWBW	  b 	 Y	   	   	(22B)		 7	  	23	12	 3	
+
+ 6	2.0	 BWBWB	 (W)	 Y	  D	  U	(21W)		18	11	16	 9	23	
+12	2.0	 BWBWB	 (W)	 Y	  U	   	(14W)		24	 5	18	19	 2	
+17	2.0	 BWBWB	 (W)	 Y	  U	   	(18W)		 5	24	 7	22	14	
+18	2.0	 WBWBW	 (B)	 Y	   	   	(17B)		 6	23	12	 8	 1	
+21	2.0	 BWWBW	 (B)	 Y	   	   	 (6B)		 9	14	 1	 3	 4	
+22	2.0	 WBWBB	  W 	 Y	   	   	(19W)		10	 4	24	17	 7	
+
+ 2	1.5	 BWWBW	 (B)	 Y	  D	  D	(24B)		14	 9	13	 4	12	
+14	1.5	 WBBWW	  B 	 Y	  D	   	(12B)		 2	21	 3	20	17	
+20	1.5	 WWBBW	 (B)	 Y	  U	   	(23B)		 8	 3	 9	14	24	
+
+24	1.0	 WBBWB	 (W)	 Y	  D	   	 (2W)		12	17	22	23	20	
+
+23	0.0	 BWBBW	 (W)	 Y	  U	   	(20W)		11	18	19	24	 6	
+
+
+BBP Pairings <build info>
+--- file gen.trf
+012 AutoTest Tournament 20261108001    1      Test0001 Player0001               1629                             4.0    4    13 w 0    19 b +    21 b 1    16 w 0    18 b 1     7 w 1001    2      Test0002 Player0002               1627                             2.5   16    14 b =     9 w 1    13 w 0     4 b 0    12 w 0    24 b 1001    3      Test0003 Player0003               1625                             3.5    7    15 w 0    20 b =    14 w 1    21 w =    19 b =     4 b 1001    4      Test0004 Player0004               1609                             3.0   11    16 b 0    22 w 1    15 b 0     2 w 1    21 b 1     3 w 0001    5      Test0005 Player0005               1607                             3.5    8    17 w 1    12 b 1    10 w +    11 w 0    10 b =     9 w 0001    6      Test0006 Player0006               1603                             2.0   20    18 b 1    11 w 0    16 b 0     9 w 0    23 b 1    21 w 0001    7      Test0007 Player0007               1593                             3.0   12    19 w 1    13 b 0    17 w 1    15 b 0    22 w 1     1 b 0001    8      Test0008 Player0008               1589                             4.0    5    20 b 1    15 w 1    11 b 0    18 w 1    16 b 1    13 w 0001    9      Test0009 Player0009               1584                             4.5    2    21 w =     2 b 0    20 w 1     6 b 1    15 w 1     5 b 1001   10      Test0010 Player0010               1581                             4.5    3    22 b 1    16 w 1     5 b -    13 b 1     5 w =    11 w 1001   11      Test0011 Player0011               1579                             4.0    6    23 w 1     6 b 1     8 w 1     5 b 1    13 w 0    10 b 0001   12      Test0012 Player0012               1574                             2.0   21    24 b 1     5 w 0    18 b 0    19 w 0     2 b 1    14 w 0001   13      Test0013 Player0013               1567                             5.0    1     1 b 1     7 w 1     2 b 1    10 w 0    11 b 1     8 b 1001   14      Test0014 Player0014               1559                             2.5   17     2 w =    21 b 0     3 b 0    20 w 1    17 w 0    12 b 1001   15      Test0015 Player0015               1556                             3.5    9     3 b 1     8 b 0     4 w 1     7 w 1     9 b 0    16 w =001   16      Test0016 Player0016               1544                             3.5   10     4 w 1    10 b 0     6 w 1     1 b 1     8 w 0    15 b =001   17      Test0017 Player0017               1533                             2.0   22     5 b 0    24 w 1     7 b 0    22 w 0    14 b 1    18 w 0001   18      Test0018 Player0018               1532                             3.0   13     6 w 0    23 b 1    12 w 1     8 b 0     1 w 0    17 b 1001   19      Test0019 Player0019               1526                             2.5   18     7 b 0     1 w -    23 w 1    12 b 1     3 w =    22 b 0001   20      Test0020 Player0020               1525                             2.5   19     8 w 0     3 w =     9 b 0    14 b 0    24 w 1    23 b 1001   21      Test0021 Player0021               1524                             3.0   14     9 b =    14 w 1     1 w 0     3 b =     4 w 0     6 b 1001   22      Test0022 Player0022               1521                             3.0   15    10 w 0     4 b 0    24 w 1    17 b 1     7 b 0    19 w 1001   23      Test0023 Player0023               1512                             0.0   24    11 b 0    18 w 0    19 b 0    24 b 0     6 w 0    20 w 0001   24      Test0024 Player0024               1504                             1.0   23    12 w 0    17 b 0    22 b 0    23 w 1    20 b 0     2 w 0092 FIDE_DUTCH_2025

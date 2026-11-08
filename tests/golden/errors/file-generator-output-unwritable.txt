@@ -1,0 +1,7 @@
+=== step 1: --dutch -g -o nodir/o.trf -s 1
+exit: 5
+--- stdout
+
+--- stderr
+The output file (nodir/o.trf) could not be opened.
+

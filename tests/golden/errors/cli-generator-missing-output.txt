@@ -1,0 +1,13 @@
+=== step 1: --dutch -g
+exit: 3
+--- stdout
+
+--- stderr
+BBP Pairings <build info>
+
+Command line argument syntax:
+<engine> [-r]
+<engine> [-r] (--dutch | --burstein) input-file -c [-l [check-list-file]]
+<engine> [-r] (--dutch | --burstein) input-file -p [output-file] [-l [check-list-file]]
+<engine> [-r] (--dutch | --burstein) (model-file -g | -g [config-file]) -o trf_file [-s random_seed] [-l [check-list-file]]
+

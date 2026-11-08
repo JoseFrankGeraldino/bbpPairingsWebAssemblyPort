@@ -1,0 +1,9 @@
+=== step 1: synthetic-trf2026-team-swiss.trf
+exit: 0
+--- stdout
+file: synthetic-trf2026-team-swiss.trf
+read: format error: Invalid line (unsupported tournament type) "192 FIDE_TEAM_BAKU"
+round-trip: not possible, the engine cannot read this file
+
+--- stderr
+

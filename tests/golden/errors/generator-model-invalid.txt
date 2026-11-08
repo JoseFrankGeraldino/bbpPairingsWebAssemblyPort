@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -g -o o.trf -s 1
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: Invalid line "001    0"
+

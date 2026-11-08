@@ -1,0 +1,7 @@
+=== step 1: --burstein issue_15.input -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file issue_15.input: The total number of rounds in the tournament must be specified.
+

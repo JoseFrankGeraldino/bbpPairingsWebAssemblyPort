@@ -1,0 +1,11 @@
+=== step 1: --burstein synthetic-8players-5rounds-unpaired-input.trf -p
+exit: 0
+--- stdout
+4
+1 4
+3 2
+5 8
+7 6
+
+--- stderr
+

@@ -1,0 +1,12 @@
+=== step 1: --dutch dutch_2025_C5.input -p out.txt
+exit: 0
+--- stdout
+
+--- stderr
+
+--- file out.txt
+3
+1 5
+3 2
+6 0
+

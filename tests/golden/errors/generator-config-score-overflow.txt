@@ -1,0 +1,8 @@
+=== step 1: --dutch -g c.cfg -o o.trf -s 3
+exit: 4
+--- stdout
+
+--- stderr
+Error generating o.trf: No valid pairing exists for round 9 of the generated tournament: The players could not be simultaneously matched while satisfying all absolute criteria.
+Error writing tournament to o.trf: The output file format does not support scores above 99.9.
+

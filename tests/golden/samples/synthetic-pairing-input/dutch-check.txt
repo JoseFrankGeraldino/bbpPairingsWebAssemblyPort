@@ -1,0 +1,40 @@
+=== step 1: --dutch synthetic-pairing-input.trf -c -l check.list
+exit: 0
+--- stdout
+synthetic-pairing-input: Round #1
+  Checker pairings        Tournament pairings 
+      1 -   3                  1 -   2
+      4 -   2                  4 -   3
+
+synthetic-pairing-input: Round #2
+  Checker pairings        Tournament pairings 
+      5 -   4                  4 -   1
+      3 -   1                  5 -   3
+
+
+
+--- stderr
+
+--- file check.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	 Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(3W)		
+ 2	0.0	 	  A 	 Y	   	   	(4B)		
+ 3	0.0	 	  A 	 Y	   	   	(1B)		
+ 4	0.0	 	  A 	 Y	   	   	(2W)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	 Cur		R1	
+
+ 1	1.0	 W	 (B)	 Y	   	   	(3B)		 2	
+ 4	1.0	 W	 (B)	 Y	   	   	(5B)		 3	
+ 5	1.0	  	  A 	 N	  D	   	(4W)		  	
+
+ 3	0.0	 B	 (W)	 Y	   	   	(1W)		 4	
+
+
+BBP Pairings <build info>

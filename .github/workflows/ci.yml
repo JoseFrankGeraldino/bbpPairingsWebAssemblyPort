@@ -1,0 +1,79 @@
+# CI for bbpPairingsWebAssemblyPort.
+# Jobs mirror the local commands in README.md ("CI jobs and their local
+# equivalents"). Actions are pinned by commit SHA; only GitHub-provided actions.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: native build, test suite, dist
+    runs-on: ubuntu-latest
+    env:
+      BBP_GENERATED_COUNT: "300"
+    steps:
+      - name: Checkout (with the engine submodule)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Toolchain versions
+        run: g++ --version && make --version | head -1 && python3 --version
+
+      - name: Submodule is the pinned fork commit, unmodified
+        run: |
+          git submodule status
+          test "$(git config -f .gitmodules submodule.third_party/bbpPairings.url)" = \
+            "https://github.com/JoseFrankGeraldino/bbpPairings.git"
+          test -z "$(git -C third_party/bbpPairings status --porcelain)"
+
+      - name: Build (make native)
+        run: make native
+
+      - name: Test suite (make test)
+        run: make test ENGINE=build/native/bbpPairings
+
+      - name: Package (make dist)
+        run: make dist
+
+      - name: Submodule still clean after build and tests
+        run: test -z "$(git -C third_party/bbpPairings status --porcelain)"
+
+      - name: Upload dist
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: native-linux-x64
+          path: dist/native-linux-x64/
+          if-no-files-found: error
+
+  coverage:
+    name: coverage (gate 90% lines of third_party/bbpPairings/src)
+    runs-on: ubuntu-latest
+    env:
+      BBP_GENERATED_COUNT: "300"
+    steps:
+      - name: Checkout (with the engine submodule)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Install gcovr
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gcovr
+
+      - name: Instrumented build, suite, report and gate (make coverage)
+        run: make coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: coverage-report
+          path: build/coverage/report/
+          if-no-files-found: error

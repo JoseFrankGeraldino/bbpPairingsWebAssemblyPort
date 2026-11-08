@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 1
+--- stdout
+
+--- stderr
+Error while pairing in.trf: No valid pairing exists: The players could not be simultaneously matched while satisfying all absolute criteria.
+

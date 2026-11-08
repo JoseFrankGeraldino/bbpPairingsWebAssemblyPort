@@ -1,0 +1,31 @@
+=== step 1: --burstein in.trf -c -l
+exit: 0
+--- stdout
+in: Round #1
+in: Round #2
+No valid pairing exists for round 2.
+
+
+
+--- stderr
+
+--- file in.list
+Round #1
+
+ID	Pts	-	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	 Cur		
+
+ 1	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(2W)		
+
+ 2	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(1B)		
+
+
+Round #2
+
+ID	Pts	--	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	Cur		R1	
+
+ 1	2.0	 W	 (B)	            0.00	          0.00	              0.0	        0.00	            0.0	   		 2	
+
+ 2	0.0	 B	 (W)	            0.00	          0.00	              2.0	        0.00	            0.0	   		 1	
+
+
+BBP Pairings <build info>

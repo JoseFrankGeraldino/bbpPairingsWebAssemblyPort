@@ -1,0 +1,20 @@
+=== step 1: --dutch in.trf -c -l
+exit: 0
+--- stdout
+in: Round #1
+
+
+--- stderr
+
+--- file in.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	 Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(3W)		
+ 2	0.0	 	  A 	 Y	   	   	(4B)		
+ 3	0.0	 	  A 	 Y	   	   	(1B)		
+ 4	0.0	 	  A 	 Y	   	   	(2W)		
+
+
+BBP Pairings <build info>

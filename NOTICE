@@ -1,0 +1,19 @@
+bbpPairingsWebAssemblyPort
+Copyright (c) 2026 Jose Geraldino
+
+This distribution contains BBP Pairings, a Swiss-system chess tournament
+pairing engine:
+
+  BBP Pairings
+  Copyright 2016-2026 Jeremy Bierema.
+  Licensed under the Apache License, Version 2.0 (see LICENSE.txt and
+  Apache-2.0.txt in this distribution).
+  Original repository: https://github.com/BieremaBoyzProgramming/bbpPairings
+
+The engine is built, unmodified, from the fork
+https://github.com/JoseFrankGeraldino/bbpPairings (branch master); the exact
+commit is recorded in the VERSION file next to this notice.
+
+The build scripts, test suite and packaging of bbpPairingsWebAssemblyPort are
+licensed under the MIT License
+(https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort).

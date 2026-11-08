@@ -1,0 +1,9 @@
+=== step 1: --dutch in.trf -c -l
+exit: 0
+--- stdout
+
+
+--- stderr
+
+--- file in.list
+BBP Pairings <build info>

@@ -1,0 +1,10 @@
+=== step 1: --dutch synthetic-pairing-input.trf -p
+exit: 0
+--- stdout
+3
+1 5
+2 4
+3 0
+
+--- stderr
+

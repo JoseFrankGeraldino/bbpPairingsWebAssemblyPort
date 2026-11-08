@@ -1,0 +1,7 @@
+=== step 1: --dutch -g dir -o o.trf -s 1
+exit: 5
+--- stdout
+
+--- stderr
+Error while reading configuration file dir: Error loading configuration file.
+

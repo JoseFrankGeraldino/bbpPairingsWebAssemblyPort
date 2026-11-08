@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -c
+exit: 3
+--- stdout
+
+--- stderr
+Pairing system specified in file in.trf does not match command line flag.
+

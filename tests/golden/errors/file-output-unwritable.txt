@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p nodir/out.txt
+exit: 5
+--- stdout
+
+--- stderr
+The output file (nodir/out.txt) could not be opened.
+

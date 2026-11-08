@@ -1,0 +1,32 @@
+=== step 1: --dutch in.trf -p -l in.list
+exit: 0
+--- stdout
+4
+2 8
+4 1
+6 5
+7 3
+
+--- stderr
+
+--- file in.list
+
+ID	Pts	----	Pref	C2	C14	C16	 Cur		R1	R2	R3	
+
+ 2	6.0	 BBB	  W 	 Y	  D	  D	(8W)		 7	 5	 3	
+
+ 1	5.0	 WBW	 (B)	 Y	   	  D	(4B)		 8	 7	 6	
+
+ 8	4.0	 BWW	  B 	 Y	  U	  U	(2B)		 1	 6	 4	
+
+ 4	3.0	 BBB	  W 	 Y	  D	  D	(1W)		 5	 3	 8	
+ 6	3.0	 BBB	  W 	 Y	   	  D	(5W)		 3	 8	 1	
+
+ 7	2.0	 WWB	 (B)	 Y	   	  U	(3W)		 2	 1	 5	
+
+ 3	1.0	 WWW	  B 	 Y	  U	  U	(7B)		 6	 4	 2	
+
+ 5	0.0	 WWW	  B 	 Y	   	  U	(6B)		 4	 2	 7	
+
+
+BBP Pairings <build info>

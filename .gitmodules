@@ -1,0 +1,4 @@
+[submodule "third_party/bbpPairings"]
+	path = third_party/bbpPairings
+	url = https://github.com/JoseFrankGeraldino/bbpPairings.git
+	branch = master

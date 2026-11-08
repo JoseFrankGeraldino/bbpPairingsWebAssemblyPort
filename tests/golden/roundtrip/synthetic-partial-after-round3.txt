@@ -1,0 +1,25 @@
+=== step 1: synthetic-partial-after-round3.trf
+exit: 0
+--- stdout
+file: synthetic-partial-after-round3.trf
+read: ok (6 player slots, 2 rounds played, 9 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: ok
+canonical-stable: yes
+model-write: 10 input lines, 10 output lines, 6 not reproduced verbatim
+  - 001    1      Player One                        2600                             2.0    1  0004 w 1  0005 w 1
+  - 001    2      Player Two                        2500                             2.0    2  0005 w 1  0006 w 1
+  - 001    3      Player Three                      2400                             1.0    3  0006 w =  0004 b =
+  - 001    4      Player Four                       2300                             0.5    4  0001 b 0  0003 w =
+  - 001    5      Player Five                       2200                             0.0    6  0002 b 0  0001 b 0
+  - 001    6      Player Six                        2100                             0.5    5  0003 b =  0002 b 0
+  + 001    1      Player One                        2600                             2.0    1     4 w 1     5 w 1
+  + 001    2      Player Two                        2500                             2.0    2     5 w 1     6 w 1
+  + 001    3      Player Three                      2400                             1.0    3     6 w =     4 b =
+  + 001    4      Player Four                       2300                             0.5    4     1 b 0     3 w =
+  + 001    5      Player Five                       2200                             0.0    6     2 b 0     1 b 0
+  + 001    6      Player Six                        2100                             0.5    5     3 b =     2 b 0
+model-reread-equal: yes
+
+--- stderr
+

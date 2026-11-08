@@ -1,0 +1,10 @@
+=== step 1: --burstein synthetic-partial-after-round3.trf -p
+exit: 0
+--- stdout
+3
+3 2
+6 1
+5 4
+
+--- stderr
+

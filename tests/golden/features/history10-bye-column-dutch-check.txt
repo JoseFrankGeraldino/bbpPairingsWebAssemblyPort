@@ -1,0 +1,90 @@
+=== step 1: --dutch in.trf -c -l
+exit: 0
+--- stdout
+in: Round #1
+  Checker pairings        Tournament pairings 
+      1 -   6                  1 -  10
+      7 -   2                  9 -   2
+      9 -   4                  7 -   4
+      5 -  10                  5 -   6
+
+in: Round #2
+  Checker pairings        Tournament pairings 
+      8 -   5                  5 -   4
+      4 -   1                 10 -   8
+      2 -   7                  9 -   1
+     10 -   9                  7 -   2
+      6 -   3                  3 -   6
+
+in: Round #3
+  Checker pairings        Tournament pairings 
+     10 -   5                  5 -   2
+      4 -   9                 10 -   6
+      8 -   7                  1 -   8
+      6 -   1                  7 -   9
+      2 -   3                  3 -   4
+
+in: Round #4
+
+
+--- stderr
+
+--- file in.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	  Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	 (6W)		
+ 2	0.0	 	  A 	 Y	   	   	 (7B)		
+ 3	0.0	 	  A 	 Y	   	   	 (8W)		
+ 4	0.0	 	  A 	 Y	   	   	 (9B)		
+ 5	0.0	 	  A 	 Y	   	   	(10W)		
+ 6	0.0	 	  A 	 Y	   	   	 (1B)		
+ 7	0.0	 	  A 	 Y	   	   	 (2W)		
+ 8	0.0	 	  A 	 Y	   	   	 (3B)		
+ 9	0.0	 	  A 	 Y	   	   	 (4W)		
+10	0.0	 	  A 	 Y	   	   	 (5B)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	  Cur		R1	
+
+ 5	1.0	 W	 (B)	 Y	   	   	 (8B)		 6	
+ 8	1.0	 B	 (W)	 Y	   	   	 (5W)		 3	
+
+ 1	0.5	 W	 (B)	 Y	   	   	 (4B)		10	
+ 2	0.5	 B	 (W)	 Y	   	   	 (7W)		 9	
+ 4	0.5	 B	 (W)	 Y	   	   	 (1W)		 7	
+ 7	0.5	 W	 (B)	 Y	   	   	 (2B)		 4	
+ 9	0.5	 W	 (B)	 Y	   	   	(10B)		 2	
+10	0.5	 B	 (W)	 Y	   	   	 (9W)		 1	
+
+ 3	0.0	 W	 (B)	 Y	   	   	 (6B)		 8	
+ 6	0.0	 B	 (W)	 Y	   	   	 (3W)		 5	
+
+
+Round #3
+
+ID	Pts	---	Pref	C2	C14	C16	  Cur		R1	R2	
+
+ 5	1.5	 WW	  B 	 Y	  D	   	(10B)		 6	 4	
+10	1.5	 BW	  b 	 Y	  U	   	 (5W)		 1	 8	
+
+ 1	1.0	 WB	  w 	 Y	   	   	 (6B)		10	 9	
+ 2	1.0	 BB	  W 	 Y	   	   	 (3W)		 9	 7	
+ 4	1.0	 BB	  W 	 Y	  U	   	 (9W)		 7	 5	
+ 7	1.0	 WW	  B 	 Y	   	   	 (8B)		 4	 2	
+ 8	1.0	 BB	  W 	 Y	  D	   	 (7W)		 3	10	
+ 9	1.0	 WW	  B 	 Y	   	   	 (4B)		 2	 1	
+
+ 3	0.5	 WW	  B 	 Y	   	   	 (2B)		 8	 6	
+ 6	0.5	 BB	  W 	 Y	   	   	 (1W)		 5	 3	
+
+
+Round #4
+
+ID	Pts	----	Pref	C2	C14	C16	Cur		R1	R2	R3	
+
+
+BBP Pairings <build info>

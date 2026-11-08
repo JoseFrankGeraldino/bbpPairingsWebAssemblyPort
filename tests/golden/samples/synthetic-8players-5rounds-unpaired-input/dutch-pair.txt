@@ -1,0 +1,11 @@
+=== step 1: --dutch synthetic-8players-5rounds-unpaired-input.trf -p
+exit: 0
+--- stdout
+4
+1 5
+6 2
+3 7
+8 4
+
+--- stderr
+

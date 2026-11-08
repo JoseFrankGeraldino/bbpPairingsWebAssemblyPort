@@ -1,0 +1,26 @@
+=== step 1: synthetic-pairing-input.trf
+exit: 0
+--- stdout
+file: synthetic-pairing-input.trf
+read: ok (5 player slots, 2 rounds played, 3 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: ok
+canonical-stable: yes
+model-write: 20 input lines, 19 output lines, 7 not reproduced verbatim
+  - 012 FIDE Grand Prix 2025
+  - XXC white1
+  - 001    1 m GM Kasparov, Garry                   2812 RUS 4100018     1963/04/13  1.5    2  0002 w 1  0004 b =
+  - 001    2   IM Kramnik, Vladimir                 2750 RUS 4101588     1975/06/25  0.5    4  0001 b 0  0000 - H
+  - 001    3      Player Three                      2000 NED                         0.0    5  0004 b 0  0005 b 0
+  - 001    4 wWGM Polgar, Judit                     2735 HUN 700070      1976/07/23  1.5    3  0003 w 1  0001 w =
+  - 001    5      Player Five                       1800 NED                         2.0    1  0000 - F  0003 w 1
+  + ### 012 FIDE Grand Prix 2025
+  + 001    1 m GM Kasparov, Garry                   2812 RUS 4100018     1963/04/13  1.5    2     2 w 1     4 b =
+  + 001    2   IM Kramnik, Vladimir                 2750 RUS 4101588     1975/06/25  0.5    4     1 b 0  0000 - H
+  + 001    3      Player Three                      2000 NED                         0.0    5     4 b 0     5 b 0
+  + 001    4 wWGM Polgar, Judit                     2735 HUN 700070      1976/07/23  1.5    3     3 w 1     1 w =
+  + 001    5      Player Five                       1800 NED                         2.0    1  0000 - F     3 w 1
+model-reread-equal: yes
+
+--- stderr
+

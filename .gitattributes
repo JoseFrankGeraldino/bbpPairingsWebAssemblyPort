@@ -1,0 +1,4 @@
+# Test inputs and golden outputs are compared byte for byte; the engine writes
+# CR line endings in TRF output. Never let git convert line endings here.
+tests/fixtures/** -text
+tests/golden/** -text

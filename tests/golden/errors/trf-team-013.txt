@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file in.trf: Invalid line (team tournaments are not supported) "013 Team A          1    2"
+

@@ -1,0 +1,16 @@
+=== step 1: --dutch in.trf -p -l in.list
+exit: 1
+--- stdout
+
+--- stderr
+Error while pairing in.trf: No valid pairing exists: The players could not be simultaneously matched while satisfying all absolute criteria.
+
+--- file in.list
+
+ID	Pts	---	Pref	C2	C14	C16	Cur		R1	R2	
+
+ 1	1.0	 WB	  w 	 Y	  D	   	   		 2	 2	
+ 2	1.0	 BW	  b 	 Y	  U	   	   		 1	 1	
+
+
+

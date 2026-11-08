@@ -1,0 +1,7 @@
+=== step 1: --dutch missing.trf -p
+exit: 5
+--- stdout
+
+--- stderr
+Error reading file missing.trf: The file could not be loaded.
+

@@ -1,0 +1,7 @@
+=== step 1: --dutch -g missing.cfg -o o.trf -s 1
+exit: 5
+--- stdout
+
+--- stderr
+Error while reading configuration file missing.cfg: Error loading configuration file.
+

@@ -1,0 +1,30 @@
+=== step 1: --dutch in.trf -c -l
+exit: 0
+--- stdout
+in: Round #1
+in: Round #2
+No valid pairing exists for round 2.
+
+
+
+--- stderr
+
+--- file in.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	 Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(2W)		
+ 2	0.0	 	  A 	 Y	   	   	(1B)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	Cur		R1	
+
+ 1	1.0	 W	 (B)	 Y	   	   	   		 2	
+
+ 2	0.0	 B	 (W)	 Y	   	   	   		 1	
+
+
+BBP Pairings <build info>

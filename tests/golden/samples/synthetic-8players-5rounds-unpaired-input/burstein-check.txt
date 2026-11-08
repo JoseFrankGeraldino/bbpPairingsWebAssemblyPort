@@ -1,0 +1,9 @@
+=== step 1: --burstein synthetic-8players-5rounds-unpaired-input.trf -c -l check.list
+exit: 0
+--- stdout
+
+
+--- stderr
+
+--- file check.list
+BBP Pairings <build info>

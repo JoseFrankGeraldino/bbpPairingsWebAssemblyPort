@@ -1,0 +1,7 @@
+=== step 1: --dutch in.trf -g -o o.trf -s 1
+exit: 3
+--- stdout
+
+--- stderr
+Error processing file in.trf: All players must have meaningful (nonzero) ratings.
+
