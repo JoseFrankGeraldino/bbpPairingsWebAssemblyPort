@@ -15,6 +15,8 @@ jobs:
     name: native build, test suite, dist
     runs-on: ubuntu-latest
     env:
+      # The full generated set (300 random tournaments) runs here, on the
+      # release build.
       BBP_GENERATED_COUNT: "300"
     steps:
       - name: Checkout (with the engine submodule)
@@ -56,7 +58,11 @@ jobs:
     name: coverage (gate 90% lines of third_party/bbpPairings/src)
     runs-on: ubuntu-latest
     env:
-      BBP_GENERATED_COUNT: "300"
+      # The coverage job only measures lines; the native job above runs the full
+      # generated set. Measured 2026-11-08: 0, 40, 100 and 300 generated cases
+      # all give the same 92.74% (4355/4696); 300 at -O0 + gcov took ~25 min on
+      # the 2-vCPU runner. 20 keeps the generated path exercised instrumented.
+      BBP_GENERATED_COUNT: "20"
     steps:
       - name: Checkout (with the engine submodule)
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
