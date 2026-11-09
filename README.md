@@ -457,7 +457,10 @@ for the engine's `__DATE__`/`__TIME__`) and passes the engine Makefile
 `version=fork-<12 characters of the fork commit>` instead of its `git
 describe`, which depends on the tags a checkout has; the engine's version
 line therefore reads `BBP Pairings (...) - fork-1b3c79fac8ae (Built <commit
-time>)`. The archives: sorted entries, the commit time on every entry, owner
+time>)`. Build packages to ship from a clean build (fresh clone, or without
+`build/obj`): the engine Makefile does not recompile `main.cpp` when only
+that line changes, so an incremental build keeps an earlier commit's time.
+The archives: sorted entries, the commit time on every entry, owner
 0, gzip without name or time.
 
 **Who builds them.** Nothing is published from this repository (no GitHub
