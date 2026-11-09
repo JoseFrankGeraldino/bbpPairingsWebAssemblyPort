@@ -38,34 +38,56 @@ namespace tiebreak
     bool isLetter{ };
     std::string letter{ };
     Decimal points{ };
+    /**
+     * A match score entry "W*": the game points of the letter times the
+     * team size (the game points of an unplayed match).
+     */
+    bool timesTeamSize{ };
   };
 
   typedef std::map<std::string, ScoreEntry> ScoreSystem;
 
-  /** One side of a game: the player and, when recorded, the result letter. */
+  /**
+   * One side of a game or match: the player or team and, when recorded, the
+   * result letter. A record 299 may also set the game points of a team's
+   * side of a match.
+   */
   struct GameSide
   {
     int cid{ };
     std::optional<std::string> result{ };
+    std::optional<Decimal> gpoints{ };
   };
 
+  /**
+   * A game of the game list or a match of the match list (a team event).
+   * A match lists the ids of its board games in board order.
+   */
   struct Game
   {
+    int id{ };
     int round{ };
     GameSide white{ };
     std::optional<GameSide> black{ };
     bool played{ };
     bool rated{ };
+    int board{ };
+    std::vector<int> games{ };
   };
 
-  /** A record 299 adjustment of a player's points. */
+  /**
+   * A record 299 adjustment of a competitor's points: match and game points
+   * for a team, the points (in gpoints) for a player.
+   */
   struct Adjustment
   {
     int round{ };
-    Decimal points{ };
+    Decimal mpoints{ };
+    Decimal gpoints{ };
     bool pairing{ };
   };
 
+  /** A player, or in a team event a team with its players (cplayers). */
   struct Competitor
   {
     int cid{ };
@@ -73,6 +95,7 @@ namespace tiebreak
     std::optional<int> rating{ };
     bool present{ true };
     std::vector<Adjustment> adjust{ };
+    std::vector<int> cplayers{ };
   };
 
   struct Tournament
@@ -82,19 +105,37 @@ namespace tiebreak
     int currentRound{ };
     std::vector<std::string> rankOrder{ "PTS" };
     std::optional<std::string> startDate{ };
+    /** The players, or in a team event the teams. */
     std::vector<Competitor> competitors{ };
     ScoreSystem gameScore{ };
     std::vector<Game> gameList{ };
+    bool teamTournament{ };
+    int teamSize{ };
+    /** The primary score a team event's record 192 declares. */
+    std::optional<std::string> primary{ };
+    ScoreSystem matchScore{ };
+    std::vector<Game> matchList{ };
   };
 
   /**
-   * Read a TRF16 or TRF-2026 file of an individual tournament the way
-   * Gacrux's trf2json reads it.
+   * Read a TRF16 or TRF-2026 file of an individual or team tournament the
+   * way Gacrux's trf2json reads it.
    *
    * @throws FileFormatException if the file is malformed, inconsistent or
-   *   describes something the tool does not support (team events).
+   *   describes something the tool does not support.
    */
   Tournament readTrf(const std::string &contents);
+
+  /**
+   * scoresystem.get_score: the points of a score system key, where a key
+   * marked "*" is the game points of a letter times the team size.
+   *
+   * @throws FileFormatException if a key has no points.
+   */
+  Decimal solveScore(
+    const Tournament &tournament,
+    bool match,
+    const std::string &key);
 
   /**
    * Walk the score system from a result letter to its points, scoring an

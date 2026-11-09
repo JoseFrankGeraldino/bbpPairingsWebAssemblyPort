@@ -9,11 +9,11 @@ engine sources with a 90% gate, a standalone FIDE tie-break tool checked
 against FIDE's reference implementation, and `dist/` packaging with the
 licences.
 
-State: E1 done (native Linux build, suite, coverage, dist). E3 milestone 1
-done: the tie-break tool for **individual** tournaments (every individual
-tie-break on FIDE's mandatory TRF-26 list), see "Tie-break tool" below. Next:
-E3 milestone 2 (team tie-breaks), then E2 (WebAssembly, judged by these same
-suites; see [docs/E2-notes.md](docs/E2-notes.md)).
+State: E1 done (native Linux build, suite, coverage, dist). E3 done: the
+tie-break tool for individual tournaments (milestone 1) and team tournaments
+(milestone 2), every tie-break on FIDE's mandatory TRF-26 list, see
+"Tie-break tool" below. Next: E2 (WebAssembly, judged by these same suites;
+see [docs/E2-notes.md](docs/E2-notes.md)).
 
 ## Repository layout
 
@@ -24,6 +24,7 @@ suites; see [docs/E2-notes.md](docs/E2-notes.md)).
 | `tiebreak/` | our tie-break tool (C++20, MIT; rules ported from Gacrux, MIT, see `tiebreak/GACRUX-LICENSE.txt`) |
 | `tests/run_tests.py` | black-box engine suite (Python 3 standard library only) |
 | `tests/tiebreak_compare.py` | differential test of the tie-break tool against Gacrux, plus its error cases |
+| `tests/tiebreak_inputs.py`, `tests/tiebreak_team_inputs.py` | synthetic individual tournaments and seeded team tournaments for that test |
 | `tests/cases_inline.py`, `tests/trf_builder.py` | synthetic feature and error cases |
 | `tests/roundtrip/trf_roundtrip.cpp` | the one white-box helper: TRF read -> write -> read |
 | `tests/coverage_gate.py` | gcovr report + "no data" and minimum-coverage gates |
@@ -212,7 +213,7 @@ not skipped — what the engine's TRF writers do **not** preserve:
   `build/obj/coverage-tiebreak`, run through `tests/tiebreak_compare.py`
   (`BBP_TIEBREAK_COVERAGE_COUNT` seeds per source), gate 85% lines (the
   workspace rule for new code), report `build/coverage/tiebreak-report/`.
-  Locally 90.3%.
+  Locally 91.4% (milestone 2 changed lines: 90.1%).
 
 ## Engine fixes in the fork
 
@@ -275,31 +276,53 @@ Exit codes: 0 success, 1 the `-c` check found a rank that differs from the file
 status), 3 invalid file or request, 4 a number too large, 5 file not readable or
 output not writable, 2 unexpected error.
 
-**Milestone 1 scope (this state):** individual tournaments, every individual
-tie-break of FIDE's mandatory list: DE, WIN, WON, BPG, BWG, REP, PS, BH, FB,
-SB, AOB, KS, ARO, TPR, PTP, APRO, APPO with the C1/C2/M1/M2/P/F/Lx variants,
-plus the helpers PTS, SNO/TPN, RANK, RTG, NUM, RIP, VUR, GE, COD, RTNG, ABH,
-AFB. Rules version by start date (record 042): before 2026-03-01 the 2024
+**Individual tournaments (milestone 1):** every individual tie-break of FIDE's
+mandatory list: DE, WIN, WON, BPG, BWG, REP, PS, BH, FB, SB, AOB, KS, ARO,
+TPR, PTP, APRO, APPO with the C1/C2/M1/M2/P/F/Lx variants, plus the helpers
+PTS, SNO/TPN, RANK, RTG, NUM, RIP, VUR, GE, COD, RTNG, ABH, AFB, and the team
+criteria Gacrux also computes for players (EDE, EDET, EDEB, ESB, MPVGP after
+PTS). Rules version by start date (record 042): before 2026-03-01 the 2024
 rules, otherwise the 2026 rules (C.07 16.4).
 
-**Not supported yet, refused with exit 3:** team tournaments and team
-tie-breaks (milestone 2: MP/GP, EDE*, E*SB, BC, TBR, BBE, SSSC, MPVGP), national
-rating records (172/FID), a TRF16 file whose points only fit a score system
-that has to be derived (add record 162), and Gacrux's non-tie-break helpers
-(ACC, FLT, RFP, TOP, RND, STD, CSQ, RSES).
+**Team tournaments (milestone 2):** the team section of record 310 or the
+older 013, with records 352 (board colours), 362 (match score system), 320
+(pairing-allocated byes), 330 (forfeited matches), 300 (board orders), 240
+team byes, 299 team assignments and penalties, and record 192's primary score.
+Matches are built from the board games the way Gacrux's `games2matches` does.
+Every team tie-break of the mandatory list: MPTS, GPTS, the shared ones with
+`:MP` / `:GP` (WIN, WON, PS, BH, FB, AOB, KS with their variants), BC, TBR,
+BBE, MPvGP, EMMSB/EMGSB/EGMSB/EGGSB (C1/C2/P), EDE, EDEBT, EDEBB, EDET, EDEB
+(P), SSSC (F/P/Kx), plus the pair suffixes (`:MM`, `:MG`, `:GM`, `:GG`), ESB,
+EDEC and the exchange modifier `/X`.
+
+**Refused with exit 3:** national rating records (172/FID), a TRF16 file whose
+points only fit a score system that has to be derived (add record 162),
+Gacrux's non-tie-break helpers (ACC, FLT, RFP, TOP, RND, STD, CSQ, RSES), team
+tie-breaks on an individual event, and the requests Gacrux itself cannot
+answer (it stops with "Program error"): an SSSC whose normalising factor
+rounds down to 0 (early rounds of an event with many boards; give `/K`), MPvGP
+before any primary score, a player in a game who is in no team.
 
 **Verification:** `tests/tiebreak_compare.py` runs every input through Gacrux
 and through the tool with the same arguments and requires identical output:
 all samples plus tournaments generated by the pinned engine with fixed seeds
-(default generator and every `tests/fixtures/generator` configuration) and
-the synthetic tournaments of `tests/tiebreak_inputs.py` (records 042, 162,
+(default generator and every `tests/fixtures/generator` configuration), the
+synthetic tournaments of `tests/tiebreak_inputs.py` (records 042, 162,
 202/212, 240, 299, XXZ; single, odd and double round robins; unrated players
 and result codes; CRLF and a byte order mark), each in 9 variants (all
 mandatory descriptors; the same for an intermediate round, as pre-determined,
 as Swiss, with `-u 1400`; the file's own order; a checked and a rank-sorted
-standing; helper values and non-mandatory modifiers). 2026-11-08, locally: 711
-inputs (100 seeds per source) x 9 variants, **0 differences**. CI runs 20
-seeds per source.
+standing; helper values and non-mandatory modifiers), and the team
+tournaments of `tests/tiebreak_team_inputs.py` (seeded: Swiss and round
+robins, 2-6 boards, reserves, every team record above, board forfeits and
+absences; plus one input per forced feature, including two teams that only
+the EDE board criteria separate), each in 10 variants (the same on the team
+list, the game points as primary score, the board criteria first on a fully
+tied field, team helpers). The one reference defect met (SSSC dividing by
+zero) is listed in the script and must be refused by our tool; it is counted
+in the summary. 2026-11-09, locally: 711 individual inputs x 9 and 113 team
+inputs x 10 (100 seeds per source), **0 differences**. CI runs 20 seeds per
+source.
 
 ## Packaging (`make dist`)
 

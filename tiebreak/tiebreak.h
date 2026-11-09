@@ -61,8 +61,8 @@ namespace tiebreak
   };
 
   /**
-   * Compute the tie-breaks and the resulting ranking of an individual
-   * tournament, as Gacrux's tiebreakchecker does.
+   * Compute the tie-breaks and the resulting ranking of an individual or a
+   * team tournament, as Gacrux's tiebreakchecker does.
    *
    * @throws InvalidRequestException if a descriptor cannot be computed.
    * @throws FileFormatException if the results are inconsistent.

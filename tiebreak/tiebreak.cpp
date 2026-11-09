@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,10 +27,37 @@ namespace tiebreak
 {
   namespace
   {
+    /**
+     * Which value of a round a tie-break reads: "points" (individual),
+     * "mpoints" and "gpoints" (team), or the board-weighted "tpoints" of the
+     * direct encounter board criteria.
+     */
+    enum PointType
+    {
+      POINTS,
+      MPOINTS,
+      GPOINTS,
+      TPOINTS
+    };
+
+    /** One board of a team's match (tiebreak.prepare_teamgames). */
+    struct BoardGame
+    {
+      Decimal points{ };
+      char color{ 'w' };
+      bool vur{ };
+      bool played{ };
+      int opponent{ };
+      int board{ };
+    };
+
     /** One round of a competitor (tiebreak.py "rsts"). */
     struct RoundResult
     {
+      /** rst["points"] of a player, rst["mpoints"] of a team. */
       Decimal points{ };
+      std::optional<Decimal> gpoints{ };
+      std::optional<Decimal> tpoints{ };
       Decimal rpoints{ 0, -1 };
       std::string res{ "Z" };
       char color{ 'w' };
@@ -37,9 +65,23 @@ namespace tiebreak
       bool vur{ true };
       int opponent{ };
       std::optional<int> opprating{ };
+      std::vector<int> gameIds{ };
+      std::vector<BoardGame> games{ };
     };
 
-    /** A competitor with its intermediate values (tiebreak.py "tbval"). */
+    /** The values under one prefix of tiebreak.py "tbval". */
+    struct PrefixValues
+    {
+      std::map<std::string, Value> vals{ };
+      std::map<int, Value> pointsRound{ };
+      Value pointsTop{ };
+      int lmp{ };
+      int lna{ };
+      /** Board points, in the order the boards were first scored. */
+      std::vector<std::pair<int, Decimal>> bp{ };
+      Value ownscore{ };
+    };
+
     struct Competitor
     {
       int cid{ };
@@ -49,16 +91,13 @@ namespace tiebreak
       std::vector<Adjustment> adjust{ };
       std::map<int, RoundResult> rsts{ };
       std::vector<Value> tiebreakScore{ };
-      std::map<std::string, Value> vals{ };
-      std::map<int, Decimal> pointsPerRound{ };
-      Value pointsTop{ };
-      int lmp{ };
-      int lna{ };
-      Value ownscore{ };
+      std::map<std::string, PrefixValues> tbval{ };
       Decimal deval{ };
       Decimal demax{ };
       int denum{ };
       bool moreloops{ };
+      Decimal tbrval{ };
+      Decimal bbeval{ };
     };
 
     struct Modifiers
@@ -75,6 +114,7 @@ namespace tiebreak
       bool foremode{ };
       bool swiss{ };
       bool vun{ };
+      bool exchange{ };
     };
 
     enum Function
@@ -82,96 +122,115 @@ namespace tiebreak
       FUNCTION_NUL,
       FUNCTION_PTS,
       FUNCTION_BUILTIN,
+      FUNCTION_MPVGP,
       FUNCTION_DE,
       FUNCTION_PS,
       FUNCTION_KS,
       FUNCTION_BH_SB,
+      FUNCTION_ESB,
       FUNCTION_AOB,
       FUNCTION_RTNG,
       FUNCTION_PERFORMANCE,
       FUNCTION_APRO,
       FUNCTION_APPO,
+      FUNCTION_BC,
+      FUNCTION_TBR,
+      FUNCTION_SSSC,
       FUNCTION_UNSUPPORTED
     };
 
     struct TiebreakDefinition
     {
+      const char *key;
       const char *name;
       Function function;
       bool rev;
+      /** Computable for an individual tournament (where Gacrux can). */
+      bool individual;
     };
 
-    /** tiebreak.py "tiebreaklist", individual tie-breaks only. */
-    const std::map<std::string, TiebreakDefinition> &tiebreakList()
+    /** tiebreak.py "tiebreaklist". */
+    constexpr TiebreakDefinition TIEBREAK_LIST[]{
+      { "NUL", "NUL", FUNCTION_NUL, false, true },
+      { "PTS", "PTS", FUNCTION_PTS, true, true },
+      { "MPTS", "PTS", FUNCTION_PTS, true, false },
+      { "GPTS", "PTS", FUNCTION_PTS, true, false },
+      { "SNO", "SNO", FUNCTION_BUILTIN, false, true },
+      { "TPN", "SNO", FUNCTION_BUILTIN, false, true },
+      { "RANK", "RANK", FUNCTION_BUILTIN, false, true },
+      { "WIN", "WIN", FUNCTION_BUILTIN, true, true },
+      { "WON", "WON", FUNCTION_BUILTIN, true, true },
+      { "BPG", "BPG", FUNCTION_BUILTIN, true, true },
+      { "BWG", "BWG", FUNCTION_BUILTIN, true, true },
+      { "GE", "GE", FUNCTION_BUILTIN, true, true },
+      { "REP", "REP", FUNCTION_BUILTIN, true, true },
+      { "RIP", "RIP", FUNCTION_BUILTIN, true, true },
+      { "VUR", "VUR", FUNCTION_BUILTIN, true, true },
+      { "NUM", "NUM", FUNCTION_BUILTIN, true, true },
+      { "COD", "COD", FUNCTION_BUILTIN, true, true },
+      { "RTG", "RTG", FUNCTION_BUILTIN, true, true },
+      { "MPVGP", "MPVGP", FUNCTION_MPVGP, true, true },
+      { "DE", "DE", FUNCTION_DE, false, true },
+      { "EDE", "EDE", FUNCTION_DE, false, true },
+      { "EDEC", "EDEC", FUNCTION_DE, false, false },
+      { "EDET", "EDET", FUNCTION_DE, false, true },
+      { "EDEB", "EDEB", FUNCTION_DE, false, true },
+      { "EDEBT", "EDEBT", FUNCTION_DE, false, false },
+      { "EDEBB", "EDEBB", FUNCTION_DE, false, false },
+      { "PS", "PS", FUNCTION_PS, true, true },
+      { "KS", "KS", FUNCTION_KS, true, true },
+      { "BH", "BH", FUNCTION_BH_SB, true, true },
+      { "FB", "FB", FUNCTION_BH_SB, true, true },
+      { "SB", "SB", FUNCTION_BH_SB, true, true },
+      { "ABH", "ABH", FUNCTION_BH_SB, true, true },
+      { "AFB", "AFB", FUNCTION_BH_SB, true, true },
+      { "AOB", "AOB", FUNCTION_AOB, true, true },
+      { "RTNG", "RTNG", FUNCTION_RTNG, true, true },
+      { "ARO", "ARO", FUNCTION_PERFORMANCE, true, true },
+      { "TPR", "TPR", FUNCTION_PERFORMANCE, true, true },
+      { "PTP", "PTP", FUNCTION_PERFORMANCE, true, true },
+      { "APRO", "APRO", FUNCTION_APRO, true, true },
+      { "APPO", "APPO", FUNCTION_APPO, true, true },
+      { "ESB", "ESB", FUNCTION_ESB, true, true },
+      { "EMMSB", "EMMSB", FUNCTION_ESB, true, false },
+      { "EMGSB", "EMGSB", FUNCTION_ESB, true, false },
+      { "EGMSB", "EGMSB", FUNCTION_ESB, true, false },
+      { "EGGSB", "EGGSB", FUNCTION_ESB, true, false },
+      { "BC", "BC", FUNCTION_BC, false, false },
+      { "TBR", "TBR", FUNCTION_TBR, false, false },
+      { "BBE", "BBE", FUNCTION_TBR, false, false },
+      { "SSSC", "SSSC", FUNCTION_SSSC, true, false },
+      // Known to the reference implementation but not computed here:
+      // helpers that are not FIDE tie-breaks.
+      { "CSQ", "CSQ", FUNCTION_UNSUPPORTED, true, false },
+      { "RSES", "RSES", FUNCTION_UNSUPPORTED, true, false },
+      { "STD", "STD", FUNCTION_UNSUPPORTED, true, false },
+      { "ACC", "ACC", FUNCTION_UNSUPPORTED, true, false },
+      { "FLT", "FLT", FUNCTION_UNSUPPORTED, true, false },
+      { "FLTD", "FLTD", FUNCTION_UNSUPPORTED, true, false },
+      { "FLTFT", "FLTFT", FUNCTION_UNSUPPORTED, true, false },
+      { "RFP", "RFP", FUNCTION_UNSUPPORTED, true, false },
+      { "TOP", "TOP", FUNCTION_UNSUPPORTED, true, false },
+      { "RND", "RND", FUNCTION_UNSUPPORTED, false, false } };
+
+    /** The tie-break of a name, or nothing for a name the list lacks. */
+    const TiebreakDefinition *findTiebreak(const std::string &name)
     {
-      static const std::map<std::string, TiebreakDefinition> list{
-        { "NUL", { "NUL", FUNCTION_NUL, false } },
-        { "PTS", { "PTS", FUNCTION_PTS, true } },
-        { "SNO", { "SNO", FUNCTION_BUILTIN, false } },
-        { "TPN", { "SNO", FUNCTION_BUILTIN, false } },
-        { "RANK", { "RANK", FUNCTION_BUILTIN, false } },
-        { "WIN", { "WIN", FUNCTION_BUILTIN, true } },
-        { "WON", { "WON", FUNCTION_BUILTIN, true } },
-        { "BPG", { "BPG", FUNCTION_BUILTIN, true } },
-        { "BWG", { "BWG", FUNCTION_BUILTIN, true } },
-        { "GE", { "GE", FUNCTION_BUILTIN, true } },
-        { "REP", { "REP", FUNCTION_BUILTIN, true } },
-        { "RIP", { "RIP", FUNCTION_BUILTIN, true } },
-        { "VUR", { "VUR", FUNCTION_BUILTIN, true } },
-        { "NUM", { "NUM", FUNCTION_BUILTIN, true } },
-        { "COD", { "COD", FUNCTION_BUILTIN, true } },
-        { "RTG", { "RTG", FUNCTION_BUILTIN, true } },
-        { "DE", { "DE", FUNCTION_DE, false } },
-        { "PS", { "PS", FUNCTION_PS, true } },
-        { "KS", { "KS", FUNCTION_KS, true } },
-        { "BH", { "BH", FUNCTION_BH_SB, true } },
-        { "FB", { "FB", FUNCTION_BH_SB, true } },
-        { "SB", { "SB", FUNCTION_BH_SB, true } },
-        { "ABH", { "ABH", FUNCTION_BH_SB, true } },
-        { "AFB", { "AFB", FUNCTION_BH_SB, true } },
-        { "AOB", { "AOB", FUNCTION_AOB, true } },
-        { "RTNG", { "RTNG", FUNCTION_RTNG, true } },
-        { "ARO", { "ARO", FUNCTION_PERFORMANCE, true } },
-        { "TPR", { "TPR", FUNCTION_PERFORMANCE, true } },
-        { "PTP", { "PTP", FUNCTION_PERFORMANCE, true } },
-        { "APRO", { "APRO", FUNCTION_APRO, true } },
-        { "APPO", { "APPO", FUNCTION_APPO, true } },
-        // Known to the reference implementation but not computed here: team
-        // tie-breaks (milestone 2) and helpers that are not FIDE tie-breaks.
-        { "MPTS", { "MPTS", FUNCTION_UNSUPPORTED, true } },
-        { "GPTS", { "GPTS", FUNCTION_UNSUPPORTED, true } },
-        { "MPVGP", { "MPVGP", FUNCTION_UNSUPPORTED, true } },
-        { "EDE", { "EDE", FUNCTION_UNSUPPORTED, false } },
-        { "EDEC", { "EDEC", FUNCTION_UNSUPPORTED, false } },
-        { "EDET", { "EDET", FUNCTION_UNSUPPORTED, false } },
-        { "EDEB", { "EDEB", FUNCTION_UNSUPPORTED, false } },
-        { "EDEBT", { "EDEBT", FUNCTION_UNSUPPORTED, false } },
-        { "EDEBB", { "EDEBB", FUNCTION_UNSUPPORTED, false } },
-        { "ESB", { "ESB", FUNCTION_UNSUPPORTED, true } },
-        { "EMMSB", { "EMMSB", FUNCTION_UNSUPPORTED, true } },
-        { "EMGSB", { "EMGSB", FUNCTION_UNSUPPORTED, true } },
-        { "EGMSB", { "EGMSB", FUNCTION_UNSUPPORTED, true } },
-        { "EGGSB", { "EGGSB", FUNCTION_UNSUPPORTED, true } },
-        { "BC", { "BC", FUNCTION_UNSUPPORTED, false } },
-        { "TBR", { "TBR", FUNCTION_UNSUPPORTED, false } },
-        { "BBE", { "BBE", FUNCTION_UNSUPPORTED, false } },
-        { "SSSC", { "SSSC", FUNCTION_UNSUPPORTED, true } },
-        { "CSQ", { "CSQ", FUNCTION_UNSUPPORTED, true } },
-        { "RSES", { "RSES", FUNCTION_UNSUPPORTED, true } },
-        { "STD", { "STD", FUNCTION_UNSUPPORTED, true } },
-        { "ACC", { "ACC", FUNCTION_UNSUPPORTED, true } },
-        { "FLT", { "FLT", FUNCTION_UNSUPPORTED, true } },
-        { "FLTD", { "FLTD", FUNCTION_UNSUPPORTED, true } },
-        { "FLTFT", { "FLTFT", FUNCTION_UNSUPPORTED, true } },
-        { "RFP", { "RFP", FUNCTION_UNSUPPORTED, true } },
-        { "TOP", { "TOP", FUNCTION_UNSUPPORTED, true } },
-        { "RND", { "RND", FUNCTION_UNSUPPORTED, false } } };
-      return list;
+      for (const TiebreakDefinition &definition : TIEBREAK_LIST)
+      {
+        if (name == definition.key)
+        {
+          return &definition;
+        }
+      }
+      return nullptr;
     }
 
     struct Spec
     {
       std::string name{ };
+      /** "points", "mpoints", "gpoints" or a pair such as "mgpoints". */
+      std::string pointtype{ };
       Modifiers modifiers{ };
       // The direct encounter loop state (tiebreak.py tb["ede"]).
       std::string functions{ };
@@ -179,6 +238,15 @@ namespace tiebreak
       std::vector<bool> edechanges{ };
       std::size_t swap{ };
       int changes{ };
+    };
+
+    /** tiebreak.get_scoreinfo. */
+    struct ScoreInfo
+    {
+      bool match;
+      PointType points;
+      const ScoreSystem *scoretype;
+      std::string prefix;
     };
 
     std::string lowerCase(std::string text)
@@ -251,64 +319,220 @@ namespace tiebreak
       }
     }
 
+    /** math.floor of a Decimal. */
+    std::int64_t floorDecimal(const Decimal &value)
+    {
+      std::int64_t result{ value.coefficient };
+      if (value.exponent >= 0)
+      {
+        for (int digit{ }; digit < value.exponent; ++digit)
+        {
+          result *= 10;
+        }
+        return result;
+      }
+      std::int64_t divisor{ 1 };
+      for (int digit{ }; digit < -value.exponent; ++digit)
+      {
+        divisor *= 10;
+      }
+      result = value.coefficient / divisor;
+      if (value.coefficient % divisor != 0 && value.coefficient < 0)
+      {
+        --result;
+      }
+      return result;
+    }
+
+    /** A score system entry that is a number (scoretype["W"]). */
+    Decimal scoreValue(const ScoreSystem &scoreSystem, const std::string &key)
+    {
+      const auto found = scoreSystem.find(key);
+      if (found == scoreSystem.end())
+      {
+        throw std::out_of_range("KeyError: score " + key);
+      }
+      if (found->second.isLetter)
+      {
+        throw std::logic_error("TypeError: score " + key + " is a letter");
+      }
+      return found->second.points;
+    }
+
+    /**
+     * gamescore[res] followed through its letters, an unplayed loss not
+     * turned into a zero (tiebreak.compute_score).
+     */
+    Decimal walkScore(const ScoreSystem &scoreSystem, std::string key)
+    {
+      for (std::size_t step{ }; step <= scoreSystem.size(); ++step)
+      {
+        const auto found = scoreSystem.find(key);
+        if (found == scoreSystem.end())
+        {
+          throw std::out_of_range("KeyError: score " + key);
+        }
+        if (!found->second.isLetter)
+        {
+          return found->second.points;
+        }
+        key = found->second.letter;
+      }
+      throw std::logic_error("RecursionError: score " + key);
+    }
+
+    std::optional<Decimal> pointsOf(
+      const RoundResult &rst,
+      const PointType type)
+    {
+      switch (type)
+      {
+      case GPOINTS:
+        return rst.gpoints;
+      case TPOINTS:
+        return rst.tpoints;
+      case POINTS:
+      case MPOINTS:
+      default:
+        return rst.points;
+      }
+    }
+
+    /** rst[points], which the reference reads without a default. */
+    Decimal requirePoints(const RoundResult &rst, const PointType type)
+    {
+      const std::optional<Decimal> points{ pointsOf(rst, type) };
+      if (!points)
+      {
+        throw std::out_of_range("KeyError: round points");
+      }
+      return *points;
+    }
+
     class Engine
     {
     public:
       Engine(const Tournament &tournament, const Options &options);
 
-      Result computeTiebreaks(const Tournament &tournament, Options options);
+      Result computeTiebreaks(Options options);
 
     private:
+      const Tournament &tournament;
       std::vector<Competitor> cmps{ };
       std::map<int, std::size_t> index{ };
       std::vector<std::size_t> rankorder{ };
       int rounds{ };
       int currentround{ };
       bool rr{ };
+      bool isteam{ };
+      int teamsize{ };
+      int maxboard{ };
       std::optional<int> unrated{ };
       int rulesversion{ 2 };
+      std::optional<std::string> primaryscore{ };
+      ScoreSystem matchscore{ };
       ScoreSystem gamescore{ };
       ScoreSystem ratingScore{ };
-      bool ptsComputed{ };
+      std::map<int, int> cteam{ };
+      std::map<int, const Game *> cgames{ };
 
       Competitor &byCid(const int cid)
       {
-        return cmps[index.at(cid)];
+        const auto found = index.find(cid);
+        if (found == index.end())
+        {
+          throw std::out_of_range(
+            "KeyError: competitor " + std::to_string(cid));
+        }
+        return cmps[found->second];
       }
 
-      Decimal zero() const;
+      static PrefixValues &values(Competitor &cmp, const std::string &prefix)
+      {
+        const auto found = cmp.tbval.find(prefix);
+        if (found == cmp.tbval.end())
+        {
+          throw std::out_of_range("KeyError: " + prefix);
+        }
+        return found->second;
+      }
+
+      static Value &val(
+        Competitor &cmp,
+        const std::string &prefix,
+        const std::string &name)
+      {
+        PrefixValues &prefixValues{ values(cmp, prefix) };
+        const auto found = prefixValues.vals.find(name);
+        if (found == prefixValues.vals.end())
+        {
+          throw std::out_of_range("KeyError: " + prefix + name);
+        }
+        return found->second;
+      }
+
+      int teamOf(const int player) const
+      {
+        const auto found = cteam.find(player);
+        if (found == cteam.end())
+        {
+          throw std::out_of_range(
+            "KeyError: player " + std::to_string(player) + " has no team");
+        }
+        return found->second;
+      }
+
+      Decimal zero(bool match) const;
+      ScoreInfo getScoreinfo(const Spec &tb, bool primary) const;
+      void setPrimaryscore(const std::string &scorename);
       Decimal getScore(
         const ScoreSystem &scoreSystem,
         const Game &game,
         bool white) const;
       bool isVur(const Game &game, bool white) const;
+      void prepareCompetitors();
       void prepareResult(const Game &game);
-      void computeScore();
-      void findTmversion(const Tournament &tournament);
+      void prepareTeamgames(const Game &match);
+      void computeScore(
+        bool match,
+        PointType pointtype,
+        const std::string &prefix);
+      void findTmversion();
       Spec parseTiebreak(const std::string &text);
       void computeSingleTiebreak(Spec &tb);
 
-      std::string computePts();
-      std::string computeDirectEncounter(Spec &tb);
-      bool singleRunDirectEncounter(
+      std::string computePts(const Spec &tb);
+      std::string reversePointtype(Spec &tb);
+      std::string computeRecursiveIfTied(Spec &tb, bool topBottom);
+      bool singleRunExtDirectEncounter(
         Spec &tb,
         const std::vector<std::size_t> &subro,
         int loopcount);
       int basicDirectEncounter(
         Spec &tb,
-        std::vector<std::size_t> subro);
+        std::vector<std::size_t> subro,
+        PointType points,
+        const ScoreSystem &scoretype);
+      bool singleRunTopBottomBoardResult(
+        const Spec &tb,
+        const std::vector<std::size_t> &ro,
+        int loopcount);
       std::string computeProgressiveScore(const Spec &tb);
       std::string computeKoya(const Spec &tb);
       std::string computeBuchholzSonnebornBerger(const Spec &tb);
+      std::string computeExtSonnebornBerger(Spec &tb);
       std::string computeRtng(const Spec &tb);
       std::string computeRatingPerformance(const Spec &tb);
       std::string computeAverage(
         const Spec &tb,
         const std::string &name,
         int exponent);
+      std::string computeBoardcount(const Spec &tb);
+      std::string computeScoreStrengthCombination(const Spec &tb);
     };
 
-    Engine::Engine(const Tournament &tournament, const Options &options)
+    Engine::Engine(const Tournament &tournament_, const Options &options)
+      : tournament(tournament_)
     {
       std::optional<bool> isRr{ };
       if (options.preDetermined)
@@ -319,39 +543,49 @@ namespace tiebreak
       {
         isRr = false;
       }
-      gamescore = tournament.gameScore;
-      ratingScore["W"] = { false, "", Decimal(10, -1) };
-      ratingScore["D"] = { false, "", Decimal(5, -1) };
-      ratingScore["Z"] = { false, "", Decimal(0, -1) };
-      for (const char *const letter : { "L", "A", "U", "F", "H", "P" })
-      {
-        ratingScore[letter] = { true, "Z", Decimal{ } };
-      }
+      isteam = tournament.teamTournament;
+      teamsize = tournament.teamSize;
       rounds = std::max(tournament.numRounds, tournament.currentRound);
       currentround = options.currentRound >= 0 ? options.currentRound : rounds;
-
-      // prepare_competitors: every round starts as an unplayed zero.
-      for (const tiebreak::Competitor &competitor : tournament.competitors)
+      if (isteam && tournament.primary)
       {
-        Competitor cmp{ };
-        cmp.cid = competitor.cid;
-        cmp.orgrank = competitor.rank;
-        cmp.rating = competitor.rating;
-        cmp.adjust = competitor.adjust;
-        for (int round{ 1 }; round <= currentround; ++round)
+        setPrimaryscore(*tournament.primary);
+      }
+      // Every result letter resolves to a number for the rating values.
+      ratingScore["W"] = { false, "", Decimal(10, -1), false };
+      ratingScore["D"] = { false, "", Decimal(5, -1), false };
+      ratingScore["Z"] = { false, "", Decimal(0, -1), false };
+      for (const char *const letter : { "L", "A", "U", "F", "H", "P" })
+      {
+        ratingScore[letter] = { true, "Z", Decimal{ }, false };
+      }
+      gamescore = tournament.gameScore;
+      if (isteam)
+      {
+        matchscore = tournament.matchScore;
+        // chessjson.build_tournament_teamcompetitors
+        cteam[0] = 0;
+        for (const tiebreak::Competitor &team : tournament.competitors)
         {
-          RoundResult result{ };
-          result.points = zero();
-          cmp.rsts[round] = result;
+          for (const int player : team.cplayers)
+          {
+            cteam[player] = team.cid;
+          }
         }
-        index[cmp.cid] = cmps.size();
-        cmps.push_back(cmp);
+        for (const Game &game : tournament.gameList)
+        {
+          cgames[game.id] = &game;
+        }
+        prepareCompetitors();
+        computeScore(true, MPOINTS, "mpoints_");
+        computeScore(false, GPOINTS, "gpoints_");
       }
-      for (const Game &game : tournament.gameList)
+      else
       {
-        prepareResult(game);
+        matchscore = gamescore;
+        prepareCompetitors();
+        computeScore(false, POINTS, "points_");
       }
-      computeScore();
       for (std::size_t position{ }; position < cmps.size(); ++position)
       {
         rankorder.push_back(position);
@@ -381,9 +615,65 @@ namespace tiebreak
       unrated = options.unrated;
     }
 
-    Decimal Engine::zero() const
+    Decimal Engine::zero(const bool match) const
     {
-      return resolveScore(gamescore, "Z", true);
+      return scoreValue(match ? matchscore : gamescore, "Z");
+    }
+
+    /**
+     * tiebreak.get_scoreinfo: the primary (first letter of the point type)
+     * or the secondary score (the second letter, or the other team score).
+     */
+    ScoreInfo Engine::getScoreinfo(const Spec &tb, bool primary) const
+    {
+      if (tb.modifiers.exchange)
+      {
+        primary = !primary;
+      }
+      const std::string &pointtype{ tb.pointtype };
+      char key{ pointtype.at(primary ? 0 : 1) };
+      if (!primary && key != 'g' && key != 'm')
+      {
+        key = pointtype.at(0);
+        if (key == 'g')
+        {
+          key = 'm';
+        }
+        else if (key == 'm')
+        {
+          key = 'g';
+        }
+      }
+      if (key == 'g')
+      {
+        return { false, GPOINTS, &gamescore, "gpoints_" };
+      }
+      if (key == 'm')
+      {
+        return { true, MPOINTS, &matchscore, "mpoints_" };
+      }
+      return { false, POINTS, &gamescore, "points_" };
+    }
+
+    void Engine::setPrimaryscore(const std::string &scorename)
+    {
+      if (primaryscore)
+      {
+        return;
+      }
+      const std::string name{ lowerCase(scorename) };
+      if (name == "mp" || name == "match")
+      {
+        primaryscore = "mpoints";
+      }
+      else if (name == "gp" || name == "game")
+      {
+        primaryscore = "gpoints";
+      }
+      else
+      {
+        primaryscore = "points";
+      }
     }
 
     /** tiebreak.get_score: one side's points under a score system. */
@@ -432,19 +722,54 @@ namespace tiebreak
       return !res || *res != "W";
     }
 
+    /**
+     * tiebreak.prepare_competitors: every round starts as an unplayed zero,
+     * then the games (or the matches and their board games) fill it in.
+     */
+    void Engine::prepareCompetitors()
+    {
+      for (const tiebreak::Competitor &competitor : tournament.competitors)
+      {
+        Competitor cmp{ };
+        cmp.cid = competitor.cid;
+        cmp.orgrank = competitor.rank;
+        cmp.rating = competitor.rating;
+        cmp.adjust = competitor.adjust;
+        for (int round{ 1 }; round <= currentround; ++round)
+        {
+          RoundResult result{ };
+          result.points = zero(isteam);
+          cmp.rsts[round] = result;
+        }
+        index[cmp.cid] = cmps.size();
+        cmps.push_back(cmp);
+      }
+      for (const Game &game :
+        isteam ? tournament.matchList : tournament.gameList)
+      {
+        prepareResult(game);
+        if (isteam)
+        {
+          prepareTeamgames(game);
+        }
+      }
+    }
+
     void Engine::prepareResult(const Game &game)
     {
+      const ScoreSystem &scoresystem{ isteam ? matchscore : gamescore };
       const int round{ game.round };
       const int white{ game.white.cid };
       const int black{ game.black ? game.black->cid : 0 };
       RoundResult whiteResult{ };
-      whiteResult.points = getScore(gamescore, game, true);
+      whiteResult.points = getScore(scoresystem, game, true);
       whiteResult.rpoints = getScore(ratingScore, game, true);
       whiteResult.vur = isVur(game, true);
       whiteResult.res = game.white.result.value_or("Z");
       whiteResult.color = 'w';
       whiteResult.played = game.played;
       whiteResult.opponent = black;
+      whiteResult.gameIds = game.games;
       std::optional<int> whiteRating{ };
       std::optional<int> blackRating{ };
       RoundResult blackResult{ };
@@ -457,13 +782,14 @@ namespace tiebreak
               + ", white=" + std::to_string(white) + ", black="
               + std::to_string(black));
         }
-        blackResult.points = getScore(gamescore, game, false);
+        blackResult.points = getScore(scoresystem, game, false);
         blackResult.rpoints = getScore(ratingScore, game, false);
         blackResult.vur = isVur(game, false);
         blackResult.res = *game.black->result;
         blackResult.color = 'b';
         blackResult.played = game.played;
         blackResult.opponent = white;
+        blackResult.gameIds = game.games;
         if (game.played)
         {
           if (index.count(white))
@@ -488,19 +814,106 @@ namespace tiebreak
       }
     }
 
-    /** tiebreak.compute_score for an individual tournament. */
-    void Engine::computeScore()
+    /**
+     * tiebreak.prepare_teamgames: a team's game points of a match and its
+     * boards; an unplayed match scores the game points the match score
+     * system gives it.
+     */
+    void Engine::prepareTeamgames(const Game &match)
     {
-      const Decimal win{ resolveScore(gamescore, "W", true) };
+      const int round{ match.round };
+      const int matchBlack{ match.black ? match.black->cid : 0 };
+      for (const bool whiteSide : { true, false })
+      {
+        const std::optional<GameSide> side{
+          whiteSide ? std::optional<GameSide>(match.white) : match.black };
+        const int competitor{ side ? side->cid : 0 };
+        if (competitor <= 0)
+        {
+          continue;
+        }
+        RoundResult &tmatch{ byCid(competitor).rsts[round] };
+        if (!tmatch.gameIds.empty() && matchBlack > 0)
+        {
+          Decimal gpoints{ 0, 0 };
+          std::vector<BoardGame> games{ };
+          for (const int id : tmatch.gameIds)
+          {
+            const auto found = cgames.find(id);
+            if (found == cgames.end())
+            {
+              throw std::out_of_range("KeyError: game " + std::to_string(id));
+            }
+            const Game &game{ *found->second };
+            const int white{ game.white.cid };
+            const int black{ game.black ? game.black->cid : 0 };
+            const int board{ game.board };
+            maxboard = std::max(maxboard, board);
+            const bool wVur{ isVur(game, true) };
+            if (teamOf(white) == competitor && board > 0)
+            {
+              const Decimal points{ getScore(gamescore, game, true) };
+              gpoints = gpoints + points;
+              games.push_back({ points, 'w', wVur, game.played, black, board });
+            }
+            if (black > 0 && board > 0 && teamOf(black) == competitor)
+            {
+              const Decimal points{ getScore(gamescore, game, false) };
+              const bool bVur{ isVur(game, false) };
+              gpoints = gpoints + points;
+              games.push_back({ points, 'b', bVur, game.played, white, board });
+            }
+          }
+          tmatch.gpoints = gpoints;
+          if (side->gpoints)
+          {
+            tmatch.gpoints = side->gpoints;
+          }
+          tmatch.games = games;
+        }
+        else
+        {
+          if (tmatch.opponent == 0 && tmatch.played)
+          {
+            tmatch.gpoints = solveScore(tournament, true, "PG");
+          }
+          else
+          {
+            static const std::map<std::string, std::string> trans{
+              { "W", "F" }, { "D", "H" }, { "L", "Z" } };
+            const auto found = trans.find(tmatch.res);
+            const std::string res{
+              found != trans.end() ? found->second : tmatch.res };
+            tmatch.gpoints = solveScore(tournament, true, res + "G");
+          }
+          tmatch.games.clear();
+        }
+      }
+    }
+
+    /**
+     * tiebreak.compute_score: the totals and counts of one score (points,
+     * match points or game points) for every competitor. A team's game
+     * points count board by board.
+     */
+    void Engine::computeScore(
+      const bool match,
+      const PointType pointtype,
+      const std::string &prefix)
+    {
+      const ScoreSystem &scoretype{ match ? matchscore : gamescore };
+      const Value win{ Value::fromDecimal(scoreValue(scoretype, "W")) };
+      const bool boards{ isteam && !match };
       for (Competitor &cmp : cmps)
       {
-        std::map<std::string, Value> &vals{ cmp.vals };
+        PrefixValues &tbscore{ cmp.tbval[prefix] };
+        std::map<std::string, Value> &vals{ tbscore.vals };
         vals["nul"] = Value::fromInt(0);
         vals["sno"] = Value::fromInt(cmp.cid);
         vals["rank"] = Value::fromInt(cmp.orgrank);
         vals["rtg"] =
           cmp.rating ? Value::fromInt(*cmp.rating) : Value::none();
-        Value points{ Value::fromDecimal(zero()) };
+        Value points{ Value::fromDecimal(zero(match)) };
         int wins{ };
         int won{ };
         int bpg{ };
@@ -518,25 +931,76 @@ namespace tiebreak
             continue;
           }
           const RoundResult &rst{ found->second };
-          cmp.pointsPerRound[round] = rst.points;
-          points = points + Value::fromDecimal(rst.points);
-          const bool isWin{ rst.points == win };
-          wins += isWin;
-          won += isWin && rst.played && rst.opponent > 0;
-          bpg += rst.color == 'b' && rst.played;
-          bwg += rst.color == 'b' && rst.played && isWin;
-          ge += rst.played || isWin;
-          rip += rst.played || rst.opponent > 0;
-          vur += rst.vur;
-          // Last round not absent, and last round paired or played (C.07
-          // 16.2): Fore Buchholz and the unplayed-round rules read them.
-          if (round > cmp.lna && !rst.vur)
+          const std::optional<Decimal> roundPoints{ pointsOf(rst, pointtype) };
+          const Value value{
+            roundPoints ? Value::fromDecimal(*roundPoints) : Value::fromInt(0) };
+          tbscore.pointsRound[round] = value;
+          points = points + value;
+          std::vector<BoardGame> gamelist{ };
+          if (!boards)
           {
-            cmp.lna = round;
+            gamelist.push_back(
+              { Decimal{ }, rst.color, rst.vur, rst.played, rst.opponent, 0 });
           }
-          if (round > cmp.lmp && rst.opponent > 0)
+          else if (rst.played && rst.opponent > 0)
           {
-            cmp.lmp = round;
+            gamelist = rst.games;
+          }
+          else
+          {
+            const Decimal boardPoints{ walkScore(gamescore, rst.res) };
+            for (int board{ }; board < teamsize; ++board)
+            {
+              gamelist.push_back(
+                { boardPoints, 'w', rst.vur, rst.played, 0, board + 1 });
+            }
+          }
+          for (const BoardGame &game : gamelist)
+          {
+            Value gamePoints{ value };
+            if (boards)
+            {
+              Decimal boardPoints{ game.points };
+              if (game.played && game.opponent <= 0)
+              {
+                // A pairing-allocated bye scores a win on every board.
+                boardPoints = scoreValue(gamescore, "W");
+              }
+              gamePoints = Value::fromDecimal(boardPoints);
+              const auto board = std::find_if(
+                tbscore.bp.begin(),
+                tbscore.bp.end(),
+                [&game](const std::pair<int, Decimal> &entry)
+                {
+                  return entry.first == game.board;
+                });
+              if (board == tbscore.bp.end())
+              {
+                tbscore.bp.emplace_back(game.board, boardPoints);
+              }
+              else
+              {
+                board->second = board->second + boardPoints;
+              }
+            }
+            const bool isWin{ gamePoints.equals(win) };
+            wins += isWin;
+            won += isWin && game.played && game.opponent > 0;
+            bpg += game.color == 'b' && game.played;
+            bwg += game.color == 'b' && game.played && isWin;
+            ge += game.played || isWin;
+            rip += game.played || game.opponent > 0;
+            vur += game.vur;
+            // Last round not absent, and last round paired or played (C.07
+            // 16.2): Fore Buchholz and the unplayed-round rules read them.
+            if (round > tbscore.lna && !game.vur)
+            {
+              tbscore.lna = round;
+            }
+            if (round > tbscore.lmp && game.opponent > 0)
+            {
+              tbscore.lmp = round;
+            }
           }
           if (rst.played && rst.opponent > 0)
           {
@@ -545,9 +1009,9 @@ namespace tiebreak
           if (rst.played)
           {
             num += rst.opponent > 0;
-            if (round > cmp.lmp)
+            if (round > tbscore.lmp)
             {
-              cmp.lmp = round;
+              tbscore.lmp = round;
             }
           }
         }
@@ -555,16 +1019,18 @@ namespace tiebreak
         Value top{ Value::fromInt(0) };
         for (const Adjustment &adjustment : cmp.adjust)
         {
+          const Decimal amount{
+            pointtype == MPOINTS ? adjustment.mpoints : adjustment.gpoints };
           if (adjustment.pairing && adjustment.round <= currentround)
           {
-            adj = adj + Value::fromDecimal(adjustment.points);
+            adj = adj + Value::fromDecimal(amount);
           }
           if (!adjustment.pairing)
           {
-            top = top + Value::fromDecimal(adjustment.points);
+            top = top + Value::fromDecimal(amount);
           }
         }
-        cmp.pointsTop = top;
+        tbscore.pointsTop = top;
         vals["points"] = points + adj;
         vals["win"] = Value::fromInt(wins);
         vals["won"] = Value::fromInt(won);
@@ -583,7 +1049,7 @@ namespace tiebreak
      * tiebreak.find_tmversion: tournaments that started before 2026-03-01
      * are scored under the 2024 rules; an undated one under the newest.
      */
-    void Engine::findTmversion(const Tournament &tournament)
+    void Engine::findTmversion()
     {
       rulesversion = 2;
       if (!tournament.startDate)
@@ -616,13 +1082,16 @@ namespace tiebreak
     }
 
     /**
-     * tiebreak.parse_tiebreak for an individual tournament.
+     * tiebreak.parse_tiebreak.
      *
      * @throws InvalidRequestException for a descriptor the tool cannot
      *   compute.
      */
     Spec Engine::parseTiebreak(const std::string &text)
     {
+      static const std::map<std::string, std::string> pointtrans{
+        { "MP", "mpoints" }, { "GP", "gpoints" }, { "MM", "mmpoints" },
+        { "MG", "mgpoints" }, { "GM", "gmpoints" }, { "GG", "ggpoints" } };
       std::string txt{ upperCase(text) };
       std::replace(txt.begin(), txt.end(), '!', '/');
       std::replace(txt.begin(), txt.end(), '#', '/');
@@ -634,15 +1103,51 @@ namespace tiebreak
       Spec tb{ };
       tb.name = nameyear[0];
       tb.modifiers.ver = rulesversion;
-      const auto definition = tiebreakList().find(tb.name);
+      const TiebreakDefinition *const definition{ findTiebreak(tb.name) };
+      const bool known{ definition != nullptr };
       // A point system suffix (":MP") names team scores, which an
       // individual tournament does not have.
-      if (nameparts.size() == 2
-        || (definition != tiebreakList().end()
-          && definition->second.function == FUNCTION_UNSUPPORTED))
+      if (!isteam
+        && (nameparts.size() >= 2
+          || (known && !definition->individual)))
       {
         throw InvalidRequestException(
           "Tie-break not supported for individual tournaments: " + text);
+      }
+      if (known && definition->function == FUNCTION_UNSUPPORTED)
+      {
+        throw InvalidRequestException("Tie-break not supported: " + text);
+      }
+      if (primaryscore)
+      {
+        tb.pointtype = *primaryscore;
+      }
+      else
+      {
+        tb.pointtype = isteam ? "mpoints" : "points";
+      }
+      if (tb.name == "MPTS")
+      {
+        tb.pointtype = "mpoints";
+      }
+      if (tb.name == "GPTS")
+      {
+        tb.pointtype = "gpoints";
+      }
+      if (nameparts.size() == 2)
+      {
+        const auto found = pointtrans.find(nameparts[1]);
+        if (found == pointtrans.end())
+        {
+          throw InvalidRequestException(
+            "Invalid tie-break descriptor: " + text);
+        }
+        tb.pointtype = found->second;
+      }
+      if (!primaryscore
+        && (tb.name == "PTS" || tb.name == "MPTS" || tb.name == "GPTS"))
+      {
+        primaryscore = tb.pointtype;
       }
       for (std::size_t part{ 1 }; part < comp.size(); ++part)
       {
@@ -712,6 +1217,10 @@ namespace tiebreak
           {
             tb.modifiers.swiss = true;
           }
+          else if (flag == 'X')
+          {
+            tb.modifiers.exchange = true;
+          }
           else if (flag == 'K' && isDigits(argument))
           {
             // The SSSC factor; it shares its field with the Koya limit.
@@ -746,10 +1255,9 @@ namespace tiebreak
 
     void Engine::computeSingleTiebreak(Spec &tb)
     {
-      const auto found = tiebreakList().find(tb.name);
+      const TiebreakDefinition *const found{ findTiebreak(tb.name) };
       const TiebreakDefinition definition{
-        found == tiebreakList().end() ? tiebreakList().at("NUL")
-          : found->second };
+        found ? *found : *findTiebreak("NUL") };
       tb.modifiers.rev = tb.modifiers.rev != definition.rev;
       std::string key{ };
       switch (definition.function)
@@ -758,13 +1266,20 @@ namespace tiebreak
         key = "nul";
         break;
       case FUNCTION_PTS:
-        key = computePts();
+        key = computePts(tb);
         break;
       case FUNCTION_BUILTIN:
         key = lowerCase(definition.name);
         break;
+      case FUNCTION_MPVGP:
+        key = reversePointtype(tb);
+        break;
       case FUNCTION_DE:
-        key = computeDirectEncounter(tb);
+        if (tb.name == "EDEC" || tb.name == "EDEBT" || tb.name == "EDEBB")
+        {
+          computeBoardcount(tb);
+        }
+        key = computeRecursiveIfTied(tb, false);
         break;
       case FUNCTION_PS:
         key = computeProgressiveScore(tb);
@@ -774,6 +1289,9 @@ namespace tiebreak
         break;
       case FUNCTION_BH_SB:
         key = computeBuchholzSonnebornBerger(tb);
+        break;
+      case FUNCTION_ESB:
+        key = computeExtSonnebornBerger(tb);
         break;
       case FUNCTION_AOB:
       {
@@ -800,12 +1318,23 @@ namespace tiebreak
         computeRatingPerformance(tb);
         key = computeAverage(tb, "ptp", 0);
         break;
+      case FUNCTION_BC:
+        key = computeBoardcount(tb);
+        break;
+      case FUNCTION_TBR:
+        key = computeRecursiveIfTied(tb, true);
+        break;
+      case FUNCTION_SSSC:
+        key = computeScoreStrengthCombination(tb);
+        break;
       default:
         throw InvalidRequestException("Tie-break not supported: " + tb.name);
       }
+      // tiebreak.addval
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
       for (Competitor &cmp : cmps)
       {
-        cmp.tiebreakScore.push_back(cmp.vals.at(key));
+        cmp.tiebreakScore.push_back(val(cmp, prefix, key));
       }
       const std::size_t position{ cmps.front().tiebreakScore.size() - 1 };
       const bool rev{ !tb.modifiers.rev };
@@ -838,16 +1367,16 @@ namespace tiebreak
           return a.cid < b.cid;
         });
       int rank{ 1 };
-      Value val{ cmps[rankorder[0]].tiebreakScore[position] };
+      Value previous{ cmps[rankorder[0]].tiebreakScore[position] };
       for (std::size_t i{ 1 }; i < rankorder.size(); ++i)
       {
         ++rank;
         Competitor &cmp{ cmps[rankorder[i]] };
         const Value &score{ cmp.tiebreakScore[position] };
-        if (cmp.rank == rank || !score.equals(val))
+        if (cmp.rank == rank || !score.equals(previous))
         {
           cmp.rank = rank;
-          val = score;
+          previous = score;
         }
         else
         {
@@ -856,35 +1385,77 @@ namespace tiebreak
       }
     }
 
-    /** tiebreak.compute_pts: points plus the adjustments outside pairing. */
-    std::string Engine::computePts()
+    /**
+     * tiebreak.compute_pts: points plus the adjustments outside pairing,
+     * computed once per score (the reference looks at competitor 1).
+     */
+    std::string Engine::computePts(const Spec &tb)
     {
-      if (!ptsComputed)
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
+      if (values(byCid(1), prefix).vals.count("pts"))
       {
-        for (Competitor &cmp : cmps)
-        {
-          cmp.vals["pts"] = cmp.vals.at("points") + cmp.pointsTop;
-        }
-        ptsComputed = true;
+        return "pts";
+      }
+      for (Competitor &cmp : cmps)
+      {
+        PrefixValues &tbscore{ values(cmp, prefix) };
+        tbscore.vals["pts"] = tbscore.vals.at("points") + tbscore.pointsTop;
       }
       return "pts";
     }
 
     /**
-     * tiebreak.compute_recursive_if_tied with the direct encounter run
-     * (C.07 6): rank the tied competitors by their games against each other,
-     * again and again until no group of tied competitors changes.
+     * tiebreak.reverse_pointtype (MPvGP, C.07 13.1): the score that is not
+     * the primary one.
      */
-    std::string Engine::computeDirectEncounter(Spec &tb)
+    std::string Engine::reversePointtype(Spec &tb)
     {
+      static const std::map<std::string, std::string> trans{
+        { "mpoints", "gpoints" }, { "gpoints", "mpoints" },
+        { "mmpoints", "ggpoints" }, { "mgpoints", "gmpoints" },
+        { "gmpoints", "mgpoints" }, { "ggpoints", "mmgpoints" } };
+      if (!primaryscore)
+      {
+        // The reference fails without a primary score.
+        throw InvalidRequestException(
+          "Tie-break " + tb.name + " needs a primary score (PTS) before it");
+      }
+      const auto found = trans.find(*primaryscore);
+      tb.pointtype = found != trans.end() ? found->second : *primaryscore;
+      return "points";
+    }
+
+    /**
+     * tiebreak.compute_recursive_if_tied, for the direct encounter family
+     * (DE, EDE and its board variants) and for TBR and BBE: run the
+     * criterion on every group of tied competitors again and again until no
+     * group changes.
+     */
+    std::string Engine::computeRecursiveIfTied(Spec &tb, const bool topBottom)
+    {
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
+      const std::string name{ lowerCase(tb.name) };
       std::vector<std::size_t> ro{ rankorder };
       for (const std::size_t player : ro)
       {
-        cmps[player].vals["de"] = Value::fromInt(cmps[player].rank);
+        values(cmps[player], prefix).vals[name] =
+          Value::fromInt(cmps[player].rank);
         cmps[player].moreloops = true;
       }
+      const auto singlerun = [this, &tb, topBottom](
+        const std::vector<std::size_t> &subro,
+        const int loopcount)
+      {
+        return topBottom ? singleRunTopBottomBoardResult(tb, subro, loopcount)
+          : singleRunExtDirectEncounter(tb, subro, loopcount);
+      };
+      const auto rankValue = [this, &prefix, &name](const std::size_t player)
+        -> Value &
+      {
+        return val(cmps[player], prefix, name);
+      };
       int loopcount{ };
-      bool moretodo{ singleRunDirectEncounter(tb, ro, loopcount) };
+      bool moretodo{ singlerun(ro, loopcount) };
       while (moretodo)
       {
         moretodo = false;
@@ -892,10 +1463,9 @@ namespace tiebreak
         std::size_t start{ };
         while (start < ro.size())
         {
-          const Value currentrank{ cmps[ro[start]].vals.at("de") };
+          const Value currentrank{ rankValue(ro[start]) };
           std::size_t stop{ start + 1 };
-          while (stop < ro.size()
-            && cmps[ro[stop]].vals.at("de").equals(currentrank))
+          while (stop < ro.size() && rankValue(ro[stop]).equals(currentrank))
           {
             ++stop;
           }
@@ -910,8 +1480,7 @@ namespace tiebreak
               const std::vector<std::size_t> subro(
                 ro.begin() + static_cast<std::ptrdiff_t>(start),
                 ro.begin() + static_cast<std::ptrdiff_t>(stop));
-              const bool moreloops{
-                singleRunDirectEncounter(tb, subro, loopcount) };
+              const bool moreloops{ singlerun(subro, loopcount) };
               for (const std::size_t player : subro)
               {
                 cmps[player].moreloops = moreloops;
@@ -921,12 +1490,12 @@ namespace tiebreak
           }
           start = stop;
         }
-        const bool moreloops{ singleRunDirectEncounter(tb, { }, loopcount) };
+        const bool moreloops{ singlerun({ }, loopcount) };
         moretodo = moretodo || moreloops;
         std::sort(
           ro.begin(),
           ro.end(),
-          [this](const std::size_t left, const std::size_t right)
+          [this, &rankValue](const std::size_t left, const std::size_t right)
           {
             const Competitor &a{ cmps[left] };
             const Competitor &b{ cmps[right] };
@@ -934,7 +1503,7 @@ namespace tiebreak
             {
               return a.rank < b.rank;
             }
-            const int comparison{ a.vals.at("de").compare(b.vals.at("de")) };
+            const int comparison{ rankValue(left).compare(rankValue(right)) };
             if (comparison != 0)
             {
               return comparison < 0;
@@ -942,8 +1511,8 @@ namespace tiebreak
             return a.cid < b.cid;
           });
       }
-      // Within each group of equal rank, number the direct encounter order
-      // from 1, or 0 for all when it separates nobody.
+      // Within each group of equal rank, number the order from 1, or 0 for
+      // all when it separates nobody.
       std::size_t start{ };
       while (start < ro.size())
       {
@@ -953,30 +1522,43 @@ namespace tiebreak
         {
           ++stop;
         }
-        std::int64_t offset{ cmps[ro[start]].vals.at("de").integer };
-        if (offset != cmps[ro[stop - 1]].vals.at("de").integer)
+        std::int64_t offset{ rankValue(ro[start]).integer };
+        if (offset != rankValue(ro[stop - 1]).integer)
         {
           --offset;
         }
         for (std::size_t p{ start }; p < stop; ++p)
         {
-          Value &value{ cmps[ro[p]].vals.at("de") };
+          Value &value{ rankValue(ro[p]) };
           value = Value::fromInt(value.integer - offset);
         }
         start = stop;
       }
-      return "de";
+      return name;
     }
 
-    /** tiebreak.compute_singlerun_ext_direct_encounter for DE ("P"). */
-    bool Engine::singleRunDirectEncounter(
+    /**
+     * tiebreak.compute_singlerun_ext_direct_encounter: DE runs the primary
+     * score ("P"); EDE alternates primary and secondary score ("PS"), and
+     * its variants add board count ("C"), top board ("T") and bottom board
+     * elimination ("B") criteria for two tied teams.
+     */
+    bool Engine::singleRunExtDirectEncounter(
       Spec &tb,
       const std::vector<std::size_t> &subro,
       const int loopcount)
     {
       if (loopcount == 0)
       {
-        tb.functions = "P";
+        const std::string tops(
+          static_cast<std::size_t>(std::max(teamsize, 0)), 'T');
+        const std::string bottoms(
+          static_cast<std::size_t>(std::max(teamsize - 1, 0)), 'B');
+        const std::map<std::string, std::string> functype{
+          { "DE", "P" }, { "EDE", "PS" }, { "EDEC", "PSC" },
+          { "EDET", "PS" + tops }, { "EDEB", "PS" + bottoms },
+          { "EDEBT", "PSC" + tops }, { "EDEBB", "PSC" + bottoms } };
+        tb.functions = functype.at(tb.name);
         tb.loopcount = 0;
         tb.edechanges.assign(tb.functions.size(), true);
         tb.swap = 0;
@@ -1013,7 +1595,51 @@ namespace tiebreak
         }
         return moretodo && loopcount < 30;
       }
-      const int changes{ basicDirectEncounter(tb, subro) };
+      int changes{ };
+      const char func{ tb.functions[tb.swap] };
+      if (func == 'P' || func == 'S')
+      {
+        const ScoreInfo info{ getScoreinfo(tb, func == 'P') };
+        changes += basicDirectEncounter(tb, subro, info.points, *info.scoretype);
+      }
+      else if (subro.size() == 2)
+      {
+        // 13.3.2: exactly two teams still tied in both scores.
+        const ScoreInfo info{ getScoreinfo(tb, false) };
+        const int pos{ static_cast<int>(std::count(
+          tb.functions.begin(),
+          tb.functions.begin() + static_cast<std::ptrdiff_t>(tb.swap),
+          func)) };
+        const int size{ teamsize };
+        const auto weight = [func, pos, size](const int board)
+        {
+          if (func == 'C')
+          {
+            // Board count is the lower-is-better board criterion; the
+            // negated weight makes larger better here.
+            return -board;
+          }
+          if (func == 'T')
+          {
+            return board - 1 == pos ? 1 : 0;
+          }
+          return size - board > pos ? 1 : 0;
+        };
+        for (const std::size_t player : subro)
+        {
+          for (auto &[round, rst] : cmps[player].rsts)
+          {
+            Decimal tscore{ 0, -1 };
+            for (const BoardGame &game : rst.games)
+            {
+              tscore = tscore
+                + Decimal::fromInt(weight(game.board)) * game.points;
+            }
+            rst.tpoints = tscore;
+          }
+        }
+        changes += basicDirectEncounter(tb, subro, TPOINTS, *info.scoretype);
+      }
       tb.changes += changes;
       return changes != 0 && loopcount < 30;
     }
@@ -1024,11 +1650,24 @@ namespace tiebreak
      * separates them when all have met; otherwise a competitor is ahead only
      * when no other could still catch up by winning their missing games.
      */
-    int Engine::basicDirectEncounter(Spec &tb, std::vector<std::size_t> subro)
+    int Engine::basicDirectEncounter(
+      Spec &tb,
+      std::vector<std::size_t> subro,
+      const PointType points,
+      const ScoreSystem &scoretype)
     {
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
+      const std::string name{ lowerCase(tb.name) };
+      const auto rankValue = [this, &prefix, &name](const std::size_t player)
+        -> Value &
+      {
+        return val(cmps[player], prefix, name);
+      };
       int changes{ };
-      const Decimal win{ resolveScore(gamescore, "W", true) };
-      const Value currentrank{ cmps[subro[0]].vals.at("de") };
+      const Decimal win{
+        scoreValue(scoretype, "W")
+        * Decimal::fromInt(points == GPOINTS ? teamsize : 1) };
+      const Value currentrank{ rankValue(subro[0]) };
       bool metall{ true };
       const int metmax{ static_cast<int>(subro.size()) - 1 };
       for (const std::size_t player : subro)
@@ -1045,29 +1684,38 @@ namespace tiebreak
             continue;
           }
           const bool played{ tb.modifiers.predetermined || rst.played };
-          if (!played
-            || !byCid(rst.opponent).vals.at("de").equals(currentrank))
+          if (!played)
           {
             continue;
           }
+          const auto opponent = index.find(rst.opponent);
+          if (opponent == index.end())
+          {
+            throw std::out_of_range("KeyError: competitor");
+          }
+          if (!rankValue(opponent->second).equals(currentrank))
+          {
+            continue;
+          }
+          const Decimal score{ requirePoints(rst, points) };
           const auto found = delist.find(rst.opponent);
           if (found != delist.end())
           {
-            Decimal score{ found->second.second };
+            Decimal average{ found->second.second };
             int num{ found->second.first };
-            Decimal sumscore{ score * Decimal::fromInt(num) };
-            de.deval = de.deval - score;
+            Decimal sumscore{ average * Decimal::fromInt(num) };
+            de.deval = de.deval - average;
             ++num;
-            sumscore = sumscore + rst.points;
-            score = sumscore / Decimal::fromInt(num);
-            de.deval = de.deval + score;
-            found->second = { num, score };
+            sumscore = sumscore + score;
+            average = sumscore / Decimal::fromInt(num);
+            de.deval = de.deval + average;
+            found->second = { num, average };
           }
           else
           {
             ++de.denum;
-            de.deval = de.deval + rst.points;
-            delist[rst.opponent] = { 1, rst.points };
+            de.deval = de.deval + score;
+            delist[rst.opponent] = { 1, score };
           }
         }
         if ((!rr && de.denum < metmax) || tb.modifiers.swiss)
@@ -1092,24 +1740,20 @@ namespace tiebreak
             return comparison != 0 ? comparison < 0
               : cmps[left].cid < cmps[right].cid;
           });
-        Value crank{ cmps[subro[0]].vals.at("de") };
+        Value crank{ rankValue(subro[0]) };
         std::int64_t rank{ crank.integer };
-        Decimal val{ cmps[subro[0]].deval };
+        Decimal previous{ cmps[subro[0]].deval };
         for (std::size_t i{ 1 }; i < subro.size(); ++i)
         {
           ++rank;
-          Competitor &de{ cmps[subro[i]] };
-          if (!(val == de.deval))
+          const Competitor &de{ cmps[subro[i]] };
+          if (!(previous == de.deval))
           {
             crank = Value::fromInt(rank);
-            de.vals["de"] = crank;
-            val = de.deval;
+            previous = de.deval;
             ++changes;
           }
-          else
-          {
-            de.vals["de"] = crank;
-          }
+          rankValue(subro[i]) = crank;
         }
         return changes;
       }
@@ -1130,9 +1774,9 @@ namespace tiebreak
           }
           return cmps[left].cid < cmps[right].cid;
         });
-      Value crank{ cmps[subro[0]].vals.at("de") };
+      Value crank{ rankValue(subro[0]) };
       std::int64_t rank{ crank.integer };
-      Decimal val{ cmps[subro[0]].deval };
+      Decimal previous{ cmps[subro[0]].deval };
       bool unique{ true };
       for (std::size_t i{ 1 }; i < subro.size(); ++i)
       {
@@ -1145,27 +1789,113 @@ namespace tiebreak
             tbmax = cmps[subro[j]].demax;
           }
         }
-        Competitor &de{ cmps[subro[i]] };
-        if (unique && tbmax < val)
+        const Competitor &de{ cmps[subro[i]] };
+        if (unique && tbmax < previous)
         {
           crank = Value::fromInt(rank);
-          de.vals["de"] = crank;
-          val = de.deval;
           ++changes;
         }
         else
         {
-          val = de.deval;
-          de.vals["de"] = crank;
           unique = false;
         }
+        previous = de.deval;
+        rankValue(subro[i]) = crank;
       }
       return changes;
+    }
+
+    /**
+     * tiebreak.compute_singlerun_topbottomboardresult: TBR (C.07 12.2)
+     * compares the board points board by board from the top, BBE (12.3)
+     * removes the bottom boards one by one.
+     */
+    bool Engine::singleRunTopBottomBoardResult(
+      const Spec &tb,
+      const std::vector<std::size_t> &ro,
+      const int loopcount)
+    {
+      const std::string name{ lowerCase(tb.name) };
+      const ScoreInfo info{ getScoreinfo(tb, true) };
+      const auto boardPoints = [](Competitor &cmp, const int board)
+      {
+        const std::vector<std::pair<int, Decimal>> &bp{
+          values(cmp, "gpoints_").bp };
+        const auto found = std::find_if(
+          bp.begin(),
+          bp.end(),
+          [board](const std::pair<int, Decimal> &entry)
+          {
+            return entry.first == board;
+          });
+        if (found == bp.end())
+        {
+          throw std::out_of_range(
+            "KeyError: board " + std::to_string(board));
+        }
+        return found->second;
+      };
+      if (loopcount == 0)
+      {
+        for (const std::size_t player : ro)
+        {
+          Competitor &cmp{ cmps[player] };
+          cmp.tbrval = zero(info.match);
+          cmp.bbeval = zero(info.match);
+          for (const auto &[board, points] : values(cmp, "gpoints_").bp)
+          {
+            cmp.bbeval = cmp.bbeval + points;
+          }
+        }
+        return true;
+      }
+      if (ro.empty())
+      {
+        return false;
+      }
+      for (const std::size_t player : ro)
+      {
+        Competitor &cmp{ cmps[player] };
+        cmp.tbrval = boardPoints(cmp, loopcount);
+        cmp.bbeval = cmp.bbeval - boardPoints(cmp, maxboard - loopcount + 1);
+      }
+      const bool top{ name == "tbr" };
+      const auto score = [this, top](const std::size_t player)
+      {
+        return top ? cmps[player].tbrval : cmps[player].bbeval;
+      };
+      std::vector<std::size_t> subro{ ro };
+      std::stable_sort(
+        subro.begin(),
+        subro.end(),
+        [this, &score](const std::size_t left, const std::size_t right)
+        {
+          const int comparison{ score(right).compare(score(left)) };
+          return comparison != 0 ? comparison < 0
+            : cmps[left].cid < cmps[right].cid;
+        });
+      std::int64_t count{ val(cmps[ro[0]], info.prefix, name).integer };
+      std::int64_t currentrank{ count };
+      for (std::size_t player{ }; player < subro.size(); ++player)
+      {
+        // subro[-1] in the reference: the first is compared with the last.
+        const std::size_t previous{
+          player == 0 ? subro.size() - 1 : player - 1 };
+        if (!(score(subro[player]) == score(subro[previous])))
+        {
+          currentrank = count;
+        }
+        val(cmps[subro[player]], info.prefix, name) =
+          Value::fromInt(currentrank);
+        ++count;
+      }
+      return loopcount < maxboard;
     }
 
     /** tiebreak.compute_progressive_score: C.07 7.5, cut from round 1. */
     std::string Engine::computeProgressiveScore(const Spec &tb)
     {
+      const ScoreInfo info{ getScoreinfo(tb, true) };
       const int low{ tb.modifiers.cutlow };
       for (Competitor &cmp : cmps)
       {
@@ -1174,15 +1904,18 @@ namespace tiebreak
         for (int round{ 1 }; round <= currentround; ++round)
         {
           const auto found = cmp.rsts.find(round);
-          ssf = ssf
-            + Value::fromDecimal(
-              found != cmp.rsts.end() ? found->second.points : zero());
+          std::optional<Decimal> points{ };
+          if (found != cmp.rsts.end())
+          {
+            points = pointsOf(found->second, info.points);
+          }
+          ssf = ssf + Value::fromDecimal(points ? *points : zero(info.match));
           if (round > low)
           {
             ps = ps + ssf;
           }
         }
-        cmp.vals["ps"] = ps;
+        values(cmp, info.prefix).vals["ps"] = ps;
       }
       return "ps";
     }
@@ -1193,20 +1926,21 @@ namespace tiebreak
      */
     std::string Engine::computeKoya(const Spec &tb)
     {
-      const Decimal win{ resolveScore(gamescore, "W", true) };
+      const ScoreInfo info{ getScoreinfo(tb, true) };
+      const Decimal win{ scoreValue(*info.scoretype, "W") };
       const int competitors{ static_cast<int>(cmps.size()) };
       int maxgames{ currentround };
-      // In a round robin with an odd number of players everybody has one
-      // game less; a player who was never paired does not count.
+      // In a round robin with an odd number of competitors everybody has
+      // one game less; a competitor who was never paired does not count.
       if (rr)
       {
         if (currentround % competitors == 0)
         {
           maxgames -= currentround / competitors;
         }
-        for (const Competitor &cmp : cmps)
+        for (Competitor &cmp : cmps)
         {
-          if (cmp.lmp == 0)
+          if (values(cmp, info.prefix).lmp == 0)
           {
             --maxgames;
           }
@@ -1214,6 +1948,7 @@ namespace tiebreak
       }
       const Decimal lim{
         tb.modifiers.plim * win * Decimal::fromInt(maxgames)
+            * Decimal::fromInt(info.points == GPOINTS ? teamsize : 1)
             / Decimal(1000, -1)
           + tb.modifiers.nlim };
       for (Competitor &cmp : cmps)
@@ -1225,67 +1960,89 @@ namespace tiebreak
           {
             continue;
           }
-          const Value oppscore{ byCid(rst.opponent).vals.at("points") };
-          const Decimal ownscore{ cmp.pointsPerRound.at(round) };
+          const Value oppscore{
+            val(byCid(rst.opponent), info.prefix, "points") };
+          const Value ownscore{ values(cmp, info.prefix).pointsRound.at(round) };
           if (oppscore.compare(Value::fromDecimal(lim)) >= 0)
           {
-            ks = ks + Value::fromDecimal(ownscore);
+            ks = ks + ownscore;
           }
         }
-        cmp.vals["ks"] = ks;
+        values(cmp, info.prefix).vals["ks"] = ks;
       }
       return "ks";
     }
 
     /**
      * tiebreak.compute_buchholz_sonneborn_berger_ver: Buchholz (8.1), Fore
-     * Buchholz (8.3) and Sonneborn-Berger (9.1) with the unplayed-round rules
-     * of C.07 16 and the cuts of 14.
+     * Buchholz (8.3), Sonneborn-Berger (9.1) and the extended
+     * Sonneborn-Berger of teams (13.2), with the unplayed-round rules of
+     * C.07 16 and the cuts of 14.
      */
     std::string Engine::computeBuchholzSonnebornBerger(const Spec &tb)
     {
       std::string name{ lowerCase(tb.name) };
       const bool isfb{ name == "fb" || name == "afb" || tb.modifiers.foremode };
-      const Decimal draw{ resolveScore(gamescore, "D", true) };
+      const ScoreInfo own{ getScoreinfo(tb, true) };
+      ScoreInfo second{ getScoreinfo(tb, name == "sb") };
+      const std::string vprefix{ isteam ? "mpoints_" : "points_" };
+      const Decimal opointsfordraw{
+        scoreValue(*own.scoretype, "D")
+        * Decimal::fromInt(own.points == GPOINTS ? teamsize : 1) };
+      const Decimal spointsfordraw{
+        scoreValue(*second.scoretype, "D")
+        * Decimal::fromInt(second.points == GPOINTS ? teamsize : 1) };
       if (name == "aob")
       {
         name = "bh";
       }
-      const bool isSb{ name == "sb" };
+      const bool esb{ name == "esb"
+        || (name.size() == 5 && name[0] == 'e' && name.substr(3) == "sb") };
+      const bool isSb{ name == "sb" || esb };
+      if (esb)
+      {
+        second = getScoreinfo(tb, false);
+      }
       for (Competitor &cmp : cmps)
       {
+        PrefixValues &tbscore{ values(cmp, own.prefix) };
+        PrefixValues &vscore{ values(cmp, vprefix) };
         // 16.3.2: for Fore Buchholz the last round is evaluated as a draw.
-        if (isfb && cmp.lmp == rounds)
+        if (isfb && vscore.lmp == rounds)
         {
-          cmp.lna = cmp.lmp;
+          vscore.lna = vscore.lmp;
         }
-        const bool isfore{ isfb && cmp.lmp == rounds };
+        const bool isfore{ isfb && vscore.lmp == rounds };
         bool adjustfore{ };
         Value abh{ Value::fromInt(0) };
+        int last{ };
         for (const auto &[round, rst] : cmp.rsts)
         {
+          last = round;
           if (round > currentround)
           {
             continue;
           }
-          const Decimal pointsNoOpp{ rr ? zero() : draw };
-          const bool hasopponent{ round <= cmp.lna || rst.opponent > 0 };
+          const bool hasopponent{ round <= tbscore.lna || rst.opponent > 0 };
           adjustfore = adjustfore
             || (isfore && round == currentround && rst.opponent > 0);
-          abh = abh + Value::fromDecimal(hasopponent ? rst.points : pointsNoOpp);
+          abh = abh
+            + Value::fromDecimal(
+              hasopponent ? requirePoints(rst, own.points)
+                : rr ? zero(own.match) : opointsfordraw);
         }
-        Value fbscore{ cmp.vals.at("points") };
+        Value fbscore{ tbscore.vals.at("points") };
         if (adjustfore)
         {
           // The reference reads the points of the last round it iterated.
           const Value adjust{
-            Value::fromDecimal(
-              draw - cmp.pointsPerRound.at(cmp.rsts.rbegin()->first)) };
+            Value::fromDecimal(opointsfordraw)
+            + Value::fromInt(-1) * tbscore.pointsRound.at(last) };
           abh = abh + adjust;
           fbscore = fbscore + adjust;
         }
-        cmp.vals["abh"] = abh;
-        cmp.ownscore = fbscore;
+        tbscore.vals["abh"] = abh;
+        tbscore.ownscore = fbscore;
       }
       if (name == "abh" || name == "afb")
       {
@@ -1316,18 +2073,19 @@ namespace tiebreak
           if (played && opponent > 0)
           {
             vur = false;
-            score = byCid(opponent).vals.at("abh");
+            score = val(byCid(opponent), own.prefix, "abh");
           }
           else if (!rr)
           {
-            score = cmp.ownscore;
+            score = values(cmp, own.prefix).ownscore;
             if (tb.modifiers.ver == 2)
             {
               // 2026 rules, 16.4: an unplayed round counts at most what the
               // opponent scored (16.4.1) or a draw in every round (16.4.2).
               const Value cap{
-                opponent > 0 ? byCid(opponent).vals.at("abh")
-                  : Value::fromDecimal(draw * Decimal::fromInt(currentround)) };
+                opponent > 0 ? val(byCid(opponent), own.prefix, "abh")
+                  : Value::fromDecimal(
+                    opointsfordraw * Decimal::fromInt(currentround)) };
               if (cap.compare(score) < 0)
               {
                 score = cap;
@@ -1338,8 +2096,17 @@ namespace tiebreak
           {
             score = Value::fromDecimal(Decimal(0, 0));
           }
-          const Decimal sres{
-            tb.modifiers.urd && !rr ? draw : rst.points };
+          Decimal sres{ };
+          if (tb.modifiers.urd && !rr)
+          {
+            sres = spointsfordraw;
+          }
+          else
+          {
+            const std::optional<Decimal> points{
+              pointsOf(rst, second.points) };
+            sres = points ? *points : zero(second.match);
+          }
           const Value tbvalue{
             isSb ? score * Value::fromDecimal(sres) : score };
           if (opponent > 0 || !rr)
@@ -1404,19 +2171,33 @@ namespace tiebreak
           bhvalue.erase(bhvalue.begin());
           --high;
         }
-        Value val{ Value::fromInt(0) };
+        Value total{ Value::fromInt(0) };
         for (const Contribution &contribution : bhvalue)
         {
-          val = val + contribution.tbvalue;
+          total = total + contribution.tbvalue;
         }
-        cmp.vals[name] = val;
+        values(cmp, own.prefix).vals[name] = total;
       }
       return name;
     }
 
-    /** tiebreak.compute_rtng: the rating used for unrated players. */
+    /**
+     * tiebreak.compute_ext_sonneborn_berger: ESB uses the primary and the
+     * secondary score; EMMSB, EMGSB, EGMSB and EGGSB name both (13.2.1-4).
+     */
+    std::string Engine::computeExtSonnebornBerger(Spec &tb)
+    {
+      if (tb.name.size() == 5)
+      {
+        tb.pointtype = lowerCase(tb.name.substr(1, 2)) + "points";
+      }
+      return computeBuchholzSonnebornBerger(tb);
+    }
+
+    /** tiebreak.compute_rtng: the rating used for unrated competitors. */
     std::string Engine::computeRtng(const Spec &tb)
     {
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
       const std::optional<int> unratedValue{
         tb.modifiers.unrated ? tb.modifiers.unrated : unrated };
       const bool allrated{
@@ -1429,7 +2210,7 @@ namespace tiebreak
       {
         const std::optional<int> rtng{
           cmp.rating ? cmp.rating : unratedValue };
-        cmp.vals["rtng"] =
+        values(cmp, prefix).vals["rtng"] =
           allrated && rtng ? Value::fromInt(*rtng) : Value::none();
       }
       return "rtng";
@@ -1438,10 +2219,11 @@ namespace tiebreak
     /**
      * tiebreak.compute_ratingperformance: ARO (10.1), TPR (10.2) and PTP
      * (10.3) over the played games, with cuts. All are empty unless every
-     * competitor is rated or a rating for unrated players is given.
+     * competitor is rated or a rating for unrated competitors is given.
      */
     std::string Engine::computeRatingPerformance(const Spec &tb)
     {
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
       const std::optional<int> unratedValue{
         tb.modifiers.unrated ? tb.modifiers.unrated : unrated };
       const bool valid{
@@ -1450,6 +2232,7 @@ namespace tiebreak
           {
             return cmp.rating.has_value();
           }) };
+      computeRtng(tb);
       struct Opponent
       {
         int rating;
@@ -1530,10 +2313,11 @@ namespace tiebreak
         {
           return valid && value ? Value::fromInt(*value) : Value::none();
         };
-        cmp.vals["aro"] = toValue(rating::averageRatingOfOpponents(ratings));
-        cmp.vals["tpr"] =
+        std::map<std::string, Value> &vals{ values(cmp, prefix).vals };
+        vals["aro"] = toValue(rating::averageRatingOfOpponents(ratings));
+        vals["tpr"] =
           toValue(rating::tournamentPerformanceRating(rscore, ratings));
-        cmp.vals["ptp"] =
+        vals["ptp"] =
           toValue(rating::perfectTournamentPerformance(rscore, ratings));
       }
       return lowerCase(tb.name);
@@ -1549,6 +2333,7 @@ namespace tiebreak
       const std::string &name,
       const int exponent)
     {
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
       const std::string tbname{ lowerCase(tb.name) };
       for (Competitor &cmp : cmps)
       {
@@ -1560,7 +2345,7 @@ namespace tiebreak
           {
             continue;
           }
-          const Value &value{ byCid(rst.opponent).vals.at(name) };
+          const Value &value{ val(byCid(rst.opponent), prefix, name) };
           if (!value.isNone())
           {
             ++num;
@@ -1569,26 +2354,113 @@ namespace tiebreak
         }
         if (num == 0)
         {
-          cmp.vals[tbname] = Value::none();
+          values(cmp, prefix).vals[tbname] = Value::none();
           continue;
         }
-        Decimal val{ sum.asDecimal() / Decimal::fromInt(num) };
+        Decimal average{ sum.asDecimal() / Decimal::fromInt(num) };
         // A zero average stays as divided: the reference only rounds a
         // value that is true.
-        if (!val.isZero())
+        if (!average.isZero())
         {
-          val = val.quantize(exponent, true);
+          average = average.quantize(exponent, true);
         }
-        cmp.vals[tbname] = Value::fromDecimal(val);
+        values(cmp, prefix).vals[tbname] = Value::fromDecimal(average);
       }
       return tbname;
     }
 
-    Result Engine::computeTiebreaks(
-      const Tournament &tournament,
-      Options options)
+    /**
+     * tiebreak.compute_boardcount: BC (C.07 12.1), the board numbers
+     * weighted by the game points scored on them.
+     */
+    std::string Engine::computeBoardcount(const Spec &tb)
     {
-      findTmversion(tournament);
+      const std::string prefix{ getScoreinfo(tb, true).prefix };
+      for (Competitor &cmp : cmps)
+      {
+        Value bc{ Value::fromInt(0) };
+        for (const auto &[board, points] : values(cmp, "gpoints_").bp)
+        {
+          bc = bc + Value::fromDecimal(Decimal::fromInt(board) * points);
+        }
+        values(cmp, prefix).vals["bc"] = bc;
+      }
+      return "bc";
+    }
+
+    /**
+     * tiebreak.compute_score_strength_combination: SSSC (C.07 13.4), the
+     * secondary score plus the Buchholz of the primary score divided by a
+     * normalising factor, rounded half up to two decimals.
+     */
+    std::string Engine::computeScoreStrengthCombination(const Spec &tb)
+    {
+      computeBuchholzSonnebornBerger(tb);
+      const ScoreInfo info{ getScoreinfo(tb, true) };
+      const char key{ tb.pointtype.at(0) };
+      const Decimal win{ scoreValue(*info.scoretype, "W") };
+      // The reference divides by zero here and stops with a program error.
+      const InvalidRequestException zeroFactor(
+        "SSSC: the normalising factor is 0 in round "
+        + std::to_string(currentround) + " with " + std::to_string(maxboard)
+        + " boards; give one with /K");
+      for (Competitor &cmp : cmps)
+      {
+        const Value dividend{ val(cmp, info.prefix, "sssc") };
+        Value score{ };
+        std::int64_t divisor{ 1 };
+        if (key == 'm')
+        {
+          score = val(cmp, "gpoints_", "points");
+          if (maxboard == 0)
+          {
+            throw zeroFactor;
+          }
+          divisor = floorDecimal(
+            win * Decimal::fromInt(currentround) / scoreValue(gamescore, "W")
+            / Decimal::fromInt(maxboard));
+        }
+        else if (key == 'g')
+        {
+          score = val(cmp, "mpoints_", "points");
+          divisor = floorDecimal(
+            win * Decimal::fromInt(currentround) * Decimal::fromInt(maxboard)
+            / scoreValue(matchscore, "W"));
+        }
+        else
+        {
+          throw std::logic_error("UnboundLocalError: score");
+        }
+        Decimal quotient{ };
+        if (Decimal{ } < tb.modifiers.nlim)
+        {
+          quotient = dividend.asDecimal() / tb.modifiers.nlim;
+        }
+        else if (dividend.kind == Value::INTEGER)
+        {
+          // int / int is a float in Python, and a float does not add to a
+          // Decimal.
+          throw std::logic_error("TypeError: float and Decimal");
+        }
+        else if (divisor == 0)
+        {
+          throw zeroFactor;
+        }
+        else
+        {
+          quotient = dividend.decimal / Decimal::fromInt(divisor);
+        }
+        const Decimal total{
+          (score + Value::fromDecimal(quotient)).asDecimal() };
+        values(cmp, info.prefix).vals["sssc"] =
+          Value::fromDecimal(total.quantize(-2, true));
+      }
+      return "sssc";
+    }
+
+    Result Engine::computeTiebreaks(Options options)
+    {
+      findTmversion();
       if (options.tiebreaks.empty())
       {
         options.tiebreaks = tournament.rankOrder;
@@ -1617,6 +2489,6 @@ namespace tiebreak
   Result computeTiebreaks(const Tournament &tournament, Options options)
   {
     Engine engine{ tournament, options };
-    return engine.computeTiebreaks(tournament, std::move(options));
+    return engine.computeTiebreaks(std::move(options));
   }
 }
