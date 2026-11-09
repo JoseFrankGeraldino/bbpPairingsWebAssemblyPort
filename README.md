@@ -448,9 +448,17 @@ version).
 | `SHA256SUMS` | `sha256sum -c` format | both |
 
 The version is `PACKAGE_VERSION` in the Makefile (semver, ours, independent
-of the engine's). The archives are reproducible: sorted entries, the commit
-time on every entry, owner 0, gzip without name or time; the same commit
-gives the same bytes.
+of the engine's). Builds and archives are reproducible: the same commit
+gives the same bytes on another machine with the same OS release and the
+pinned Emscripten (checked 2026-11-09 with two independent checkouts and
+emsdk installs: every binary, `.wasm` and archive identical). For that the
+Makefile exports `SOURCE_DATE_EPOCH` (the commit time; GCC and clang use it
+for the engine's `__DATE__`/`__TIME__`) and passes the engine Makefile
+`version=fork-<12 characters of the fork commit>` instead of its `git
+describe`, which depends on the tags a checkout has; the engine's version
+line therefore reads `BBP Pairings (...) - fork-1b3c79fac8ae (Built <commit
+time>)`. The archives: sorted entries, the commit time on every entry, owner
+0, gzip without name or time.
 
 **Who builds them.** Nothing is published from this repository (no GitHub
 releases, no npm registry). The main app's private pipeline checks out a

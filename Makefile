@@ -28,8 +28,20 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := native
 .DELETE_ON_ERROR:
 
+# Reproducible builds: the engine prints __DATE__ and __TIME__ in its version
+# line (src/main.cpp); GCC and clang take both from SOURCE_DATE_EPOCH when it
+# is set. The commit time of this repository makes one commit build the same
+# bytes anywhere (README "Release packages").
+SOURCE_DATE_EPOCH ?= $(shell git log -1 --format=%ct HEAD 2>/dev/null)
+export SOURCE_DATE_EPOCH
+
 ENGINE_DIR := third_party/bbpPairings
-ENGINE_MAKE := $(MAKE) -C $(ENGINE_DIR)
+# version: the engine Makefile takes it from "git describe" in the submodule,
+# which depends on the tags a checkout happens to have; it ends up in the
+# version line of every build. We pass the fork commit instead, so the bytes
+# do not depend on the checkout and the program names its exact engine source.
+ENGINE_VERSION := fork-$(shell git -C $(ENGINE_DIR) rev-parse HEAD 2>/dev/null | cut -c1-12)
+ENGINE_MAKE := $(MAKE) -C $(ENGINE_DIR) version=$(ENGINE_VERSION)
 
 # Pin information (see README.md "Pinned engine").
 ENGINE_FORK_URL := https://github.com/JoseFrankGeraldino/bbpPairings
@@ -473,7 +485,7 @@ PACKAGE_VERSION := 0.1.0
 PACKAGES_DIR := dist/packages
 PACKAGE_TEST_DIR := build/package-test
 PACKAGE_ARGS = --native $(DIST_DIR) --wasm $(DIST_WASM_DIR) \
-	--version $(PACKAGE_VERSION) --mtime $$(git log -1 --format=%ct HEAD)
+	--version $(PACKAGE_VERSION) --mtime $(SOURCE_DATE_EPOCH)
 PACKAGED_NATIVE := $(PACKAGE_TEST_DIR)/native/bbppairings-native-linux-x64-$(PACKAGE_VERSION)
 PACKAGED_WASM := $(PACKAGE_TEST_DIR)/wasm/package
 
