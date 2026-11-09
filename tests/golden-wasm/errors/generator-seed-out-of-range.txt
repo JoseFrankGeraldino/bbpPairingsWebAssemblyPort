@@ -1,0 +1,7 @@
+=== step 1: --dutch -g -o o.trf -s 99999999999999999999999
+exit: 4
+--- stdout
+
+--- stderr
+The seed must be between 0 and 4294967295.
+

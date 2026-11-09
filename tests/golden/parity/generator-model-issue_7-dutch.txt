@@ -1,0 +1,1064 @@
+=== step 1: --dutch gen.trf -c -l check.list
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+gen: Round #4
+gen: Round #5
+gen: Round #6
+gen: Round #7
+gen: Round #8
+gen: Round #9
+gen: Round #10
+gen: Round #11
+gen: Round #12
+gen: Round #13
+gen: Round #14
+
+
+--- stderr
+
+--- file check.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	  Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(31W)		
+ 2	0.0	 	  A 	 Y	   	   	(32B)		
+ 3	0.0	 	  A 	 Y	   	   	(33W)		
+ 4	0.0	 	  A 	 Y	   	   	(34B)		
+ 5	0.0	 	  A 	 Y	   	   	(35W)		
+ 6	0.0	 	  A 	 Y	   	   	(36B)		
+ 7	0.0	 	  A 	 Y	   	   	(37W)		
+ 8	0.0	 	  A 	 Y	   	   	(38B)		
+ 9	0.0	 	  A 	 Y	   	   	(39W)		
+10	0.0	 	  A 	 Y	   	   	(40B)		
+11	0.0	 	  A 	 Y	   	   	(41W)		
+12	0.0	 	  A 	 Y	   	   	(42B)		
+13	0.0	 	  A 	 Y	   	   	(43W)		
+14	0.0	 	  A 	 Y	   	   	(44B)		
+15	0.0	 	  A 	 Y	   	   	(45W)		
+16	0.0	 	  A 	 Y	   	   	(46B)		
+17	0.0	 	  A 	 Y	   	   	(47W)		
+18	0.0	 	  A 	 Y	   	   	(48B)		
+19	0.0	 	  A 	 Y	   	   	(49W)		
+20	0.0	 	  A 	 Y	   	   	(50B)		
+21	0.0	 	  A 	 Y	   	   	(51W)		
+22	0.0	 	  A 	 Y	   	   	(52B)		
+23	0.0	 	  A 	 Y	   	   	(53W)		
+24	0.0	 	  A 	 Y	   	   	(54B)		
+25	0.0	 	  A 	 Y	   	   	(55W)		
+26	0.0	 	  A 	 Y	   	   	(56B)		
+27	0.0	 	  A 	 Y	   	   	(57W)		
+28	0.0	 	  A 	 Y	   	   	(58B)		
+29	0.0	 	  A 	 Y	   	   	(59W)		
+30	0.0	 	  A 	 Y	   	   	(60B)		
+31	0.0	 	  A 	 Y	   	   	 (1B)		
+32	0.0	 	  A 	 Y	   	   	 (2W)		
+33	0.0	 	  A 	 Y	   	   	 (3B)		
+34	0.0	 	  A 	 Y	   	   	 (4W)		
+35	0.0	 	  A 	 Y	   	   	 (5B)		
+36	0.0	 	  A 	 Y	   	   	 (6W)		
+37	0.0	 	  A 	 Y	   	   	 (7B)		
+38	0.0	 	  A 	 Y	   	   	 (8W)		
+39	0.0	 	  A 	 Y	   	   	 (9B)		
+40	0.0	 	  A 	 Y	   	   	(10W)		
+41	0.0	 	  A 	 Y	   	   	(11B)		
+42	0.0	 	  A 	 Y	   	   	(12W)		
+43	0.0	 	  A 	 Y	   	   	(13B)		
+44	0.0	 	  A 	 Y	   	   	(14W)		
+45	0.0	 	  A 	 Y	   	   	(15B)		
+46	0.0	 	  A 	 Y	   	   	(16W)		
+47	0.0	 	  A 	 Y	   	   	(17B)		
+48	0.0	 	  A 	 Y	   	   	(18W)		
+49	0.0	 	  A 	 Y	   	   	(19B)		
+50	0.0	 	  A 	 Y	   	   	(20W)		
+51	0.0	 	  A 	 Y	   	   	(21B)		
+52	0.0	 	  A 	 Y	   	   	(22W)		
+53	0.0	 	  A 	 Y	   	   	(23B)		
+54	0.0	 	  A 	 Y	   	   	(24W)		
+55	0.0	 	  A 	 Y	   	   	(25B)		
+56	0.0	 	  A 	 Y	   	   	(26W)		
+57	0.0	 	  A 	 Y	   	   	(27B)		
+58	0.0	 	  A 	 Y	   	   	(28W)		
+59	0.0	 	  A 	 Y	   	   	(29B)		
+60	0.0	 	  A 	 Y	   	   	(30W)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	  Cur		R1	
+
+ 1	1.0	 W	 (B)	 Y	   	   	(16B)		31	
+ 2	1.0	 B	 (W)	 Y	   	   	(15W)		32	
+ 3	1.0	 W	 (B)	 Y	   	   	(18B)		33	
+ 4	1.0	 B	 (W)	 Y	   	   	(17W)		34	
+ 5	1.0	 W	 (B)	 Y	   	   	(20B)		35	
+ 6	1.0	 B	 (W)	 Y	   	   	(19W)		36	
+ 8	1.0	 B	 (W)	 Y	   	   	(22W)		38	
+ 9	1.0	 W	 (B)	 Y	   	   	(24B)		39	
+10	1.0	 B	 (W)	 Y	   	   	(25W)		40	
+11	1.0	 W	 (B)	 Y	   	   	(26B)		41	
+12	1.0	 B	 (W)	 Y	   	   	(27W)		42	
+13	1.0	 W	 (B)	 Y	   	   	(28B)		43	
+14	1.0	 B	 (W)	 Y	   	   	(29W)		44	
+15	1.0	 W	 (B)	 Y	   	   	 (2B)		45	
+16	1.0	 B	 (W)	 Y	   	   	 (1W)		46	
+17	1.0	 W	 (B)	 Y	   	   	 (4B)		47	
+18	1.0	 B	 (W)	 Y	   	   	 (3W)		48	
+19	1.0	 W	 (B)	 Y	   	   	 (6B)		49	
+20	1.0	 B	 (W)	 Y	   	   	 (5W)		50	
+22	1.0	 B	 (W)	 Y	   	   	 (8B)		52	
+24	1.0	 B	 (W)	 Y	   	   	 (9W)		54	
+25	1.0	 W	 (B)	 Y	   	   	(10B)		55	
+26	1.0	 B	 (W)	 Y	   	   	(11W)		56	
+27	1.0	 W	 (B)	 Y	   	   	(12B)		57	
+28	1.0	 B	 (W)	 Y	   	   	(13W)		58	
+29	1.0	 W	 (B)	 Y	   	   	(14B)		59	
+
+ 7	0.5	 W	 (B)	 Y	   	   	(30B)		37	
+21	0.5	 W	 (B)	 Y	   	   	(53B)		51	
+23	0.5	 W	 (B)	 Y	   	   	(51B)		53	
+30	0.5	 B	 (W)	 Y	   	   	 (7W)		60	
+37	0.5	 B	 (W)	 Y	   	   	(60W)		 7	
+51	0.5	 B	 (W)	 Y	   	   	(23W)		21	
+53	0.5	 B	 (W)	 Y	   	   	(21W)		23	
+60	0.5	 W	 (B)	 Y	   	   	(37B)		30	
+
+31	0.0	 B	 (W)	 Y	   	   	(46W)		 1	
+32	0.0	 W	 (B)	 Y	   	   	(45B)		 2	
+33	0.0	 B	 (W)	 Y	   	   	(48W)		 3	
+34	0.0	 W	 (B)	 Y	   	   	(47B)		 4	
+35	0.0	 B	 (W)	 Y	   	   	(50W)		 5	
+36	0.0	 W	 (B)	 Y	   	   	(49B)		 6	
+38	0.0	 W	 (B)	 Y	   	   	(52B)		 8	
+39	0.0	 B	 (W)	 Y	   	   	(54W)		 9	
+40	0.0	 W	 (B)	 Y	   	   	(55B)		10	
+41	0.0	 B	 (W)	 Y	   	   	(56W)		11	
+42	0.0	 W	 (B)	 Y	   	   	(57B)		12	
+43	0.0	 B	 (W)	 Y	   	   	(58W)		13	
+44	0.0	 W	 (B)	 Y	   	   	(59B)		14	
+45	0.0	 B	 (W)	 Y	   	   	(32W)		15	
+46	0.0	 W	 (B)	 Y	   	   	(31B)		16	
+47	0.0	 B	 (W)	 Y	   	   	(34W)		17	
+48	0.0	 W	 (B)	 Y	   	   	(33B)		18	
+49	0.0	 B	 (W)	 Y	   	   	(36W)		19	
+50	0.0	 W	 (B)	 Y	   	   	(35B)		20	
+52	0.0	 W	 (B)	 Y	   	   	(38W)		22	
+54	0.0	 W	 (B)	 Y	   	   	(39B)		24	
+55	0.0	 B	 (W)	 Y	   	   	(40W)		25	
+56	0.0	 W	 (B)	 Y	   	   	(41B)		26	
+57	0.0	 B	 (W)	 Y	   	   	(42W)		27	
+58	0.0	 W	 (B)	 Y	   	   	(43B)		28	
+59	0.0	 B	 (W)	 Y	   	   	(44W)		29	
+
+
+Round #3
+
+ID	Pts	---	Pref	C2	C14	C16	  Cur		R1	R2	
+
+ 2	2.0	 BW	  b 	 Y	   	   	(11B)		32	15	
+ 3	2.0	 WB	  w 	 Y	   	   	(12W)		33	18	
+ 5	2.0	 WB	  w 	 Y	   	   	(14W)		35	20	
+ 8	2.0	 BW	  b 	 Y	   	   	(13B)		38	22	
+10	2.0	 BW	  b 	 Y	   	   	(19W)		40	25	
+11	2.0	 WB	  w 	 Y	   	   	 (2W)		41	26	
+12	2.0	 BW	  b 	 Y	   	   	 (3B)		42	27	
+13	2.0	 WB	  w 	 Y	   	   	 (8W)		43	28	
+14	2.0	 BW	  b 	 Y	   	   	 (5B)		44	29	
+19	2.0	  W	 (B)	 N	  D	   	(10B)		49	  	
+
+ 1	1.5	 WB	  w 	 Y	   	   	(24W)		31	16	
+ 4	1.5	 BW	  b 	 Y	   	   	(23B)		34	17	
+ 7	1.5	 WB	  w 	 Y	   	   	(16W)		37	30	
+ 9	1.5	 WB	  w 	 Y	   	   	(37W)		39	24	
+16	1.5	 BW	  b 	 Y	   	   	 (7B)		46	 1	
+17	1.5	 WB	  w 	 Y	   	   	(18W)		47	 4	
+23	1.5	 WB	  w 	 Y	   	   	 (4W)		53	51	
+24	1.5	 BW	  b 	 Y	   	   	 (1B)		54	 9	
+37	1.5	 BW	  b 	 Y	   	   	 (9B)		 7	60	
+
+ 6	1.0	  B	 (W)	 Y	   	   	(31W)		36	  	
+15	1.0	 WB	  w 	 Y	   	   	(33W)		45	 2	
+18	1.0	 BW	  b 	 Y	   	   	(17B)		48	 3	
+20	1.0	 BW	  b 	 Y	   	   	(29B)		50	 5	
+21	1.0	 WB	  w 	 Y	   	   	(35W)		51	53	
+22	1.0	 BB	  W 	 Y	   	   	(38W)		52	 8	
+25	1.0	 WB	  w 	 Y	   	   	(39W)		55	10	
+26	1.0	 BW	  b 	 Y	   	   	(34B)		56	11	
+27	1.0	 WB	  w 	 Y	   	   	(41W)		57	12	
+28	1.0	 BW	  b 	 Y	   	   	(53B)		58	13	
+29	1.0	 WB	  w 	 Y	   	   	(20W)		59	14	
+31	1.0	 BW	  b 	 Y	   	   	 (6B)		 1	46	
+33	1.0	 BW	  b 	 Y	   	   	(15B)		 3	48	
+34	1.0	 WB	  w 	 Y	   	   	(26W)		 4	47	
+35	1.0	 BW	  b 	 Y	   	   	(21B)		 5	50	
+38	1.0	  W	 (B)	 N	  D	   	(22B)		 8	  	
+39	1.0	 BW	  b 	 Y	   	   	(25B)		 9	54	
+41	1.0	 BW	  b 	 Y	   	   	(27B)		11	56	
+53	1.0	 BW	  b 	 Y	   	   	(28W)		23	21	
+57	1.0	 BW	  b 	 Y	   	   	(30B)		27	42	
+
+30	0.5	 BW	  b 	 Y	   	   	(57W)		60	 7	
+32	0.5	 WB	  w 	 Y	   	   	(49W)		 2	45	
+36	0.5	 WB	  w 	 Y	   	   	(51W)		 6	49	
+40	0.5	 WB	  w 	 Y	   	   	(59W)		10	55	
+43	0.5	 BW	  b 	 Y	   	   	(60B)		13	58	
+44	0.5	 WB	  w 	 Y	   	   	(55W)		14	59	
+45	0.5	 BW	  b 	 Y	   	   	(58B)		15	32	
+49	0.5	 BW	  b 	 Y	   	   	(32B)		19	36	
+51	0.5	 BW	  b 	 Y	   	   	(36B)		21	23	
+55	0.5	 BW	  b 	 Y	   	   	(44B)		25	40	
+58	0.5	 WB	  w 	 Y	   	   	(45W)		28	43	
+59	0.5	 BW	  b 	 Y	   	   	(40B)		29	44	
+60	0.5	 WB	  w 	 Y	   	   	(43W)		30	37	
+
+42	0.0	 WB	  w 	 Y	   	   	(50W)		12	57	
+46	0.0	 WB	  w 	 Y	   	   	(52W)		16	31	
+47	0.0	 BW	  b 	 Y	   	   	(54B)		17	34	
+48	0.0	 WB	  w 	 Y	   	   	(56W)		18	33	
+50	0.0	 WB	  w 	 Y	   	   	(42B)		20	35	
+52	0.0	  W	 (B)	 Y	   	   	(46B)		22	  	
+54	0.0	 WB	  w 	 Y	   	   	(47W)		24	39	
+56	0.0	 WB	  w 	 Y	   	   	(48B)		26	41	
+
+
+Round #4
+
+ID	Pts	----	Pref	C2	C14	C16	  Cur		R1	R2	R3	
+
+10	3.0	 BWW	  B 	 Y	   	   	(12B)		40	25	19	
+12	3.0	 BWB	 (W)	 Y	   	   	(10W)		42	27	 3	
+
+ 1	2.5	 WBW	 (B)	 Y	   	   	 (8B)		31	16	24	
+ 2	2.5	 BWB	 (W)	 Y	   	   	(13W)		32	15	11	
+ 4	2.5	 BWB	 (W)	 Y	   	   	(11W)		34	17	23	
+ 5	2.5	 WBW	 (B)	 Y	   	   	(17B)		35	20	14	
+ 7	2.5	 WBW	 (B)	 Y	   	   	(14B)		37	30	16	
+ 8	2.5	 BWB	 (W)	 Y	   	   	 (1W)		38	22	13	
+11	2.5	 WBW	 (B)	 Y	   	   	 (4B)		41	26	 2	
+13	2.5	 WBW	 (B)	 Y	   	   	 (2B)		43	28	 8	
+14	2.5	 BWB	 (W)	 Y	   	   	 (7W)		44	29	 5	
+17	2.5	 WBW	 (B)	 Y	  D	   	 (5W)		47	 4	18	
+
+ 3	2.0	 WBW	 (B)	 Y	   	   	(22B)		33	18	12	
+ 9	2.0	 WBW	 (B)	 Y	   	   	(26B)		39	24	37	
+19	2.0	  WB	  w 	 N	   	  D	(28B)		49	  	10	
+20	2.0	 BWB	 (W)	 Y	   	   	(27W)		50	 5	29	
+21	2.0	 WBW	 (B)	 Y	   	   	(37B)		51	53	35	
+22	2.0	 BBW	 (W)	 Y	   	   	 (3W)		52	 8	38	
+26	2.0	 BWB	 (W)	 Y	   	   	 (9W)		56	11	34	
+27	2.0	 WBW	 (B)	 Y	   	   	(20B)		57	12	41	
+28	2.0	 BWB	 (W)	 Y	   	   	(19W)		58	13	53	
+37	2.0	 BWB	 (W)	 Y	   	   	(21W)		 7	60	 9	
+
+ 6	1.5	  BW	  b 	 Y	   	   	(32W)		36	  	31	
+15	1.5	 WBW	 (B)	 Y	   	   	(36B)		45	 2	33	
+16	1.5	 BWB	 (W)	 Y	   	   	(40W)		46	 1	 7	
+23	1.5	 WBW	 (B)	 Y	   	   	(33B)		53	51	 4	
+24	1.5	 BWB	 (W)	 Y	   	   	(44W)		54	 9	 1	
+25	1.5	 WBW	 (B)	 Y	   	   	(43B)		55	10	39	
+30	1.5	 BWW	  B 	 Y	  U	   	(39B)		60	 7	57	
+31	1.5	 BWB	 (W)	 Y	   	   	(58W)		 1	46	 6	
+32	1.5	 WBW	 (B)	 Y	   	   	 (6B)		 2	45	49	
+33	1.5	 BWB	 (W)	 Y	   	   	(23W)		 3	48	15	
+36	1.5	 WBW	 (B)	 Y	   	   	(15W)		 6	49	51	
+39	1.5	 BWB	 (W)	 Y	   	   	(30W)		 9	54	25	
+40	1.5	 WBW	 (B)	 Y	   	   	(16B)		10	55	59	
+43	1.5	 BWB	 (W)	 Y	   	   	(25W)		13	58	60	
+44	1.5	 WBW	 (B)	 Y	   	   	(24B)		14	59	55	
+58	1.5	 WBW	 (B)	 Y	   	   	(31B)		28	43	45	
+
+18	1.0	 BWB	 (W)	 Y	  U	   	(42W)		48	 3	17	
+29	1.0	 WBW	 (B)	 Y	   	   	(41B)		59	14	20	
+34	1.0	 WBW	 (B)	 Y	   	   	(54B)		 4	47	26	
+35	1.0	 BWB	 (W)	 Y	   	   	(53W)		 5	50	21	
+38	1.0	  WB	  w 	 N	   	  D	(57B)		 8	  	22	
+41	1.0	 BWB	 (W)	 Y	   	   	(29W)		11	56	27	
+42	1.0	 WBW	 (B)	 Y	   	   	(18B)		12	57	50	
+52	1.0	  WB	  w 	 Y	   	   	(45B)		22	  	46	
+53	1.0	 BWW	  B 	 Y	   	   	(35B)		23	21	28	
+54	1.0	  WB	  w 	 N	  D	   	(34W)		24	39	  	
+57	1.0	 BWB	 (W)	 Y	  D	   	(38W)		27	42	30	
+
+45	0.5	 BWB	 (W)	 Y	   	   	(52W)		15	32	58	
+48	0.5	 WBW	 (B)	 Y	   	   	(55B)		18	33	56	
+49	0.5	 BWB	 (W)	 Y	   	   	(56B)		19	36	32	
+51	0.5	 BWB	 (W)	 Y	   	   	(60W)		21	23	36	
+55	0.5	 BWB	 (W)	 Y	   	   	(48W)		25	40	44	
+56	0.5	 WBB	  W 	 Y	   	   	(49W)		26	41	48	
+59	0.5	 BWB	 (W)	 Y	   	   	(46W)		29	44	40	
+60	0.5	 WBW	 (B)	 Y	   	   	(51B)		30	37	43	
+
+46	0.0	 WBW	 (B)	 Y	   	   	(59B)		16	31	52	
+47	0.0	  BW	  b 	 Y	   	   	(50B)		17	34	  	
+50	0.0	 WBB	  W 	 Y	   	   	(47W)		20	35	42	
+
+
+Round #5
+
+ID	Pts	-----	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	
+
+12	4.0	 BWBW	  b 	 Y	   	   	 (7B)		42	27	 3	10	
+
+ 7	3.5	 WBWB	  w 	 Y	   	   	(12W)		37	30	16	14	
+11	3.5	 WBWB	  w 	 Y	   	   	 (1W)		41	26	 2	 4	
+
+ 1	3.0	 WBWB	  w 	 Y	   	   	(11B)		31	16	24	 8	
+ 2	3.0	 BWBW	  b 	 Y	   	   	(19B)		32	15	11	13	
+ 5	3.0	 WBWB	  w 	 Y	   	   	(13W)		35	20	14	17	
+ 8	3.0	 BWBW	  b 	 Y	   	   	(20B)		38	22	13	 1	
+ 9	3.0	 WBWB	  w 	 Y	   	   	(17W)		39	24	37	26	
+10	3.0	 BWWB	  w 	 Y	   	   	(21B)		40	25	19	12	
+13	3.0	 WBWB	  w 	 Y	   	   	 (5B)		43	28	 8	 2	
+17	3.0	 WBWW	  B 	 Y	   	  D	 (9B)		47	 4	18	 5	
+19	3.0	  WBB	  W 	 N	   	   	 (2W)		49	  	10	28	
+20	3.0	  BWB	 (W)	 N	  D	   	 (8W)		50	 5	29	  	
+21	3.0	 WBWB	  w 	 Y	   	   	(10W)		51	53	35	37	
+
+ 3	2.5	 WBWB	  w 	 Y	   	   	(16W)		33	18	12	22	
+ 4	2.5	 BWBW	  b 	 Y	   	   	(22W)		34	17	23	11	
+ 6	2.5	  BWW	  B 	 Y	   	   	(25B)		36	  	31	32	
+14	2.5	 BWBW	  b 	 Y	   	   	(30B)		44	29	 5	 7	
+15	2.5	 WBWB	  w 	 Y	   	   	(58W)		45	 2	33	36	
+16	2.5	 BWBW	  b 	 Y	   	   	 (3B)		46	 1	 7	40	
+22	2.5	 BBWW	  B 	 Y	   	   	 (4B)		52	 8	38	 3	
+24	2.5	 BWBW	  b 	 Y	   	   	(23B)		54	 9	 1	44	
+25	2.5	 WBWB	  w 	 Y	   	   	 (6W)		55	10	39	43	
+30	2.5	 BWWB	  w 	 Y	   	  U	(14W)		60	 7	57	39	
+58	2.5	  WBW	 (B)	 N	  D	   	(15B)		28	43	45	  	
+
+18	2.0	 BWBW	  b 	 Y	   	  U	(33B)		48	 3	17	42	
+23	2.0	 WBWB	  w 	 Y	   	   	(24W)		53	51	 4	33	
+26	2.0	 BWBW	  b 	 Y	   	   	(35B)		56	11	34	 9	
+27	2.0	  WBW	 (B)	 Y	   	   	(34B)		57	12	41	  	
+28	2.0	 BWBW	  b 	 Y	   	   	(38B)		58	13	53	19	
+29	2.0	 WBWB	  w 	 Y	   	   	(37W)		59	14	20	41	
+33	2.0	 BWBW	  b 	 Y	   	   	(18W)		 3	48	15	23	
+34	2.0	 WBWB	  w 	 Y	   	   	(27W)		 4	47	26	54	
+35	2.0	 BWBW	  b 	 Y	   	   	(26W)		 5	50	21	53	
+37	2.0	 BWBW	  b 	 Y	   	   	(29B)		 7	60	 9	21	
+38	2.0	  WBB	  W 	 N	   	   	(28W)		 8	  	22	57	
+
+31	1.5	  BWB	 (W)	 Y	   	   	(44W)		 1	46	 6	  	
+32	1.5	 WBWB	  w 	 Y	   	   	(51W)		 2	45	49	 6	
+36	1.5	 WBWW	  B 	 Y	   	   	(45B)		 6	49	51	15	
+39	1.5	 BWBW	  b 	 Y	   	   	(48B)		 9	54	25	30	
+40	1.5	 WBWB	  w 	 Y	   	   	(56W)		10	55	59	16	
+43	1.5	 BWBW	  b 	 Y	   	   	(59B)		13	58	60	25	
+44	1.5	 WBWB	  w 	 Y	   	   	(31B)		14	59	55	24	
+45	1.5	  BWB	 (W)	 N	  D	   	(36W)		15	32	58	  	
+48	1.5	 WBWB	  w 	 Y	   	   	(39W)		18	33	56	55	
+51	1.5	 BWBW	  b 	 Y	   	   	(32B)		21	23	36	60	
+56	1.5	 WBBW	  b 	 Y	   	   	(40B)		26	41	48	49	
+59	1.5	  BWB	 (W)	 N	  D	   	(43W)		29	44	40	  	
+
+41	1.0	 BWBW	  b 	 Y	   	   	(52B)		11	56	27	29	
+42	1.0	 WBWB	  w 	 Y	   	   	(54W)		12	57	50	18	
+47	1.0	  BWB	 (W)	 Y	   	   	(57W)		17	34	  	50	
+52	1.0	   WB	  w 	 Y	   	   	(41W)		22	  	46	  	
+53	1.0	 BWWB	  w 	 Y	   	   	(49B)		23	21	28	35	
+54	1.0	  WBW	 (B)	 N	   	  D	(42B)		24	39	  	34	
+57	1.0	 BWBW	  b 	 Y	   	  D	(47B)		27	42	30	38	
+
+49	0.5	 BWBB	  W 	 Y	   	   	(53W)		19	36	32	56	
+55	0.5	 BWBW	  b 	 Y	   	   	(60B)		25	40	44	48	
+60	0.5	 WBWB	  w 	 Y	   	   	(55W)		30	37	43	51	
+
+46	0.0	  WBW	 (B)	 Y	   	   	(50B)		16	31	52	  	
+50	0.0	 WBBW	  b 	 Y	   	   	(46W)		20	35	42	47	
+
+
+Round #6
+
+ID	Pts	------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	
+
+ 7	4.5	 WBWBW	 (B)	 Y	  U	   	 (2B)		37	30	16	14	12	
+
+ 1	4.0	 WBWBB	  W 	 Y	  U	   	 (6W)		31	16	24	 8	11	
+ 2	4.0	 BWBWB	 (W)	 Y	   	   	 (7W)		32	15	11	13	19	
+ 5	4.0	 WBWBW	 (B)	 Y	   	   	(10B)		35	20	14	17	13	
+ 9	4.0	 WBWBW	 (B)	 Y	   	   	(12B)		39	24	37	26	17	
+10	4.0	  BWWB	  w 	 N	  D	   	 (5W)		40	25	19	12	  	
+12	4.0	 BWBWB	 (W)	 Y	  D	   	 (9W)		42	27	 3	10	 7	
+
+ 6	3.5	  BWWB	  w 	 Y	   	   	 (1B)		36	  	31	32	25	
+ 8	3.5	 BWBWB	 (W)	 Y	   	   	(15W)		38	22	13	 1	20	
+11	3.5	 WBWBW	 (B)	 Y	  D	   	(16B)		41	26	 2	 4	 1	
+14	3.5	 BWBWB	 (W)	 Y	   	   	(20W)		44	29	 5	 7	30	
+15	3.5	 WBWBW	 (B)	 Y	   	   	 (8B)		45	 2	33	36	58	
+16	3.5	 BWBWB	 (W)	 Y	   	   	(11W)		46	 1	 7	40	 3	
+20	3.5	  BWBW	  b 	 N	   	  D	(14B)		50	 5	29	  	 8	
+
+ 4	3.0	 BWBWW	  B 	 Y	   	   	(21B)		34	17	23	11	22	
+13	3.0	 WBWBB	  W 	 Y	   	   	(23W)		43	28	 8	 2	 5	
+17	3.0	 WBWWB	 (B)	 Y	   	   	(22B)		47	 4	18	 5	 9	
+19	3.0	  WBBW	  b 	 N	   	   	(26B)		49	  	10	28	 2	
+21	3.0	  WBWB	  w 	 Y	   	   	 (4W)		51	53	35	37	  	
+22	3.0	 BBWWB	 (W)	 Y	   	   	(17W)		52	 8	38	 3	 4	
+23	3.0	 WBWBW	 (B)	 Y	  U	   	(13B)		53	51	 4	33	24	
+26	3.0	 BWBWB	 (W)	 Y	   	   	(19W)		56	11	34	 9	35	
+
+ 3	2.5	 WBWBW	 (B)	 Y	   	   	(37B)		33	18	12	22	16	
+18	2.5	 BWBWB	 (W)	 Y	   	   	(32W)		48	 3	17	42	33	
+24	2.5	 BWBWB	 (W)	 Y	  D	   	(33W)		54	 9	 1	44	23	
+25	2.5	 WBWBW	 (B)	 Y	   	   	(38B)		55	10	39	43	 6	
+27	2.5	  WBWB	  w 	 Y	   	   	(36W)		57	12	41	  	34	
+28	2.5	 BWBWB	 (W)	 Y	   	   	(34W)		58	13	53	19	38	
+29	2.5	 WBWBW	 (B)	 Y	   	   	(43B)		59	14	20	41	37	
+30	2.5	 BWWBW	 (B)	 Y	   	   	(58B)		60	 7	57	39	14	
+31	2.5	  BWBW	  b 	 Y	   	   	(40W)		 1	46	 6	  	44	
+32	2.5	 WBWBW	 (B)	 Y	   	   	(18B)		 2	45	49	 6	51	
+33	2.5	 BWBWW	  B 	 Y	   	   	(24B)		 3	48	15	23	18	
+34	2.5	 WBWBW	 (B)	 Y	   	   	(28B)		 4	47	26	54	27	
+36	2.5	 WBWWB	 (B)	 Y	   	   	(27B)		 6	49	51	15	45	
+37	2.5	 BWBWB	 (W)	 Y	   	   	 (3W)		 7	60	 9	21	29	
+38	2.5	  WBBW	  b 	 N	   	   	(25W)		 8	  	22	57	28	
+40	2.5	 WBWBW	 (B)	 Y	   	   	(31B)		10	55	59	16	56	
+43	2.5	 BWBWB	 (W)	 Y	   	   	(29W)		13	58	60	25	59	
+48	2.5	 WBWBW	 (B)	 Y	   	   	(35W)		18	33	56	55	39	
+58	2.5	  WBWB	  w 	 N	   	  D	(30W)		28	43	45	  	15	
+
+35	2.0	 BWBWW	  B 	 Y	   	   	(48B)		 5	50	21	53	26	
+52	2.0	   WBW	 (B)	 Y	   	   	(54B)		22	  	46	  	41	
+54	2.0	  WBWB	  w 	 N	   	   	(52W)		24	39	  	34	42	
+
+39	1.5	 BWBWB	 (W)	 Y	   	   	(59W)		 9	54	25	30	48	
+44	1.5	 WBWBB	  W 	 Y	   	   	(49W)		14	59	55	24	31	
+45	1.5	  BWBW	  b 	 N	   	  D	(51B)		15	32	58	  	36	
+47	1.5	  BWBW	  b 	 Y	   	   	(56B)		17	34	  	50	57	
+49	1.5	 BWBBW	 (W)	 Y	  U	   	(44B)		19	36	32	56	53	
+51	1.5	 BWBWB	 (W)	 Y	   	   	(45W)		21	23	36	60	32	
+56	1.5	 WBBWB	 (W)	 Y	   	   	(47W)		26	41	48	49	40	
+57	1.5	 BWBWB	 (W)	 Y	   	   	(60W)		27	42	30	38	47	
+59	1.5	  BWBW	  b 	 N	   	  D	(39B)		29	44	40	  	43	
+
+41	1.0	 BWBWB	 (W)	 Y	   	   	(46W)		11	56	27	29	52	
+42	1.0	 WBWBW	 (B)	 Y	   	   	(53B)		12	57	50	18	54	
+53	1.0	 BWWBB	  W 	 Y	  D	   	(42W)		23	21	28	35	49	
+55	1.0	 BWBWB	 (W)	 Y	   	   	(50W)		25	40	44	48	60	
+60	1.0	 WBWBW	 (B)	 Y	   	   	(57B)		30	37	43	51	55	
+
+46	0.5	  WBWB	  w 	 Y	   	   	(41B)		16	31	52	  	50	
+50	0.5	 WBBWW	  B 	 Y	   	   	(55B)		20	35	42	47	46	
+
+
+Round #7
+
+ID	Pts	-------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	
+
+ 1	5.0	 WBWBBW	  b 	 Y	  D	  U	 (2B)		31	16	24	 8	11	 6	
+ 2	5.0	  BWBWB	 (W)	 N	  D	   	 (1W)		32	15	11	13	19	  	
+
+ 5	4.5	 WBWBWB	  w 	 Y	   	   	(11W)		35	20	14	17	13	10	
+ 7	4.5	  WBWBW	 (B)	 Y	   	  U	 (9B)		37	30	16	14	12	  	
+ 8	4.5	  BWBWB	 (W)	 N	  D	   	(12W)		38	22	13	 1	20	  	
+ 9	4.5	 WBWBWB	  w 	 Y	   	   	 (7W)		39	24	37	26	17	12	
+10	4.5	  BWWBW	 (B)	 N	   	  D	(14B)		40	25	19	12	  	 5	
+11	4.5	  WBWBW	 (B)	 N	  D	  D	 (5B)		41	26	 2	 4	 1	  	
+12	4.5	 BWBWBW	  b 	 Y	   	  D	 (8B)		42	27	 3	10	 7	 9	
+14	4.5	 BWBWBW	  b 	 Y	   	   	(10W)		44	29	 5	 7	30	20	
+
+ 4	4.0	 BWBWWB	  w 	 Y	   	   	(19B)		34	17	23	11	22	21	
+17	4.0	 WBWWBB	  W 	 Y	   	   	 (3W)		47	 4	18	 5	 9	22	
+19	4.0	  WBBWB	 (W)	 N	   	   	 (4W)		49	  	10	28	 2	26	
+
+ 3	3.5	 WBWBWB	  w 	 Y	   	   	(17B)		33	18	12	22	16	37	
+ 6	3.5	  BWWBB	  W 	 Y	  U	   	(23W)		36	  	31	32	25	 1	
+13	3.5	 WBWBBW	  b 	 Y	   	   	(20B)		43	28	 8	 2	 5	23	
+15	3.5	  WBWBW	 (B)	 Y	   	   	(24B)		45	 2	33	36	58	  	
+16	3.5	  BWBWB	 (W)	 Y	   	   	(31W)		46	 1	 7	40	 3	  	
+18	3.5	 BWBWBW	  b 	 Y	   	   	(25B)		48	 3	17	42	33	32	
+20	3.5	  BWBWB	 (W)	 N	   	   	(13W)		50	 5	29	  	 8	14	
+23	3.5	 WBWBWB	  w 	 Y	   	  U	 (6B)		53	51	 4	33	24	13	
+24	3.5	  BWBWB	 (W)	 N	  D	  D	(15W)		54	 9	 1	44	23	  	
+25	3.5	 WBWBWB	  w 	 Y	   	   	(18W)		55	10	39	43	 6	38	
+30	3.5	 BWWBWB	  w 	 Y	   	   	(21W)		60	 7	57	39	14	58	
+31	3.5	  BWBWW	  B 	 Y	   	   	(16B)		 1	46	 6	  	44	40	
+
+21	3.0	  WBWBW	 (B)	 Y	   	   	(30B)		51	53	35	37	  	 4	
+22	3.0	 BBWWBW	  b 	 Y	   	   	(34B)		52	 8	38	 3	 4	17	
+26	3.0	 BWBWBW	  b 	 Y	   	   	(29B)		56	11	34	 9	35	19	
+27	3.0	  WBWBW	 (B)	 Y	   	   	(35B)		57	12	41	  	34	36	
+28	3.0	 BWBWBW	  b 	 Y	   	   	(36B)		58	13	53	19	38	34	
+29	3.0	 WBWBWB	  w 	 Y	   	   	(26W)		59	14	20	41	37	43	
+34	3.0	 WBWBWB	  w 	 Y	   	   	(22W)		 4	47	26	54	27	28	
+35	3.0	 BWBWWB	  w 	 Y	  U	   	(27W)		 5	50	21	53	26	48	
+36	3.0	 WBWWBB	  W 	 Y	   	   	(28W)		 6	49	51	15	45	27	
+43	3.0	 BWBWBW	  b 	 Y	   	   	(32B)		13	58	60	25	59	29	
+
+32	2.5	 WBWBWB	  w 	 Y	   	   	(43W)		 2	45	49	 6	51	18	
+33	2.5	  BWBWW	  B 	 Y	   	   	(51B)		 3	48	15	23	18	  	
+37	2.5	 BWBWBW	  b 	 Y	   	   	(48W)		 7	60	 9	21	29	 3	
+38	2.5	  WBBWW	  B 	 N	   	   	(52B)		 8	  	22	57	28	25	
+40	2.5	 WBWBWB	  w 	 Y	   	   	(54W)		10	55	59	16	56	31	
+48	2.5	 WBWBWW	  B 	 Y	  D	   	(37B)		18	33	56	55	39	35	
+51	2.5	 BWBWBW	  b 	 Y	   	   	(33W)		21	23	36	60	32	45	
+52	2.5	   WBWB	  w 	 Y	   	   	(38W)		22	  	46	  	41	54	
+54	2.5	  WBWBW	 (B)	 N	   	   	(40B)		24	39	  	34	42	52	
+58	2.5	  WBWBW	 (B)	 N	   	   	(39B)		28	43	45	  	15	30	
+
+39	2.0	 BWBWBW	  b 	 Y	   	   	(58W)		 9	54	25	30	48	59	
+41	2.0	 BWBWBW	  b 	 Y	  D	   	(59B)		11	56	27	29	52	46	
+44	2.0	 WBWBBW	  b 	 Y	   	   	(47B)		14	59	55	24	31	49	
+47	2.0	  BWBWB	 (W)	 Y	   	   	(44W)		17	34	  	50	57	56	
+49	2.0	 BWBBWB	  W 	 Y	   	  U	(57W)		19	36	32	56	53	44	
+56	2.0	 WBBWBW	  b 	 Y	   	   	(42B)		26	41	48	49	40	47	
+57	2.0	 BWBWBW	  b 	 Y	  D	   	(49B)		27	42	30	38	47	60	
+59	2.0	  BWBWB	 (W)	 N	   	   	(41W)		29	44	40	  	43	39	
+
+42	1.5	 WBWBWB	  w 	 Y	   	   	(56W)		12	57	50	18	54	53	
+45	1.5	  BWBWB	 (W)	 N	   	   	(53W)		15	32	58	  	36	51	
+50	1.5	 WBBWWB	  w 	 Y	  U	   	(60B)		20	35	42	47	46	55	
+53	1.5	 BWWBBW	  b 	 Y	   	  D	(45B)		23	21	28	35	49	42	
+60	1.5	 WBWBWB	  w 	 Y	  U	   	(50W)		30	37	43	51	55	57	
+
+55	1.0	 BWBWBW	  b 	 Y	  D	   	(46B)		25	40	44	48	60	50	
+
+46	0.5	  WBWBB	  W 	 Y	  U	   	(55W)		16	31	52	  	50	41	
+
+
+Round #8
+
+ID	Pts	--------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	
+
+ 2	6.0	  BWBWBW	  b 	 N	   	  D	 (7B)		32	15	11	13	19	  	 1	
+
+ 7	5.5	  WBWBWB	  w 	 Y	   	   	 (2W)		37	30	16	14	12	  	 9	
+10	5.5	   BWWBW	 (B)	 N	  D	   	 (1B)		40	25	19	12	  	 5	  	
+
+ 1	5.0	 WBWBBWB	 (W)	 Y	   	  D	(10W)		31	16	24	 8	11	 6	 2	
+ 4	5.0	 BWBWWBB	  W 	 Y	   	   	 (5W)		34	17	23	11	22	21	19	
+ 5	5.0	 WBWBWBW	 (B)	 Y	   	   	 (4B)		35	20	14	17	13	10	11	
+ 8	5.0	  BWBWBW	  b 	 N	   	  D	(11B)		38	22	13	 1	20	  	12	
+11	5.0	  WBWBWB	  w 	 N	   	  D	 (8W)		41	26	 2	 4	 1	  	 5	
+12	5.0	 BWBWBWB	 (W)	 Y	   	   	(14W)		42	27	 3	10	 7	 9	 8	
+
+ 6	4.5	   BWWBB	  W 	 N	  D	  U	(17W)		36	  	31	32	25	 1	  	
+ 9	4.5	 WBWBWBW	 (B)	 Y	   	   	(15B)		39	24	37	26	17	12	 7	
+13	4.5	 WBWBBWB	 (W)	 Y	   	   	(25W)		43	28	 8	 2	 5	23	20	
+14	4.5	  BWBWBW	  b 	 Y	   	   	(12B)		44	29	 5	 7	30	20	  	
+15	4.5	  WBWBWB	  w 	 Y	   	   	 (9W)		45	 2	33	36	58	  	24	
+17	4.5	 WBWWBBW	 (B)	 Y	  D	   	 (6B)		47	 4	18	 5	 9	22	 3	
+25	4.5	 WBWBWBW	 (B)	 Y	   	   	(13B)		55	10	39	43	 6	38	18	
+
+ 3	4.0	 WBWBWBB	  W 	 Y	  U	   	(31W)		33	18	12	22	16	37	17	
+16	4.0	  BWBWBW	  b 	 Y	   	   	(26B)		46	 1	 7	40	 3	  	31	
+19	4.0	  WBBWBW	  b 	 N	   	   	(43B)		49	  	10	28	 2	26	 4	
+21	4.0	  WBWBWB	  w 	 Y	  U	   	(36W)		51	53	35	37	  	 4	30	
+22	4.0	 BBWWBWB	 (W)	 Y	   	   	(35W)		52	 8	38	 3	 4	17	34	
+26	4.0	 BWBWBWB	 (W)	 Y	   	   	(16W)		56	11	34	 9	35	19	29	
+31	4.0	  BWBWWB	  w 	 Y	   	   	 (3B)		 1	46	 6	  	44	40	16	
+35	4.0	 BWBWWBW	 (B)	 Y	   	  U	(22B)		 5	50	21	53	26	48	27	
+36	4.0	 WBWWBBW	 (B)	 Y	   	   	(21B)		 6	49	51	15	45	27	28	
+43	4.0	 BWBWBWB	 (W)	 Y	  D	   	(19W)		13	58	60	25	59	29	32	
+
+18	3.5	 BWBWBWB	 (W)	 Y	   	   	(24W)		48	 3	17	42	33	32	25	
+20	3.5	  BWBWBW	  b 	 N	   	   	(33B)		50	 5	29	  	 8	14	13	
+23	3.5	  WBWBWB	  w 	 Y	   	   	(30W)		53	51	 4	33	24	13	  	
+24	3.5	  BWBWBW	  b 	 N	   	  D	(18B)		54	 9	 1	44	23	  	15	
+30	3.5	 BWWBWBW	 (B)	 Y	  D	   	(23B)		60	 7	57	39	14	58	21	
+33	3.5	  BWBWWB	  w 	 Y	   	   	(20W)		 3	48	15	23	18	  	51	
+38	3.5	  WBBWWB	  w 	 N	   	   	(29W)		 8	  	22	57	28	25	52	
+
+27	3.0	  WBWBWB	  w 	 Y	   	   	(48W)		57	12	41	  	34	36	35	
+28	3.0	 BWBWBWB	 (W)	 Y	   	   	(57W)		58	13	53	19	38	34	36	
+29	3.0	 WBWBWBW	 (B)	 Y	   	   	(38B)		59	14	20	41	37	43	26	
+34	3.0	 WBWBWBW	 (B)	 Y	   	   	(41B)		 4	47	26	54	27	28	22	
+37	3.0	 BWBWBWW	  B 	 Y	   	   	(54B)		 7	60	 9	21	29	 3	48	
+39	3.0	 BWBWBWW	  B 	 Y	  U	   	(47B)		 9	54	25	30	48	59	58	
+40	3.0	 WBWBWBW	 (B)	 Y	   	   	(45B)		10	55	59	16	56	31	54	
+41	3.0	 BWBWBWB	 (W)	 Y	   	  D	(34W)		11	56	27	29	52	46	59	
+47	3.0	   BWBWB	 (W)	 N	  D	   	(39W)		17	34	  	50	57	56	  	
+48	3.0	 WBWBWWB	 (B)	 Y	   	  D	(27B)		18	33	56	55	39	35	37	
+54	3.0	  WBWBWB	  w 	 N	   	   	(37W)		24	39	  	34	42	52	40	
+57	3.0	  BWBWBW	  b 	 N	  D	  D	(28B)		27	42	30	38	47	60	  	
+
+32	2.5	 WBWBWBW	 (B)	 Y	  U	   	(56B)		 2	45	49	 6	51	18	43	
+45	2.5	  BWBWBW	  b 	 N	   	   	(40W)		15	32	58	  	36	51	53	
+51	2.5	 BWBWBWW	  B 	 Y	   	   	(58B)		21	23	36	60	32	45	33	
+52	2.5	   WBWBW	 (B)	 Y	   	   	(60B)		22	  	46	  	41	54	38	
+56	2.5	 WBBWBWB	 (W)	 Y	  D	   	(32W)		26	41	48	49	40	47	42	
+58	2.5	  WBWBWB	  w 	 N	  D	   	(51W)		28	43	45	  	15	30	39	
+60	2.5	  WBWBWB	  w 	 N	  D	  U	(52W)		30	37	43	51	55	57	  	
+
+42	2.0	 WBWBWBW	 (B)	 Y	  U	   	(49B)		12	57	50	18	54	53	56	
+44	2.0	  WBWBBW	  b 	 Y	   	   	(46B)		14	59	55	24	31	49	  	
+49	2.0	  BWBBWB	  W 	 Y	   	   	(42W)		19	36	32	56	53	44	  	
+59	2.0	  BWBWBW	  b 	 N	   	   	(50B)		29	44	40	  	43	39	41	
+
+46	1.5	  WBWBBW	  b 	 Y	  U	  U	(44W)		16	31	52	  	50	41	55	
+50	1.5	  WBBWWB	  w 	 Y	   	  U	(59W)		20	35	42	47	46	55	  	
+53	1.5	 BWWBBWB	 (W)	 Y	   	   	(55W)		23	21	28	35	49	42	45	
+
+55	1.0	 BWBWBWB	 (W)	 Y	  D	  D	(53B)		25	40	44	48	60	50	46	
+
+
+Round #9
+
+ID	Pts	---------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	
+
+ 2	7.0	  BWBWBWB	 (W)	 N	  D	   	 (8W)		32	15	11	13	19	  	 1	 7	
+
+ 1	6.0	 WBWBBWBW	  b 	 Y	  U	   	 (4B)		31	16	24	 8	11	 6	 2	10	
+ 4	6.0	 BWBWWBBW	  b 	 Y	   	   	 (1W)		34	17	23	11	22	21	19	 5	
+ 8	6.0	  BWBWBWB	 (W)	 N	   	   	 (2B)		38	22	13	 1	20	  	12	11	
+
+ 6	5.5	   BWWBBW	  b 	 N	   	  D	(12W)		36	  	31	32	25	 1	  	17	
+ 7	5.5	  WBWBWBW	 (B)	 Y	  U	   	(10B)		37	30	16	14	12	  	 9	 2	
+10	5.5	   BWWBWB	  w 	 N	  D	  D	 (7W)		40	25	19	12	  	 5	  	 1	
+12	5.5	 BWBWBWBW	  b 	 Y	  D	   	 (6B)		42	27	 3	10	 7	 9	 8	14	
+13	5.5	 WBWBBWBW	  b 	 Y	   	   	 (9B)		43	28	 8	 2	 5	23	20	25	
+
+ 3	5.0	 WBWBWBBW	  b 	 Y	   	  U	(14B)		33	18	12	22	16	37	17	31	
+ 5	5.0	 WBWBWBWB	  w 	 Y	   	   	(15W)		35	20	14	17	13	10	11	 4	
+ 9	5.0	 WBWBWBWB	  w 	 Y	   	   	(13W)		39	24	37	26	17	12	 7	15	
+11	5.0	  WBWBWBW	 (B)	 N	   	   	(16B)		41	26	 2	 4	 1	  	 5	 8	
+14	5.0	  BWBWBWB	 (W)	 Y	  U	   	 (3W)		44	29	 5	 7	30	20	  	12	
+15	5.0	  WBWBWBW	 (B)	 Y	   	   	 (5B)		45	 2	33	36	58	  	24	 9	
+16	5.0	  BWBWBWB	 (W)	 Y	   	   	(11W)		46	 1	 7	40	 3	  	31	26	
+22	5.0	 BBWWBWBW	  b 	 Y	   	   	(19B)		52	 8	38	 3	 4	17	34	35	
+
+17	4.5	 WBWWBBWB	  w 	 Y	   	  D	(23W)		47	 4	18	 5	 9	22	 3	 6	
+18	4.5	 BWBWBWBW	  b 	 Y	   	   	(36B)		48	 3	17	42	33	32	25	24	
+19	4.5	  WBBWBWB	 (W)	 N	   	   	(22W)		49	  	10	28	 2	26	 4	43	
+20	4.5	  BWBWBWB	 (W)	 N	   	   	(43W)		50	 5	29	  	 8	14	13	33	
+21	4.5	  WBWBWBW	 (B)	 Y	   	  U	(25B)		51	53	35	37	  	 4	30	36	
+23	4.5	  WBWBWBW	 (B)	 Y	   	   	(17B)		53	51	 4	33	24	13	  	30	
+25	4.5	 WBWBWBWB	  w 	 Y	   	   	(21W)		55	10	39	43	 6	38	18	13	
+36	4.5	 WBWWBBWB	  w 	 Y	   	   	(18W)		 6	49	51	15	45	27	28	21	
+43	4.5	 BWBWBWBW	  b 	 Y	   	  D	(20B)		13	58	60	25	59	29	32	19	
+
+26	4.0	 BWBWBWBW	  b 	 Y	   	   	(31B)		56	11	34	 9	35	19	29	16	
+27	4.0	  WBWBWBW	 (B)	 Y	   	   	(29B)		57	12	41	  	34	36	35	48	
+28	4.0	 BWBWBWBW	  b 	 Y	   	   	(35B)		58	13	53	19	38	34	36	57	
+29	4.0	 WBWBWBWB	  w 	 Y	  U	   	(27W)		59	14	20	41	37	43	26	38	
+31	4.0	  BWBWWBB	  W 	 Y	   	   	(26W)		 1	46	 6	  	44	40	16	 3	
+35	4.0	 BWBWWBWB	  w 	 Y	   	   	(28W)		 5	50	21	53	26	48	27	22	
+37	4.0	 BWBWBWWB	  w 	 Y	   	   	(24B)		 7	60	 9	21	29	 3	48	54	
+
+24	3.5	  BWBWBWB	 (W)	 N	   	   	(37W)		54	 9	 1	44	23	  	15	18	
+30	3.5	 BWWBWBWB	  w 	 Y	   	  D	(41W)		60	 7	57	39	14	58	21	23	
+32	3.5	 WBWBWBWB	  w 	 Y	   	  U	(47W)		 2	45	49	 6	51	18	43	56	
+33	3.5	  BWBWWBW	 (B)	 Y	   	   	(39B)		 3	48	15	23	18	  	51	20	
+34	3.5	 WBWBWBWB	  w 	 Y	   	   	(40W)		 4	47	26	54	27	28	22	41	
+38	3.5	  WBBWWBW	 (B)	 N	  D	   	(51B)		 8	  	22	57	28	25	52	29	
+39	3.5	 BWBWBWWB	  w 	 Y	   	  U	(33W)		 9	54	25	30	48	59	58	47	
+40	3.5	 WBWBWBWB	  w 	 Y	  D	   	(34B)		10	55	59	16	56	31	54	45	
+41	3.5	 BWBWBWBW	  b 	 Y	   	   	(30B)		11	56	27	29	52	46	59	34	
+47	3.5	   BWBWBW	  b 	 N	   	  D	(32B)		17	34	  	50	57	56	  	39	
+51	3.5	 BWBWBWWB	  w 	 Y	   	   	(38W)		21	23	36	60	32	45	33	58	
+52	3.5	   WBWBWB	  w 	 Y	   	   	(44B)		22	  	46	  	41	54	38	60	
+
+44	3.0	  WBWBBWB	 (W)	 Y	  D	   	(52W)		14	59	55	24	31	49	  	46	
+45	3.0	  BWBWBWW	  B 	 N	  U	   	(57B)		15	32	58	  	36	51	53	40	
+48	3.0	 WBWBWWBB	  W 	 Y	   	   	(54W)		18	33	56	55	39	35	37	27	
+54	3.0	  WBWBWBW	 (B)	 N	   	   	(48B)		24	39	  	34	42	52	40	37	
+57	3.0	  BWBWBWB	 (W)	 N	   	  D	(45W)		27	42	30	38	47	60	  	28	
+
+42	2.5	 WBWBWBWB	  w 	 Y	   	  U	(58W)		12	57	50	18	54	53	56	49	
+49	2.5	  BWBBWBW	 (W)	 Y	   	   	(60W)		19	36	32	56	53	44	  	42	
+50	2.5	  WBBWWBW	 (B)	 Y	  U	   	(56B)		20	35	42	47	46	55	  	59	
+56	2.5	 WBBWBWBW	  b 	 Y	   	  D	(50W)		26	41	48	49	40	47	42	32	
+58	2.5	  WBWBWBW	 (B)	 N	   	  D	(42B)		28	43	45	  	15	30	39	51	
+60	2.5	  WBWBWBW	 (B)	 N	   	  D	(49B)		30	37	43	51	55	57	  	52	
+
+55	2.0	 BWBWBWBB	  W 	 Y	  U	  D	(59W)		25	40	44	48	60	50	46	53	
+59	2.0	  BWBWBWB	 (W)	 N	  D	   	(55B)		29	44	40	  	43	39	41	50	
+
+46	1.5	  WBWBBWW	  B 	 Y	  U	  U	(53B)		16	31	52	  	50	41	55	44	
+53	1.5	 BWWBBWBW	  b 	 Y	  D	   	(46W)		23	21	28	35	49	42	45	55	
+
+
+Round #10
+
+ID	Pts	----------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	R9	
+
+ 2	8.0	  BWBWBWBW	  b 	 N	  D	  D	 (4W)		32	15	11	13	19	  	 1	 7	 8	
+
+ 4	7.0	 BWBWWBBWW	  B 	 Y	   	   	 (2B)		34	17	23	11	22	21	19	 5	 1	
+
+ 6	6.5	   BWWBBWW	  B 	 N	   	   	(10B)		36	  	31	32	25	 1	  	17	12	
+10	6.5	   BWWBWBW	 (B)	 N	   	  D	 (6W)		40	25	19	12	  	 5	  	 1	 7	
+13	6.5	 WBWBBWBWB	 (W)	 Y	  D	   	 (1W)		43	28	 8	 2	 5	23	20	25	 9	
+
+ 1	6.0	 WBWBBWBWB	 (W)	 Y	   	  U	(13B)		31	16	24	 8	11	 6	 2	10	 4	
+ 8	6.0	  BWBWBWBB	  W 	 N	  U	   	(16W)		38	22	13	 1	20	  	12	11	 2	
+16	6.0	  BWBWBWBW	  b 	 Y	   	   	 (8B)		46	 1	 7	40	 3	  	31	26	11	
+
+ 3	5.5	 WBWBWBBWB	 (W)	 Y	   	   	(15W)		33	18	12	22	16	37	17	31	14	
+ 5	5.5	 WBWBWBWBW	 (B)	 Y	   	   	(12B)		35	20	14	17	13	10	11	 4	15	
+ 7	5.5	  WBWBWBWB	  w 	 Y	   	  U	(19W)		37	30	16	14	12	  	 9	 2	10	
+12	5.5	 BWBWBWBWB	 (W)	 Y	   	  D	 (5W)		42	27	 3	10	 7	 9	 8	14	 6	
+14	5.5	  BWBWBWBW	  b 	 Y	   	  U	(21B)		44	29	 5	 7	30	20	  	12	 3	
+15	5.5	  WBWBWBWB	  w 	 Y	   	   	 (3B)		45	 2	33	36	58	  	24	 9	 5	
+19	5.5	  WBBWBWBW	  b 	 N	  U	   	 (7B)		49	  	10	28	 2	26	 4	43	22	
+21	5.5	  WBWBWBWB	  w 	 Y	   	   	(14W)		51	53	35	37	  	 4	30	36	25	
+
+ 9	5.0	 WBWBWBWBW	 (B)	 Y	  U	   	(23B)		39	24	37	26	17	12	 7	15	13	
+11	5.0	  WBWBWBWB	  w 	 N	   	   	(29W)		41	26	 2	 4	 1	  	 5	 8	16	
+17	5.0	 WBWWBBWBW	 (B)	 Y	   	   	(43B)		47	 4	18	 5	 9	22	 3	 6	23	
+18	5.0	 BWBWBWBWB	 (W)	 Y	   	   	(31W)		48	 3	17	42	33	32	25	24	36	
+20	5.0	  BWBWBWBW	  b 	 N	   	   	(28B)		50	 5	29	  	 8	14	13	33	43	
+22	5.0	 BBWWBWBWB	 (W)	 Y	  D	   	(36W)		52	 8	38	 3	 4	17	34	35	19	
+23	5.0	  WBWBWBWB	  w 	 Y	   	   	 (9W)		53	51	 4	33	24	13	  	30	17	
+28	5.0	 BWBWBWBWB	 (W)	 Y	   	   	(20W)		58	13	53	19	38	34	36	57	35	
+29	5.0	 WBWBWBWBW	 (B)	 Y	   	  U	(11B)		59	14	20	41	37	43	26	38	27	
+31	5.0	  BWBWWBBW	  b 	 Y	   	   	(18B)		 1	46	 6	  	44	40	16	 3	26	
+36	5.0	 WBWWBBWBW	 (B)	 Y	   	   	(22B)		 6	49	51	15	45	27	28	21	18	
+43	5.0	 BWBWBWBWB	 (W)	 Y	   	   	(17W)		13	58	60	25	59	29	32	19	20	
+
+25	4.5	 WBWBWBWBW	 (B)	 Y	   	   	(37B)		55	10	39	43	 6	38	18	13	21	
+30	4.5	 BWWBWBWBW	 (B)	 Y	   	   	(38B)		60	 7	57	39	14	58	21	23	41	
+33	4.5	  BWBWWBWB	  w 	 Y	   	   	(40B)		 3	48	15	23	18	  	51	20	39	
+37	4.5	 BWBWBWWBB	  W 	 Y	  D	   	(25W)		 7	60	 9	21	29	 3	48	54	24	
+38	4.5	  WBBWWBWB	  w 	 N	   	  D	(30W)		 8	  	22	57	28	25	52	29	51	
+40	4.5	 WBWBWBWBB	  W 	 Y	   	  D	(33W)		10	55	59	16	56	31	54	45	34	
+47	4.5	   BWBWBWB	 (W)	 N	   	   	(35W)		17	34	  	50	57	56	  	39	32	
+
+24	4.0	  BWBWBWBW	  b 	 N	  U	   	(27B)		54	 9	 1	44	23	  	15	18	37	
+26	4.0	 BWBWBWBWB	 (W)	 Y	   	   	(44W)		56	11	34	 9	35	19	29	16	31	
+27	4.0	  WBWBWBWB	  w 	 Y	   	   	(24W)		57	12	41	  	34	36	35	48	29	
+35	4.0	 BWBWWBWBW	 (B)	 Y	   	   	(47B)		 5	50	21	53	26	48	27	22	28	
+44	4.0	  WBWBBWBW	  b 	 Y	  U	  D	(26B)		14	59	55	24	31	49	  	46	52	
+45	4.0	  BWBWBWWB	  w 	 N	   	  U	(34W)		15	32	58	  	36	51	53	40	57	
+
+32	3.5	 WBWBWBWBW	 (B)	 Y	   	   	(54B)		 2	45	49	 6	51	18	43	56	47	
+34	3.5	 WBWBWBWBW	 (B)	 Y	   	   	(45B)		 4	47	26	54	27	28	22	41	40	
+39	3.5	 BWBWBWWBW	 (B)	 Y	   	   	(50B)		 9	54	25	30	48	59	58	47	33	
+41	3.5	 BWBWBWBWB	 (W)	 Y	   	   	(51W)		11	56	27	29	52	46	59	34	30	
+42	3.5	 WBWBWBWBW	 (B)	 Y	   	   	(52B)		12	57	50	18	54	53	56	49	58	
+48	3.5	 WBWBWWBBW	 (B)	 Y	   	   	(60B)		18	33	56	55	39	35	37	27	54	
+50	3.5	  WBBWWBWB	  w 	 Y	   	  U	(39W)		20	35	42	47	46	55	  	59	56	
+51	3.5	 BWBWBWWBW	 (B)	 Y	   	   	(41B)		21	23	36	60	32	45	33	58	38	
+52	3.5	   WBWBWBB	  W 	 Y	  D	   	(42W)		22	  	46	  	41	54	38	60	44	
+54	3.5	  WBWBWBWB	  w 	 N	   	   	(32W)		24	39	  	34	42	52	40	37	48	
+60	3.5	  WBWBWBWB	  w 	 N	   	   	(48W)		30	37	43	51	55	57	  	52	49	
+
+55	3.0	 BWBWBWBBW	 (W)	 Y	   	  U	(57W)		25	40	44	48	60	50	46	53	59	
+57	3.0	  BWBWBWBW	  b 	 N	   	   	(55B)		27	42	30	38	47	60	  	28	45	
+
+46	2.5	  WBWBBWWB	  w 	 Y	   	  U	(56W)		16	31	52	  	50	41	55	44	53	
+49	2.5	  BWBBWBWW	  B 	 Y	   	   	(58B)		19	36	32	56	53	44	  	42	60	
+56	2.5	 WBBWBWBWW	  B 	 Y	   	   	(46B)		26	41	48	49	40	47	42	32	50	
+58	2.5	  WBWBWBWB	  w 	 N	   	   	(49W)		28	43	45	  	15	30	39	51	42	
+
+59	2.0	  BWBWBWBB	  W 	 N	   	  D	(53W)		29	44	40	  	43	39	41	50	55	
+
+53	1.5	 BWWBBWBWW	  B 	 Y	   	  D	(59B)		23	21	28	35	49	42	45	55	46	
+
+
+Round #11
+
+ID	Pts	-----------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	R9	R10	
+
+ 2	8.0	  BWBWBWBWW	  B 	 N	  D	  D	 (6B)		32	15	11	13	19	  	 1	 7	 8	  4	
+ 4	8.0	 BWBWWBBWWB	  w 	 Y	  U	   	(10W)		34	17	23	11	22	21	19	 5	 1	  2	
+
+ 1	7.0	 WBWBBWBWBB	  W 	 Y	  U	   	 (3W)		31	16	24	 8	11	 6	 2	10	 4	 13	
+ 6	7.0	   BWWBBWWB	  w 	 N	   	   	 (2W)		36	  	31	32	25	 1	  	17	12	 10	
+ 8	7.0	  BWBWBWBBW	 (W)	 N	   	  U	(19W)		38	22	13	 1	20	  	12	11	 2	 16	
+10	7.0	   BWWBWBWW	  B 	 N	   	   	 (4B)		40	25	19	12	  	 5	  	 1	 7	  6	
+
+ 3	6.5	 WBWBWBBWBW	  b 	 Y	   	   	 (1B)		33	18	12	22	16	37	17	31	14	 15	
+12	6.5	 BWBWBWBWBW	  b 	 Y	   	   	(11W)		42	27	 3	10	 7	 9	 8	14	 6	  5	
+13	6.5	 WBWBBWBWBW	  b 	 Y	  D	  D	(21B)		43	28	 8	 2	 5	23	20	25	 9	  1	
+19	6.5	   WBBWBWBW	  b 	 N	  D	  U	 (8B)		49	  	10	28	 2	26	 4	43	22	   	
+21	6.5	   WBWBWBWB	  w 	 N	  D	   	(13W)		51	53	35	37	  	 4	30	36	25	   	
+
+ 9	6.0	 WBWBWBWBWB	  w 	 Y	   	  U	(18W)		39	24	37	26	17	12	 7	15	13	 23	
+11	6.0	  WBWBWBWBW	 (B)	 N	   	   	(12B)		41	26	 2	 4	 1	  	 5	 8	16	 29	
+16	6.0	  BWBWBWBWB	 (W)	 Y	   	   	(22W)		46	 1	 7	40	 3	  	31	26	11	  8	
+18	6.0	 BWBWBWBWBW	  b 	 Y	   	   	 (9B)		48	 3	17	42	33	32	25	24	36	 31	
+22	6.0	 BBWWBWBWBW	  b 	 Y	   	  D	(16B)		52	 8	38	 3	 4	17	34	35	19	 36	
+
+ 5	5.5	 WBWBWBWBWB	  w 	 Y	   	   	(28W)		35	20	14	17	13	10	11	 4	15	 12	
+ 7	5.5	   WBWBWBWB	  w 	 Y	   	   	(38W)		37	30	16	14	12	  	 9	 2	10	   	
+14	5.5	   BWBWBWBW	  b 	 Y	   	   	(17B)		44	29	 5	 7	30	20	  	12	 3	   	
+15	5.5	  WBWBWBWBB	  W 	 Y	   	   	(40W)		45	 2	33	36	58	  	24	 9	 5	  3	
+17	5.5	 WBWWBBWBWB	  w 	 Y	   	   	(14W)		47	 4	18	 5	 9	22	 3	 6	23	 43	
+20	5.5	  BWBWBWBWB	 (W)	 N	   	   	(47W)		50	 5	29	  	 8	14	13	33	43	 28	
+28	5.5	 BWBWBWBWBW	  b 	 Y	   	   	 (5B)		58	13	53	19	38	34	36	57	35	 20	
+38	5.5	  WBBWWBWBW	 (B)	 N	   	   	 (7B)		 8	  	22	57	28	25	52	29	51	 30	
+40	5.5	 WBWBWBWBBW	  b 	 Y	   	   	(15B)		10	55	59	16	56	31	54	45	34	 33	
+43	5.5	 BWBWBWBWBW	  b 	 Y	   	   	(31B)		13	58	60	25	59	29	32	19	20	 17	
+47	5.5	   BWBWBWBW	  b 	 N	  D	   	(20B)		17	34	  	50	57	56	  	39	32	 35	
+
+23	5.0	  WBWBWBWBW	 (B)	 Y	   	   	(29B)		53	51	 4	33	24	13	  	30	17	  9	
+25	5.0	 WBWBWBWBWB	  w 	 Y	   	   	(27W)		55	10	39	43	 6	38	18	13	21	 37	
+27	5.0	  WBWBWBWBW	 (B)	 Y	   	   	(25B)		57	12	41	  	34	36	35	48	29	 24	
+29	5.0	 WBWBWBWBWB	  w 	 Y	   	   	(23W)		59	14	20	41	37	43	26	38	27	 11	
+31	5.0	  BWBWWBBWB	 (W)	 Y	   	   	(43W)		 1	46	 6	  	44	40	16	 3	26	 18	
+36	5.0	 WBWWBBWBWB	  w 	 Y	   	   	(37W)		 6	49	51	15	45	27	28	21	18	 22	
+37	5.0	 BWBWBWWBBW	  b 	 Y	   	  D	(36B)		 7	60	 9	21	29	 3	48	54	24	 25	
+
+26	4.5	 BWBWBWBWBW	  b 	 Y	   	   	(42B)		56	11	34	 9	35	19	29	16	31	 44	
+30	4.5	 BWWBWBWBWB	  w 	 Y	   	   	(44B)		60	 7	57	39	14	58	21	23	41	 38	
+32	4.5	 WBWBWBWBWB	  w 	 Y	   	   	(41W)		 2	45	49	 6	51	18	43	56	47	 54	
+33	4.5	  BWBWWBWBB	  W 	 Y	   	   	(45W)		 3	48	15	23	18	  	51	20	39	 40	
+41	4.5	 BWBWBWBWBW	  b 	 Y	   	   	(32B)		11	56	27	29	52	46	59	34	30	 51	
+42	4.5	 WBWBWBWBWB	  w 	 Y	   	   	(26W)		12	57	50	18	54	53	56	49	58	 52	
+44	4.5	  WBWBBWBWB	 (W)	 Y	   	  U	(30W)		14	59	55	24	31	49	  	46	52	 26	
+45	4.5	  BWBWBWWBW	 (B)	 N	  D	   	(33B)		15	32	58	  	36	51	53	40	57	 34	
+48	4.5	 WBWBWWBBWB	  w 	 Y	   	   	(50W)		18	33	56	55	39	35	37	27	54	 60	
+
+24	4.0	  BWBWBWBWB	 (W)	 N	   	  U	(35W)		54	 9	 1	44	23	  	15	18	37	 27	
+34	4.0	 WBWBWBWBWB	  w 	 Y	  U	   	(39W)		 4	47	26	54	27	28	22	41	40	 45	
+35	4.0	 BWBWWBWBWB	  w 	 Y	  U	   	(24B)		 5	50	21	53	26	48	27	22	28	 47	
+39	4.0	 BWBWBWWBWB	  w 	 Y	   	   	(34B)		 9	54	25	30	48	59	58	47	33	 50	
+50	4.0	  WBBWWBWBW	 (B)	 Y	   	   	(48B)		20	35	42	47	46	55	  	59	56	 39	
+57	4.0	  BWBWBWBWB	 (W)	 N	   	   	(51W)		27	42	30	38	47	60	  	28	45	 55	
+
+49	3.5	  BWBBWBWWB	 (W)	 Y	   	   	(52W)		19	36	32	56	53	44	  	42	60	 58	
+51	3.5	 BWBWBWWBWB	  w 	 Y	   	   	(57B)		21	23	36	60	32	45	33	58	38	 41	
+52	3.5	   WBWBWBBW	  b 	 Y	   	  D	(49B)		22	  	46	  	41	54	38	60	44	 42	
+54	3.5	  WBWBWBWBW	 (B)	 N	   	   	(60B)		24	39	  	34	42	52	40	37	48	 32	
+60	3.5	  WBWBWBWBW	 (B)	 N	   	   	(54W)		30	37	43	51	55	57	  	52	49	 48	
+
+46	3.0	  WBWBBWWBW	 (B)	 Y	   	   	(59B)		16	31	52	  	50	41	55	44	53	 56	
+55	3.0	 BWBWBWBBWW	  B 	 Y	   	   	(56B)		25	40	44	48	60	50	46	53	59	 57	
+56	3.0	 WBBWBWBWWB	  w 	 Y	   	   	(55W)		26	41	48	49	40	47	42	32	50	 46	
+
+53	2.5	 BWWBBWBWWB	  w 	 Y	  U	   	(58W)		23	21	28	35	49	42	45	55	46	 59	
+58	2.5	  WBWBWBWBW	 (B)	 N	   	   	(53B)		28	43	45	  	15	30	39	51	42	 49	
+
+59	2.0	  BWBWBWBBW	 (W)	 N	  D	   	(46W)		29	44	40	  	43	39	41	50	55	 53	
+
+
+Round #12
+
+ID	Pts	------------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	R9	R10	R11	
+
+ 4	9.0	 BWBWWBBWWBW	 (B)	 Y	  D	  U	 (6B)		34	17	23	11	22	21	19	 5	 1	  2	 10	
+
+ 1	8.0	 WBWBBWBWBBW	 (W)	 Y	  D	  U	(19B)		31	16	24	 8	11	 6	 2	10	 4	 13	  3	
+ 2	8.0	  BWBWBWBWWB	  w 	 N	  D	  D	 (9W)		32	15	11	13	19	  	 1	 7	 8	  4	  6	
+ 6	8.0	   BWWBBWWBW	 (B)	 N	  U	   	 (4W)		36	  	31	32	25	 1	  	17	12	 10	  2	
+
+19	7.5	   WBBWBWBWB	 (W)	 N	  U	  D	 (1W)		49	  	10	28	 2	26	 4	43	22	   	  8	
+
+ 8	7.0	  BWBWBWBBWW	  B 	 N	  D	   	(21B)		38	22	13	 1	20	  	12	11	 2	 16	 19	
+ 9	7.0	 WBWBWBWBWBW	 (B)	 Y	   	   	 (2B)		39	24	37	26	17	12	 7	15	13	 23	 18	
+10	7.0	   BWWBWBWWB	 (B)	 N	  U	   	(13B)		40	25	19	12	  	 5	  	 1	 7	  6	  4	
+11	7.0	  WBWBWBWBWB	  w 	 N	  U	   	(22W)		41	26	 2	 4	 1	  	 5	 8	16	 29	 12	
+13	7.0	 WBWBBWBWBWB	 (W)	 Y	   	  D	(10W)		43	28	 8	 2	 5	23	20	25	 9	  1	 21	
+21	7.0	   WBWBWBWBW	 (B)	 N	   	  D	 (8W)		51	53	35	37	  	 4	30	36	25	   	 13	
+22	7.0	  BBWWBWBWBW	  b 	 N	  D	   	(11B)		52	 8	38	 3	 4	17	34	35	19	 36	   	
+
+ 3	6.5	 WBWBWBBWBWB	 (W)	 Y	  U	   	 (5W)		33	18	12	22	16	37	17	31	14	 15	  1	
+ 5	6.5	 WBWBWBWBWBW	 (B)	 Y	   	   	 (3B)		35	20	14	17	13	10	11	 4	15	 12	 28	
+ 7	6.5	   WBWBWBWBW	 (B)	 Y	   	   	(18B)		37	30	16	14	12	  	 9	 2	10	   	 38	
+12	6.5	 BWBWBWBWBWW	  B 	 Y	  D	   	(16B)		42	27	 3	10	 7	 9	 8	14	 6	  5	 11	
+14	6.5	   BWBWBWBWB	 (W)	 Y	   	   	(15W)		44	29	 5	 7	30	20	  	12	 3	   	 17	
+15	6.5	  WBWBWBWBBW	  b 	 Y	   	   	(14B)		45	 2	33	36	58	  	24	 9	 5	  3	 40	
+
+16	6.0	   BWBWBWBWB	 (W)	 Y	   	   	(12W)		46	 1	 7	40	 3	  	31	26	11	  8	   	
+18	6.0	 BWBWBWBWBWB	 (W)	 Y	   	   	 (7W)		48	 3	17	42	33	32	25	24	36	 31	  9	
+20	6.0	  BWBWBWBWBW	  b 	 N	   	   	(36B)		50	 5	29	  	 8	14	13	33	43	 28	 47	
+23	6.0	  WBWBWBWBWB	  w 	 Y	   	   	(31W)		53	51	 4	33	24	13	  	30	17	  9	 29	
+27	6.0	  WBWBWBWBWB	  w 	 Y	   	   	(47B)		57	12	41	  	34	36	35	48	29	 24	 25	
+31	6.0	  BWBWWBBWBW	  b 	 Y	  U	   	(23B)		 1	46	 6	  	44	40	16	 3	26	 18	 43	
+36	6.0	  WBWWBBWBWB	  w 	 N	  D	   	(20W)		 6	49	51	15	45	27	28	21	18	 22	   	
+47	6.0	   BWBWBWBWB	 (W)	 N	   	  D	(27W)		17	34	  	50	57	56	  	39	32	 35	 20	
+
+17	5.5	 WBWWBBWBWBW	 (B)	 Y	   	   	(32B)		47	 4	18	 5	 9	22	 3	 6	23	 43	 14	
+28	5.5	 BWBWBWBWBWB	 (W)	 Y	   	   	(45W)		58	13	53	19	38	34	36	57	35	 20	  5	
+32	5.5	  WBWBWBWBWB	  w 	 N	  D	   	(17W)		 2	45	49	 6	51	18	43	56	47	 54	   	
+38	5.5	  WBBWWBWBWB	  w 	 N	   	   	(43B)		 8	  	22	57	28	25	52	29	51	 30	  7	
+40	5.5	 WBWBWBWBBWB	 (W)	 Y	   	   	(25W)		10	55	59	16	56	31	54	45	34	 33	 15	
+43	5.5	 BWBWBWBWBWB	 (W)	 Y	  D	   	(38W)		13	58	60	25	59	29	32	19	20	 17	 31	
+45	5.5	  BWBWBWWBWB	  w 	 N	   	  D	(28B)		15	32	58	  	36	51	53	40	57	 34	 33	
+
+25	5.0	 WBWBWBWBWBW	 (B)	 Y	   	   	(40B)		55	10	39	43	 6	38	18	13	21	 37	 27	
+26	5.0	 BWBWBWBWBWB	 (W)	 Y	   	   	(37W)		56	11	34	 9	35	19	29	16	31	 44	 42	
+29	5.0	 WBWBWBWBWBW	 (B)	 Y	   	   	(44B)		59	14	20	41	37	43	26	38	27	 11	 23	
+30	5.0	 BWWBWBWBWBB	  W 	 Y	   	   	(42W)		60	 7	57	39	14	58	21	23	41	 38	 44	
+34	5.0	 WBWBWBWBWBW	 (B)	 Y	   	  U	(50B)		 4	47	26	54	27	28	22	41	40	 45	 39	
+37	5.0	  BWBWBWWBBW	  b 	 Y	   	   	(26B)		 7	60	 9	21	29	 3	48	54	24	 25	   	
+42	5.0	 WBWBWBWBWBW	 (B)	 Y	   	   	(30B)		12	57	50	18	54	53	56	49	58	 52	 26	
+44	5.0	  WBWBBWBWBW	  b 	 Y	   	   	(29W)		14	59	55	24	31	49	  	46	52	 26	 30	
+50	5.0	  WBBWWBWBWB	  w 	 Y	  U	   	(34W)		20	35	42	47	46	55	  	59	56	 39	 48	
+
+24	4.5	  BWBWBWBWBW	  b 	 N	   	   	(51B)		54	 9	 1	44	23	  	15	18	37	 27	 35	
+33	4.5	  BWBWWBWBBW	  b 	 Y	   	   	(35B)		 3	48	15	23	18	  	51	20	39	 40	 45	
+35	4.5	 BWBWWBWBWBB	  W 	 Y	   	  U	(33W)		 5	50	21	53	26	48	27	22	28	 47	 24	
+41	4.5	  BWBWBWBWBW	  b 	 Y	   	   	(48W)		11	56	27	29	52	46	59	34	30	 51	   	
+48	4.5	 WBWBWWBBWBW	 (B)	 Y	  D	   	(41B)		18	33	56	55	39	35	37	27	54	 60	 50	
+49	4.5	  BWBBWBWWBW	  b 	 Y	   	   	(39B)		19	36	32	56	53	44	  	42	60	 58	 52	
+51	4.5	 BWBWBWWBWBB	  W 	 Y	  U	   	(24W)		21	23	36	60	32	45	33	58	38	 41	 57	
+
+39	4.0	 BWBWBWWBWBB	  W 	 Y	   	   	(49W)		 9	54	25	30	48	59	58	47	33	 50	 34	
+54	4.0	  WBWBWBWBWB	  w 	 N	   	   	(57W)		24	39	  	34	42	52	40	37	48	 32	 60	
+56	4.0	 WBBWBWBWWBW	 (B)	 Y	   	   	(53B)		26	41	48	49	40	47	42	32	50	 46	 55	
+57	4.0	  BWBWBWBWBW	  b 	 N	  D	   	(54B)		27	42	30	38	47	60	  	28	45	 55	 51	
+60	4.0	  WBWBWBWBWW	  B 	 N	   	   	(46B)		30	37	43	51	55	57	  	52	49	 48	 54	
+
+46	3.5	  WBWBBWWBWB	  w 	 Y	  D	   	(60W)		16	31	52	  	50	41	55	44	53	 56	 59	
+52	3.5	   WBWBWBBWB	 (W)	 Y	   	   	(55W)		22	  	46	  	41	54	38	60	44	 42	 49	
+53	3.5	 BWWBBWBWWBW	 (B)	 Y	   	  U	(56W)		23	21	28	35	49	42	45	55	46	 59	 58	
+
+55	3.0	 BWBWBWBBWWB	 (W)	 Y	   	   	(52B)		25	40	44	48	60	50	46	53	59	 57	 56	
+
+58	2.5	  WBWBWBWBWB	  w 	 N	   	   	(59W)		28	43	45	  	15	30	39	51	42	 49	 53	
+59	2.5	  BWBWBWBBWW	  B 	 N	  U	  D	(58B)		29	44	40	  	43	39	41	50	55	 53	 46	
+
+
+Round #13
+
+ID	 Pts	-------------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	R9	R10	R11	R12	
+
+ 4	10.0	 BWBWWBBWWBWB	  w 	 Y	  D	  D	(13W)		34	17	23	11	22	21	19	 5	 1	  2	 10	  6	
+
+ 1	 9.0	  WBWBBWBWBBW	 (W)	 N	  D	  D	 (9W)		31	16	24	 8	11	 6	 2	10	 4	 13	  3	   	
+
+ 2	 8.0	   BWBWBWBWWB	  w 	 N	   	  D	(14W)		32	15	11	13	19	  	 1	 7	 8	  4	  6	   	
+ 6	 8.0	   BWWBBWWBWW	  B 	 N	  U	  U	 (8B)		36	  	31	32	25	 1	  	17	12	 10	  2	  4	
+ 8	 8.0	  BWBWBWBBWWB	 (W)	 N	   	  D	 (6W)		38	22	13	 1	20	  	12	11	 2	 16	 19	 21	
+ 9	 8.0	  WBWBWBWBWBW	 (B)	 N	  D	   	 (1B)		39	24	37	26	17	12	 7	15	13	 23	 18	   	
+11	 8.0	  WBWBWBWBWBW	 (B)	 N	   	  U	 (7B)		41	26	 2	 4	 1	  	 5	 8	16	 29	 12	 22	
+13	 8.0	 WBWBBWBWBWBW	  b 	 Y	   	   	 (4B)		43	28	 8	 2	 5	23	20	25	 9	  1	 21	 10	
+
+ 3	 7.5	 WBWBWBBWBWBW	  b 	 Y	   	  U	(19B)		33	18	12	22	16	37	17	31	14	 15	  1	  5	
+ 7	 7.5	   WBWBWBWBWB	  w 	 Y	  D	   	(11W)		37	30	16	14	12	  	 9	 2	10	   	 38	 18	
+14	 7.5	   BWBWBWBWBW	  b 	 Y	   	   	 (2B)		44	29	 5	 7	30	20	  	12	 3	   	 17	 15	
+19	 7.5	    WBBWBWBWB	 (W)	 N	   	  U	 (3W)		49	  	10	28	 2	26	 4	43	22	   	  8	   	
+
+10	 7.0	   BWWBWBWWBB	  W 	 N	   	  U	(23W)		40	25	19	12	  	 5	  	 1	 7	  6	  4	 13	
+12	 7.0	 BWBWBWBWBWWB	  w 	 Y	  D	  D	(36B)		42	27	 3	10	 7	 9	 8	14	 6	  5	 11	 16	
+21	 7.0	   WBWBWBWBWW	  B 	 N	   	   	(22B)		51	53	35	37	  	 4	30	36	25	   	 13	  8	
+22	 7.0	  BBWWBWBWBWB	 (W)	 N	   	  D	(21W)		52	 8	38	 3	 4	17	34	35	19	 36	   	 11	
+23	 7.0	  WBWBWBWBWBW	 (B)	 Y	   	   	(10B)		53	51	 4	33	24	13	  	30	17	  9	 29	 31	
+27	 7.0	  WBWBWBWBWBB	  W 	 Y	   	   	(28W)		57	12	41	  	34	36	35	48	29	 24	 25	 47	
+36	 7.0	   WBWWBBWBWB	  w 	 N	  D	  D	(12W)		 6	49	51	15	45	27	28	21	18	 22	   	   	
+
+ 5	 6.5	 WBWBWBWBWBWB	  w 	 Y	   	   	(16W)		35	20	14	17	13	10	11	 4	15	 12	 28	  3	
+15	 6.5	  WBWBWBWBBWB	 (W)	 Y	   	   	(43W)		45	 2	33	36	58	  	24	 9	 5	  3	 40	 14	
+16	 6.5	   BWBWBWBWBW	  b 	 Y	  U	   	 (5B)		46	 1	 7	40	 3	  	31	26	11	  8	   	 12	
+28	 6.5	 BWBWBWBWBWBW	  b 	 Y	   	   	(27B)		58	13	53	19	38	34	36	57	35	 20	  5	 45	
+43	 6.5	 BWBWBWBWBWBW	  b 	 Y	   	  D	(15B)		13	58	60	25	59	29	32	19	20	 17	 31	 38	
+
+17	 6.0	 WBWWBBWBWBWB	  w 	 Y	   	   	(34W)		47	 4	18	 5	 9	22	 3	 6	23	 43	 14	 32	
+18	 6.0	 BWBWBWBWBWBW	  b 	 Y	  U	   	(37B)		48	 3	17	42	33	32	25	24	36	 31	  9	  7	
+20	 6.0	   BWBWBWBWBW	  b 	 N	   	   	(42B)		50	 5	29	  	 8	14	13	33	43	 28	 47	   	
+25	 6.0	 WBWBWBWBWBWB	  w 	 Y	  U	   	(32W)		55	10	39	43	 6	38	18	13	21	 37	 27	 40	
+31	 6.0	  BWBWWBBWBWB	 (W)	 Y	   	  U	(47W)		 1	46	 6	  	44	40	16	 3	26	 18	 43	 23	
+32	 6.0	  WBWBWBWBWBW	 (B)	 N	   	  D	(25B)		 2	45	49	 6	51	18	43	56	47	 54	   	 17	
+34	 6.0	 WBWBWBWBWBWB	  w 	 Y	   	   	(17B)		 4	47	26	54	27	28	22	41	40	 45	 39	 50	
+37	 6.0	  BWBWBWWBBWB	 (W)	 Y	   	   	(18W)		 7	60	 9	21	29	 3	48	54	24	 25	   	 26	
+42	 6.0	 WBWBWBWBWBWB	  w 	 Y	   	   	(20W)		12	57	50	18	54	53	56	49	58	 52	 26	 30	
+47	 6.0	   BWBWBWBWBW	  b 	 N	   	   	(31B)		17	34	  	50	57	56	  	39	32	 35	 20	 27	
+
+24	 5.5	  BWBWBWBWBWB	 (W)	 N	   	   	(40W)		54	 9	 1	44	23	  	15	18	37	 27	 35	 51	
+29	 5.5	 WBWBWBWBWBWB	  w 	 Y	   	   	(35W)		59	14	20	41	37	43	26	38	27	 11	 23	 44	
+35	 5.5	 BWBWWBWBWBBW	  b 	 Y	   	   	(29B)		 5	50	21	53	26	48	27	22	28	 47	 24	 33	
+38	 5.5	  WBBWWBWBWBB	  W 	 N	   	   	(44W)		 8	  	22	57	28	25	52	29	51	 30	  7	 43	
+40	 5.5	 WBWBWBWBBWBW	  b 	 Y	  D	   	(24B)		10	55	59	16	56	31	54	45	34	 33	 15	 25	
+44	 5.5	  WBWBBWBWBWW	  B 	 Y	   	   	(38B)		14	59	55	24	31	49	  	46	52	 26	 30	 29	
+45	 5.5	  BWBWBWWBWBB	  W 	 N	   	   	(41W)		15	32	58	  	36	51	53	40	57	 34	 33	 28	
+
+26	 5.0	 BWBWBWBWBWBW	  b 	 Y	   	   	(48B)		56	11	34	 9	35	19	29	16	31	 44	 42	 37	
+30	 5.0	 BWWBWBWBWBBW	  b 	 Y	   	   	(50W)		60	 7	57	39	14	58	21	23	41	 38	 44	 42	
+41	 5.0	  BWBWBWBWBWW	  B 	 Y	   	   	(45B)		11	56	27	29	52	46	59	34	30	 51	   	 48	
+48	 5.0	 WBWBWWBBWBWB	  w 	 Y	   	  D	(26W)		18	33	56	55	39	35	37	27	54	 60	 50	 41	
+49	 5.0	  BWBBWBWWBWB	 (W)	 Y	  D	   	(54W)		19	36	32	56	53	44	  	42	60	 58	 52	 39	
+50	 5.0	  WBBWWBWBWBW	 (B)	 Y	   	  U	(30B)		20	35	42	47	46	55	  	59	56	 39	 48	 34	
+54	 5.0	  WBWBWBWBWBW	 (B)	 N	   	   	(49B)		24	39	  	34	42	52	40	37	48	 32	 60	 57	
+
+33	 4.5	  BWBWWBWBBWB	 (W)	 Y	   	   	(46W)		 3	48	15	23	18	  	51	20	39	 40	 45	 35	
+39	 4.5	 BWBWBWWBWBBW	  b 	 Y	  U	   	(56B)		 9	54	25	30	48	59	58	47	33	 50	 34	 49	
+46	 4.5	  WBWBBWWBWBW	 (B)	 Y	  U	  D	(33B)		16	31	52	  	50	41	55	44	53	 56	 59	 60	
+51	 4.5	 BWBWBWWBWBBW	  b 	 Y	   	  U	(52W)		21	23	36	60	32	45	33	58	38	 41	 57	 24	
+56	 4.5	 WBBWBWBWWBWB	  w 	 Y	  D	   	(39W)		26	41	48	49	40	47	42	32	50	 46	 55	 53	
+
+52	 4.0	   WBWBWBBWBW	  b 	 Y	  D	   	(51B)		22	  	46	  	41	54	38	60	44	 42	 49	 55	
+53	 4.0	 BWWBBWBWWBWW	  B 	 Y	  U	   	(57B)		23	21	28	35	49	42	45	55	46	 59	 58	 56	
+57	 4.0	  BWBWBWBWBWB	 (W)	 N	   	  D	(53W)		27	42	30	38	47	60	  	28	45	 55	 51	 54	
+60	 4.0	  WBWBWBWBWWB	 (B)	 N	  D	   	(59B)		30	37	43	51	55	57	  	52	49	 48	 54	 46	
+
+55	 3.5	 BWBWBWBBWWBB	  W 	 Y	  U	   	(58W)		25	40	44	48	60	50	46	53	59	 57	 56	 52	
+58	 3.5	  WBWBWBWBWBW	 (B)	 N	   	   	(55B)		28	43	45	  	15	30	39	51	42	 49	 53	 59	
+
+59	 2.5	  BWBWBWBBWWB	 (W)	 N	   	  U	(60W)		29	44	40	  	43	39	41	50	55	 53	 46	 58	
+
+
+Round #14
+
+ID	 Pts	--------------	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	R5	R6	R7	R8	R9	R10	R11	R12	R13	
+
+ 4	11.0	 BWBWWBBWWBWBW	 (B)	 Y	  D	  D	 (3B)		34	17	23	11	22	21	19	 5	 1	  2	 10	  6	 13	
+
+ 1	10.0	  WBWBBWBWBBWW	  B 	 N	  D	  D	 (7B)		31	16	24	 8	11	 6	 2	10	 4	 13	  3	   	  9	
+
+ 2	 9.0	   BWBWBWBWWBW	 (B)	 N	  D	   	(12B)		32	15	11	13	19	  	 1	 7	 8	  4	  6	   	 14	
+ 6	 9.0	   BWWBBWWBWWB	 (B)	 N	   	  U	(13B)		36	  	31	32	25	 1	  	17	12	 10	  2	  4	  8	
+
+ 3	 8.5	 WBWBWBBWBWBWB	 (W)	 Y	   	   	 (4W)		33	18	12	22	16	37	17	31	14	 15	  1	  5	 19	
+ 7	 8.5	   WBWBWBWBWBW	 (B)	 Y	  U	  D	 (1W)		37	30	16	14	12	  	 9	 2	10	   	 38	 18	 11	
+
+ 8	 8.0	  BWBWBWBBWWBW	  b 	 N	   	   	 (9B)		38	22	13	 1	20	  	12	11	 2	 16	 19	 21	  6	
+ 9	 8.0	  WBWBWBWBWBWB	  w 	 N	  U	  D	 (8W)		39	24	37	26	17	12	 7	15	13	 23	 18	   	  1	
+10	 8.0	   BWWBWBWWBBW	 (B)	 N	   	   	(11B)		40	25	19	12	  	 5	  	 1	 7	  6	  4	 13	 23	
+11	 8.0	  WBWBWBWBWBWB	  w 	 N	  D	   	(10W)		41	26	 2	 4	 1	  	 5	 8	16	 29	 12	 22	  7	
+12	 8.0	 BWBWBWBWBWWBB	  W 	 Y	   	  D	 (2W)		42	27	 3	10	 7	 9	 8	14	 6	  5	 11	 16	 36	
+13	 8.0	 WBWBBWBWBWBWB	 (W)	 Y	  U	   	 (6W)		43	28	 8	 2	 5	23	20	25	 9	  1	 21	 10	  4	
+
+14	 7.5	   BWBWBWBWBWB	 (W)	 Y	  U	   	(19W)		44	29	 5	 7	30	20	  	12	 3	   	 17	 15	  2	
+15	 7.5	  WBWBWBWBBWBW	  b 	 Y	   	   	(21W)		45	 2	33	36	58	  	24	 9	 5	  3	 40	 14	 43	
+16	 7.5	   BWBWBWBWBWB	 (W)	 Y	   	  U	(28W)		46	 1	 7	40	 3	  	31	26	11	  8	   	 12	  5	
+19	 7.5	    WBBWBWBWBW	  b 	 N	   	   	(14B)		49	  	10	28	 2	26	 4	43	22	   	  8	   	  3	
+21	 7.5	   WBWBWBWBWWB	 (B)	 N	   	   	(15B)		51	53	35	37	  	 4	30	36	25	   	 13	  8	 22	
+22	 7.5	  BBWWBWBWBWBW	  b 	 N	   	   	(18B)		52	 8	38	 3	 4	17	34	35	19	 36	   	 11	 21	
+28	 7.5	  BWBWBWBWBWBW	  b 	 N	  D	   	(16B)		58	13	53	19	38	34	36	57	35	 20	  5	 45	   	
+
+17	 7.0	 WBWWBBWBWBWBW	 (B)	 Y	   	   	(27B)		47	 4	18	 5	 9	22	 3	 6	23	 43	 14	 32	 34	
+18	 7.0	 BWBWBWBWBWBWB	 (W)	 Y	   	  U	(22W)		48	 3	17	42	33	32	25	24	36	 31	  9	  7	 37	
+23	 7.0	  WBWBWBWBWBWB	  w 	 Y	   	   	(32W)		53	51	 4	33	24	13	  	30	17	  9	 29	 31	 10	
+27	 7.0	   WBWBWBWBWBB	  W 	 Y	   	   	(17W)		57	12	41	  	34	36	35	48	29	 24	 25	 47	   	
+32	 7.0	   WBWBWBWBWBW	 (B)	 N	  D	   	(23B)		 2	45	49	 6	51	18	43	56	47	 54	   	 17	   	
+36	 7.0	   WBWWBBWBWBW	 (B)	 N	   	  D	(47B)		 6	49	51	15	45	27	28	21	18	 22	   	   	 12	
+47	 7.0	   BWBWBWBWBWB	 (W)	 N	   	   	(36W)		17	34	  	50	57	56	  	39	32	 35	 20	 27	 31	
+
+ 5	 6.5	 WBWBWBWBWBWBW	 (B)	 Y	   	   	(43B)		35	20	14	17	13	10	11	 4	15	 12	 28	  3	 16	
+20	 6.5	   BWBWBWBWBWB	 (W)	 N	   	   	(38W)		50	 5	29	  	 8	14	13	33	43	 28	 47	   	 42	
+24	 6.5	  BWBWBWBWBWBW	  b 	 N	   	   	(29W)		54	 9	 1	44	23	  	15	18	37	 27	 35	 51	 40	
+29	 6.5	 WBWBWBWBWBWBW	 (B)	 Y	   	   	(24B)		59	14	20	41	37	43	26	38	27	 11	 23	 44	 35	
+38	 6.5	  WBBWWBWBWBBW	  b 	 N	   	   	(20B)		 8	  	22	57	28	25	52	29	51	 30	  7	 43	 44	
+42	 6.5	 WBWBWBWBWBWBW	 (B)	 Y	   	   	(34B)		12	57	50	18	54	53	56	49	58	 52	 26	 30	 20	
+43	 6.5	 BWBWBWBWBWBWB	 (W)	 Y	   	   	 (5W)		13	58	60	25	59	29	32	19	20	 17	 31	 38	 15	
+
+25	 6.0	  WBWBWBWBWBWB	  w 	 Y	   	  U	(31W)		55	10	39	43	 6	38	18	13	21	 37	 27	 40	   	
+26	 6.0	 BWBWBWBWBWBWB	 (W)	 Y	   	   	(30W)		56	11	34	 9	35	19	29	16	31	 44	 42	 37	 48	
+30	 6.0	 BWWBWBWBWBBWW	  B 	 Y	   	   	(26B)		60	 7	57	39	14	58	21	23	41	 38	 44	 42	 50	
+31	 6.0	  BWBWWBBWBWBW	  b 	 Y	   	   	(25B)		 1	46	 6	  	44	40	16	 3	26	 18	 43	 23	 47	
+34	 6.0	 WBWBWBWBWBWBB	  W 	 Y	   	   	(42W)		 4	47	26	54	27	28	22	41	40	 45	 39	 50	 17	
+37	 6.0	  BWBWBWWBBWBW	  b 	 Y	   	   	(41B)		 7	60	 9	21	29	 3	48	54	24	 25	   	 26	 18	
+41	 6.0	  BWBWBWBWBWWB	  w 	 Y	  U	   	(37W)		11	56	27	29	52	46	59	34	30	 51	   	 48	 45	
+
+35	 5.5	 BWBWWBWBWBBWB	 (W)	 Y	   	   	(45W)		 5	50	21	53	26	48	27	22	28	 47	 24	 33	 29	
+39	 5.5	 BWBWBWWBWBBWB	 (W)	 Y	   	  U	(51W)		 9	54	25	30	48	59	58	47	33	 50	 34	 49	 56	
+40	 5.5	 WBWBWBWBBWBWB	 (W)	 Y	   	  D	(49W)		10	55	59	16	56	31	54	45	34	 33	 15	 25	 24	
+44	 5.5	  WBWBBWBWBWWB	  w 	 Y	   	   	(54B)		14	59	55	24	31	49	  	46	52	 26	 30	 29	 38	
+45	 5.5	  BWBWBWWBWBBW	  b 	 N	  D	   	(35B)		15	32	58	  	36	51	53	40	57	 34	 33	 28	 41	
+49	 5.5	  BWBBWBWWBWBW	  b 	 Y	   	  D	(40B)		19	36	32	56	53	44	  	42	60	 58	 52	 39	 54	
+51	 5.5	 BWBWBWWBWBBWW	  B 	 Y	  D	   	(39B)		21	23	36	60	32	45	33	58	38	 41	 57	 24	 52	
+54	 5.5	  WBWBWBWBWBWB	  w 	 N	   	   	(44W)		24	39	  	34	42	52	40	37	48	 32	 60	 57	 49	
+
+33	 5.0	  BWBWWBWBBWBW	  b 	 Y	   	   	(55B)		 3	48	15	23	18	  	51	20	39	 40	 45	 35	 46	
+46	 5.0	  WBWBBWWBWBWB	  w 	 Y	   	  U	(48W)		16	31	52	  	50	41	55	44	53	 56	 59	 60	 33	
+48	 5.0	 WBWBWWBBWBWBW	 (B)	 Y	   	   	(46B)		18	33	56	55	39	35	37	27	54	 60	 50	 41	 26	
+50	 5.0	  WBBWWBWBWBWB	  w 	 Y	   	   	(57W)		20	35	42	47	46	55	  	59	56	 39	 48	 34	 30	
+57	 5.0	  BWBWBWBWBWBW	  b 	 N	   	   	(50B)		27	42	30	38	47	60	  	28	45	 55	 51	 54	 53	
+
+56	 4.5	 WBBWBWBWWBWBW	 (B)	 Y	   	  D	(58B)		26	41	48	49	40	47	42	32	50	 46	 55	 53	 39	
+60	 4.5	  WBWBWBWBWWBB	  W 	 N	  D	  D	(53W)		30	37	43	51	55	57	  	52	49	 48	 54	 46	 59	
+
+52	 4.0	   WBWBWBBWBWB	 (W)	 Y	  U	  D	(59W)		22	  	46	  	41	54	38	60	44	 42	 49	 55	 51	
+53	 4.0	 BWWBBWBWWBWWB	 (B)	 Y	   	  U	(60B)		23	21	28	35	49	42	45	55	46	 59	 58	 56	 57	
+55	 4.0	 BWBWBWBBWWBBW	 (W)	 Y	   	  U	(33W)		25	40	44	48	60	50	46	53	59	 57	 56	 52	 58	
+58	 4.0	  WBWBWBWBWBWB	  w 	 N	   	   	(56W)		28	43	45	  	15	30	39	51	42	 49	 53	 59	 55	
+
+59	 3.0	  BWBWBWBBWWBW	  b 	 N	  U	   	(52B)		29	44	40	  	43	39	41	50	55	 53	 46	 58	 60	
+
+
+BBP Pairings <build info>

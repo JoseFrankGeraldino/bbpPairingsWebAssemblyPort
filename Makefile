@@ -18,6 +18,11 @@
 #                           (engine 90%, tie-break tool 85%)
 #   make dist               dist/native-linux-x64 with licences and VERSION
 #   make golden-record CONFIRM=<submodule short sha>   re-record golden files
+#   make wasm               WebAssembly builds (Emscripten): Node command lines
+#                           in build/wasm, browser modules in build/wasm/web
+#   make test-wasm          the same suites against the WebAssembly builds
+#   make dist-wasm          dist/wasm: modules, bridge, licences, VERSION
+#   make golden-record-wasm CONFIRM=<sha>   re-record tests/golden-wasm
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := native
@@ -98,7 +103,10 @@ LIMITS_VARS := engine_comparison=no optimize=no \
 
 .PHONY: native native-limits tools tiebreak gacrux test test-engine \
 	test-tiebreak coverage coverage-build coverage-run coverage-report dist \
-	golden-record clean check-submodule
+	golden-record clean check-submodule wasm wasm-toolchain wasm-node \
+	wasm-limits wasm-tools wasm-tiebreak wasm-web test-wasm \
+	test-wasm-engine test-wasm-tiebreak test-wasm-bridge dist-wasm \
+	golden-record-wasm
 
 check-submodule:
 	@test -f $(ENGINE_DIR)/Makefile || { \
@@ -285,6 +293,153 @@ golden-record: native native-limits tools
 	fi
 	$(PYTHON) tests/run_tests.py --record --engine $(NATIVE_BIN) \
 		--engine-limits $(LIMITS_BIN) --roundtrip $(ROUNDTRIP_BIN)
+
+golden-record-wasm: wasm-node wasm-limits wasm-tools
+	@actual=$$(git -C $(ENGINE_DIR) rev-parse --short=7 HEAD); \
+	if [ "$(CONFIRM)" != "$$actual" ]; then \
+		echo "Refusing to record golden files: pass CONFIRM=$$actual (the submodule commit) after review." >&2; \
+		exit 1; \
+	fi
+	$(PYTHON) tests/run_tests.py --record --target wasm --engine $(WASM_BIN) \
+		--engine-limits $(WASM_LIMITS_BIN) --roundtrip $(WASM_ROUNDTRIP_BIN)
+
+# --- WebAssembly (E2) -------------------------------------------------------------
+# The engine is built by its own Makefile with Emscripten: COMP=clang selects
+# its clang warning set, CXX="em++ -fwasm-exceptions" the compiler (Wasm
+# exception handling: the engine reports every error by an exception, which
+# Emscripten aborts on by default), and optional_ldflags replaces the link
+# flags (the default ones carry a bare "-s", strip for GNU ld, which emcc reads
+# as a setting). The compile flags are the engine's own.
+#
+# The toolchain is pinned: the generator's random distributions come from
+# Emscripten's libc++, so tests/golden-wasm holds for this version only.
+# em++ is taken from PATH, else from EMSDK_ENV.
+
+EMSDK_VERSION := 7.0.0
+EMSDK_ENV ?= $(HOME)/emsdk/emsdk_env.sh
+WASM_ENV := $(if $(shell command -v em++ 2>/dev/null),,source $(EMSDK_ENV) > /dev/null &&)
+WASM_CXX := em++ -fwasm-exceptions
+# Node command lines with the bbpPairings and tie-break CLI contract: real
+# files relative to the working directory, the program's exit code.
+WASM_NODE_LDFLAGS := -sALLOW_MEMORY_GROWTH=1 -sEXIT_RUNTIME=1 -sNODERAWFS=1
+# Browser (and Web Worker) ES modules: an in-memory file system, main called
+# by the bridge (bridge/bbp-bridge.ts) on a fresh instance per run.
+WASM_WEB_LDFLAGS := -sALLOW_MEMORY_GROWTH=1 -sMODULARIZE=1 -sEXPORT_ES6=1 \
+	-sINVOKE_RUN=0 -sEXIT_RUNTIME=1 -sFORCE_FILESYSTEM=1 \
+	-sENVIRONMENT=web,worker,node -sEXPORTED_RUNTIME_METHODS=callMain,FS
+
+WASM_BIN := build/wasm/bbpPairings
+WASM_LIMITS_BIN := build/wasm-limits/bbpPairings
+WASM_ROUNDTRIP_BIN := build/wasm/trf-roundtrip
+WASM_TIEBREAK_BIN := build/wasm/tiebreak
+WASM_WEB_DIR := build/wasm/web
+DIST_WASM_DIR := dist/wasm
+
+# A Node command line: the Emscripten loader with a node shebang, next to its
+# .wasm. Run as the file itself, the program sees its own path as argv[0], as
+# a native executable does. $(1) = loader, $(2) = target.
+define wasm_node_install
+	mkdir -p $(dir $(2))
+	{ echo '#!/usr/bin/env node'; cat $(1); } > $(2)
+	chmod 755 $(2)
+	install -m 644 $(basename $(1)).wasm $(dir $(2))
+endef
+
+wasm: wasm-node wasm-limits wasm-tools wasm-tiebreak wasm-web
+
+wasm-toolchain:
+	@$(WASM_ENV) version=$$(em++ --version | head -1); \
+	case "$$version" in *" $(EMSDK_VERSION) "*) ;; \
+		*) echo "Emscripten $(EMSDK_VERSION) required, found: $$version" >&2; exit 1;; esac
+
+wasm-node: check-submodule wasm-toolchain
+	$(WASM_ENV) $(ENGINE_MAKE) -j$(JOBS) OBJ=$(OBJ_ROOT)/wasm COMP=clang \
+		CXX="$(WASM_CXX)" optional_ldflags="$(WASM_NODE_LDFLAGS)" \
+		$(OBJ_ROOT)/wasm/bbpPairings.exe
+	$(call wasm_node_install,$(OBJ_ROOT)/wasm/bbpPairings.exe,$(WASM_BIN))
+
+wasm-limits: check-submodule wasm-toolchain
+	$(WASM_ENV) $(ENGINE_MAKE) -j$(JOBS) OBJ=$(OBJ_ROOT)/wasm-limits COMP=clang \
+		$(LIMITS_VARS) CXX="$(WASM_CXX)" optional_ldflags="$(WASM_NODE_LDFLAGS)" \
+		$(OBJ_ROOT)/wasm-limits/bbpPairings.exe
+	$(call wasm_node_install,$(OBJ_ROOT)/wasm-limits/bbpPairings.exe,$(WASM_LIMITS_BIN))
+
+# The round-trip helper on the WebAssembly engine objects (optimize=no, as
+# for the native helper).
+wasm-tools: check-submodule wasm-toolchain
+	$(WASM_ENV) $(ENGINE_MAKE) -j$(JOBS) OBJ=$(OBJ_ROOT)/wasm-plain COMP=clang \
+		optimize=no CXX="$(WASM_CXX)" optional_ldflags="$(WASM_NODE_LDFLAGS)" \
+		$(OBJ_ROOT)/wasm-plain/bbpPairings.exe
+	mkdir -p $(OBJ_ROOT)/wasm-tools
+	$(WASM_ENV) $(WASM_CXX) $(HELPER_CXXFLAGS) $(WASM_NODE_LDFLAGS) \
+		-o $(OBJ_ROOT)/wasm-tools/trf-roundtrip.js tests/roundtrip/trf_roundtrip.cpp \
+		$(call ENGINE_LIB_OBJS,$(OBJ_ROOT)/wasm-plain)
+	$(call wasm_node_install,$(OBJ_ROOT)/wasm-tools/trf-roundtrip.js,$(WASM_ROUNDTRIP_BIN))
+
+wasm-tiebreak: wasm-toolchain $(TIEBREAK_SOURCES) $(TIEBREAK_HEADERS)
+	mkdir -p $(OBJ_ROOT)/wasm-tiebreak
+	$(WASM_ENV) $(WASM_CXX) $(TIEBREAK_WARNINGS) -O2 -DNDEBUG $(WASM_NODE_LDFLAGS) \
+		-o $(OBJ_ROOT)/wasm-tiebreak/tiebreak.js $(TIEBREAK_SOURCES)
+	$(call wasm_node_install,$(OBJ_ROOT)/wasm-tiebreak/tiebreak.js,$(WASM_TIEBREAK_BIN))
+
+wasm-web: check-submodule wasm-toolchain $(TIEBREAK_SOURCES) $(TIEBREAK_HEADERS)
+	$(WASM_ENV) $(ENGINE_MAKE) -j$(JOBS) OBJ=$(OBJ_ROOT)/wasm-web COMP=clang \
+		CXX="$(WASM_CXX)" \
+		optional_ldflags="$(WASM_WEB_LDFLAGS) -sEXPORT_NAME=createBbpPairings" \
+		$(OBJ_ROOT)/wasm-web/bbpPairings.exe
+	mkdir -p $(WASM_WEB_DIR) $(OBJ_ROOT)/wasm-web-tiebreak
+	install -m 644 $(OBJ_ROOT)/wasm-web/bbpPairings.exe $(WASM_WEB_DIR)/bbpPairings.mjs
+	install -m 644 $(OBJ_ROOT)/wasm-web/bbpPairings.wasm $(WASM_WEB_DIR)/
+	$(WASM_ENV) $(WASM_CXX) $(TIEBREAK_WARNINGS) -O2 -DNDEBUG $(WASM_WEB_LDFLAGS) \
+		-sEXPORT_NAME=createTiebreak \
+		-o $(OBJ_ROOT)/wasm-web-tiebreak/tiebreak.mjs $(TIEBREAK_SOURCES)
+	install -m 644 $(OBJ_ROOT)/wasm-web-tiebreak/tiebreak.mjs \
+		$(OBJ_ROOT)/wasm-web-tiebreak/tiebreak.wasm $(WASM_WEB_DIR)/
+
+# The engine suite (golden overlay tests/golden-wasm for the cases listed in
+# run_tests.py TARGET_DIFFERENCES), the Gacrux comparison of the tie-break
+# tool (tournaments generated by the WebAssembly engine), and the bridge.
+test-wasm: test-wasm-engine test-wasm-tiebreak test-wasm-bridge
+
+test-wasm-engine: wasm-node wasm-limits wasm-tools
+	$(PYTHON) tests/run_tests.py --target wasm --engine $(WASM_BIN) \
+		--engine-limits $(WASM_LIMITS_BIN) --roundtrip $(WASM_ROUNDTRIP_BIN)
+
+test-wasm-tiebreak: wasm-node wasm-tiebreak gacrux
+	$(PYTHON) tests/tiebreak_compare.py --tool $(WASM_TIEBREAK_BIN) \
+		--gacrux $(GACRUX_DIR)/gacrux --engine $(WASM_BIN) \
+		--count $(BBP_TIEBREAK_COUNT)
+
+test-wasm-bridge: wasm-web wasm-node native tiebreak
+	$(WASM_ENV) node tests/bridge/bridge_test.ts --modules $(WASM_WEB_DIR) \
+		--engine $(NATIVE_BIN) --wasm-engine $(WASM_BIN) --tiebreak $(TIEBREAK_BIN)
+
+dist-wasm: wasm-web
+	rm -rf $(DIST_WASM_DIR)
+	mkdir -p $(DIST_WASM_DIR)
+	install -m 644 $(WASM_WEB_DIR)/bbpPairings.mjs $(WASM_WEB_DIR)/bbpPairings.wasm \
+		$(WASM_WEB_DIR)/tiebreak.mjs $(WASM_WEB_DIR)/tiebreak.wasm \
+		bridge/bbp-bridge.ts bridge/bbp-worker.ts $(DIST_WASM_DIR)/
+	install -m 644 $(ENGINE_DIR)/LICENSE.txt $(ENGINE_DIR)/Apache-2.0.txt NOTICE \
+		$(DIST_WASM_DIR)/
+	install -m 644 LICENSE $(DIST_WASM_DIR)/LICENSE-tiebreak.txt
+	install -m 644 tiebreak/GACRUX-LICENSE.txt $(DIST_WASM_DIR)/GACRUX-LICENSE.txt
+	@# The Emscripten runtime in the .mjs loaders and the libraries compiled
+	@# into the .wasm files (THIRD_PARTY_NOTICES.md, "Emscripten").
+	$(WASM_ENV) root=$$(dirname "$$(command -v emcc)"); \
+	install -m 644 $$root/LICENSE $(DIST_WASM_DIR)/EMSCRIPTEN-LICENSE.txt && \
+	install -m 644 $$root/system/lib/libcxx/LICENSE.TXT $(DIST_WASM_DIR)/LIBCXX-LICENSE.txt && \
+	install -m 644 $$root/system/lib/libcxxabi/LICENSE.TXT $(DIST_WASM_DIR)/LIBCXXABI-LICENSE.txt && \
+	install -m 644 $$root/system/lib/libc/musl/COPYRIGHT $(DIST_WASM_DIR)/MUSL-COPYRIGHT.txt
+	{ \
+		echo "engine_fork=$(ENGINE_FORK_URL)"; \
+		echo "engine_commit=$$(git -C $(ENGINE_DIR) rev-parse HEAD)"; \
+		echo "port_repo_commit=$$(git rev-parse HEAD)$$(git diff --quiet HEAD 2>/dev/null || echo -dirty)"; \
+		echo "tiebreak_reference=Gacrux $(GACRUX_URL) $(GACRUX_COMMIT)"; \
+		echo "emscripten=$(EMSDK_VERSION)"; \
+		echo "target=wasm32-emscripten (ES modules, web/worker/node)"; \
+	} > $(DIST_WASM_DIR)/VERSION
+	@echo "dist: $(DIST_WASM_DIR)"; ls -l $(DIST_WASM_DIR)
 
 clean:
 	rm -rf build dist

@@ -1,0 +1,6 @@
+=== step 1: --dutch -g dir -o o.trf -s 1
+exit: 0
+--- stdout
+
+--- stderr
+

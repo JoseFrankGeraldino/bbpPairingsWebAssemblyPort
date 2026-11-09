@@ -1,0 +1,44 @@
+=== step 1: --dutch gen.trf -c -l check.list
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+
+
+--- stderr
+
+--- file check.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	  Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	 (4W)		
+ 3	0.0	 	  A 	 Y	   	   	 (5B)		
+ 4	0.0	 	  A 	 Y	   	   	 (1B)		
+ 5	0.0	 	  A 	 Y	   	   	 (3W)		
+ 6	0.0	 	  A 	 Y	   	   	(bye)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	  Cur		R1	
+
+ 1	1.0	 W	 (B)	 Y	   	   	 (6B)		 4	
+ 5	1.0	 W	 (B)	 Y	   	   	 (2B)		 3	
+ 6	1.0	  	  A 	 N	  D	   	 (1W)		  	
+
+ 2	0.0	  	  A 	 Y	   	   	 (5W)		  	
+ 4	0.0	 B	 (W)	 Y	   	   	(bye)		 1	
+
+
+Round #3
+
+ID	Pts	---	Pref	C2	C14	C16	 Cur		R1	R2	
+
+ 2	1.0	  W	 (B)	 Y	  U	   	(3B)		  	 5	
+
+ 3	0.0	  B	 (W)	 Y	   	   	(2W)		 5	  	
+
+
+BBP Pairings <build info>

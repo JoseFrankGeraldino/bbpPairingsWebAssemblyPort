@@ -1,0 +1,7 @@
+=== step 1: --dutch -g c.cfg -o o.trf -s 3
+exit: 4
+--- stdout
+
+--- stderr
+Error writing tournament to o.trf: The output file format does not support scores above 99.9.
+

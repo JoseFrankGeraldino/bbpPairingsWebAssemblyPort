@@ -65,6 +65,67 @@ jobs:
           path: dist/native-linux-x64/
           if-no-files-found: error
 
+  wasm:
+    name: WebAssembly builds, suites on WASM, bridge, dist-wasm
+    runs-on: ubuntu-latest
+    env:
+      # Fewer generated tournaments than the native job (each case starts
+      # Node); the golden ones (seeds 1-20) and the parity group all run.
+      BBP_GENERATED_COUNT: "100"
+      BBP_TIEBREAK_COUNT: "5"
+      # The Makefile sources it when em++ is not on PATH.
+      EMSDK_ENV: ${{ github.workspace }}/build/emsdk/emsdk_env.sh
+    steps:
+      - name: Checkout (with the engine submodule)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      # Must match GACRUX_COMMIT in the Makefile; make gacrux verifies it.
+      - name: Checkout Gacrux (tie-break reference, pinned)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          repository: OttoMilvang/TieBreakServer
+          ref: 49b01e67ccb2f94945fa97b97ade66a35584b341
+          path: build/gacrux
+          persist-credentials: false
+
+      # Emscripten SDK at its 7.0.0 release commit (EMSDK_VERSION in the
+      # Makefile; tests/golden-wasm holds for this version).
+      - name: Checkout emsdk (pinned)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          repository: emscripten-core/emsdk
+          ref: 1693ce7359fc9694f198694f902a2cc061239b86
+          path: build/emsdk
+          persist-credentials: false
+
+      - name: Install Emscripten 7.0.0
+        run: |
+          build/emsdk/emsdk install 7.0.0
+          build/emsdk/emsdk activate 7.0.0
+          source "$EMSDK_ENV" > /dev/null && em++ --version | head -1 && node --version
+
+      - name: WebAssembly builds (make wasm)
+        run: make wasm
+
+      - name: Engine suite, tie-break comparison and bridge on WASM (make test-wasm)
+        run: make test-wasm
+
+      - name: Package (make dist-wasm)
+        run: make dist-wasm
+
+      - name: Submodule still clean after build and tests
+        run: test -z "$(git -C third_party/bbpPairings status --porcelain)"
+
+      - name: Upload dist-wasm
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: wasm
+          path: dist/wasm/
+          if-no-files-found: error
+
   coverage:
     name: coverage (gates 90% engine src, 85% tie-break tool)
     runs-on: ubuntu-latest

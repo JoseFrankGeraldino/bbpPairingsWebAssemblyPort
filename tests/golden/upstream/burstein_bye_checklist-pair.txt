@@ -1,0 +1,10 @@
+=== step 1: --dutch burstein_bye_checklist.input -p
+exit: 0
+--- stdout
+3
+4 1
+5 2
+3 0
+
+--- stderr
+

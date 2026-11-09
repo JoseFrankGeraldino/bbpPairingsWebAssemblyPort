@@ -1631,7 +1631,11 @@ namespace tiebreak
           continue;
         }
         checkPlayer(slice(line, 0, 3), pid);
-        players.at(pid);
+        if (!players.count(pid))
+        {
+          // No player section to check against: a KeyError in the reference.
+          throw std::out_of_range("KeyError: player " + std::to_string(pid));
+        }
         playerOrder[pid] = board;
         competitor.cplayers.push_back(pid);
         playerTeamId[pid] = teamid;

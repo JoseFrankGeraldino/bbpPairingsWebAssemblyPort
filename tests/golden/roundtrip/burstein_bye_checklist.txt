@@ -1,0 +1,26 @@
+=== step 1: burstein_bye_checklist.input
+exit: 0
+--- stdout
+file: burstein_bye_checklist.input
+read: ok (5 player slots, 1 rounds played, 3 rounds expected)
+system: none in file, Dutch assumed (as with --dutch)
+canonical-write: ok
+canonical-stable: yes
+model-write: 8 input lines, 7 output lines, 7 not reproduced verbatim
+  - 012 Burstein bye checklist test
+  - XXC white1
+  - 001    1      Player 0001                       2400                             1.0          3 w 1
+  - 001    2      Player 0002                       2300                             0.5          4 w =
+  - 001    3      Player 0003                       2200                             0.0          1 b 0
+  - 001    4      Player 0004                       2100                             0.5          2 b =
+  - 001    5      Player 0005                       2000                             1.0       0000 - U
+  + ### 012 Burstein bye checklist test
+  + 001    1      Player 0001                       2400                             1.0    1     3 w 1
+  + 001    2      Player 0002                       2300                             0.5    3     4 w =
+  + 001    3      Player 0003                       2200                             0.0    5     1 b 0
+  + 001    4      Player 0004                       2100                             0.5    4     2 b =
+  + 001    5      Player 0005                       2000                             1.0    2  0000 - U
+model-reread-equal: yes
+
+--- stderr
+

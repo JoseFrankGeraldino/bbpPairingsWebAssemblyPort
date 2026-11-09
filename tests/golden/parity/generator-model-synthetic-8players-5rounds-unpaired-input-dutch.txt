@@ -1,0 +1,9 @@
+=== step 1: --dutch gen.trf -c -l check.list
+exit: 0
+--- stdout
+
+
+--- stderr
+
+--- file check.list
+BBP Pairings <build info>

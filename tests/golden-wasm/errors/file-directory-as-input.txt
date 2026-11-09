@@ -1,0 +1,7 @@
+=== step 1: --dutch dir -p
+exit: 3
+--- stdout
+
+--- stderr
+Error parsing file dir: The total number of rounds in the tournament must be specified.
+

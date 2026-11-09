@@ -1,5 +1,13 @@
 # E2 notes: WebAssembly build of the pinned engine
 
+**E2 is done (2026-11-09); README.md, "WebAssembly (E2)", describes what was
+built and found.** Checked against these notes: the `-s` link flag, wasm32
+limit messages and libc++ random distributions were as predicted; `-Werror`
+with the newer clang needed one fork fix (`1b3c79f`, limits configuration
+only); the PR #31 out-of-bounds report was a different defect than guessed
+below (the Burstein bye iterator, fork `7462281`), not the `dutch.cpp` one.
+Exceptions needed `-fwasm-exceptions`. The text below is kept as written.
+
 Pointers collected during E1 for the next engine iteration (E2: Emscripten
 build, Node runner, parity with the native build). Notes only; no WASM work was
 done in E1.

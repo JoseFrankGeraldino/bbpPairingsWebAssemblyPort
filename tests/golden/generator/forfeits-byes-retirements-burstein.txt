@@ -96,7 +96,7 @@ ID	Pts	--	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Me
 22	0.0	 B	 (W)	            0.00	          0.00	              1.0	        0.00	            0.0	(20W)		25	
 23	0.0	  	  A 	            0.00	          0.00	              1.0	        0.00	            0.0	(18B)		  	
 26	0.0	 B	 (W)	            0.00	          0.00	              1.0	        0.00	            0.0	(19W)		21	
-26	0.0	 B	 (W)	            0.00	          0.00	              1.0	        0.00	            0.0	(19W)		21	
+30	0.0	  	  A 	            0.00	          0.00	              1.0	        0.00	            0.0	(bye)		  	
 
 
 Round #3.
@@ -174,7 +174,7 @@ ID	Pts	----	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	
 20	1.0	  BW	  b 	            0.00	          3.50	              3.5	        1.50	            1.5	(13B)		  	22	15	
 
 15	0.0	 BWB	 (W)	            0.00	          0.00	              5.0	        0.00	            1.5	(17W)		 2	12	20	
-15	0.0	 BWB	 (W)	            0.00	          0.00	              5.0	        0.00	            1.5	(17W)		 2	12	20	
+26	0.0	  BW	  b 	            0.00	          0.00	              4.5	        0.00	            1.5	(bye)		21	  	18	
 
 
 Round #5.
@@ -341,8 +341,8 @@ ID	Pts	--------	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median sc
 28	2.5	   WBWBW	 (B)	            7.75	         72.50	             29.0	       52.50	           21.0	(18B)		  	 9	14	 2	10	  	 8	
 22	2.5	   BWWBW	 (B)	            7.50	         61.25	             24.5	       46.25	           18.5	(23B)		25	20	  	30	 3	24	  	
 23	2.5	  BWWBWB	  w 	            6.25	         55.00	             22.0	       41.25	           16.5	(22W)		  	18	31	12	 8	15	30	
-18	2.5	     BWB	 (W)	            5.25	         51.25	             20.5	       36.25	           14.5	(28W)		29	23	26	  	  	  	  	
 12	2.5	   WBWBW	 (B)	            6.00	         58.75	             23.5	       41.25	           16.5	(bye)		 5	15	 3	23	  	  	26	
+18	2.5	     BWB	 (W)	            5.25	         51.25	             20.5	       36.25	           14.5	(28W)		29	23	26	  	  	  	  	
 
  1	2.0	      BW	  b 	            5.75	         48.00	             24.0	       34.00	           17.0	(30W)		  	  	  	25	 9	  	  	
 27	2.0	    BWBW	  b 	            4.00	         48.00	             24.0	       36.00	           18.0	(26B)		  	  	 4	16	30	  	25	

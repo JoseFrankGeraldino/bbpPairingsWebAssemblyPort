@@ -1,0 +1,16 @@
+=== step 1: --dutch dutch_2025_C9.input -g -o gen.trf -s 7
+exit: 0
+--- stdout
+
+--- stderr
+
+=== step 2: --dutch gen.trf -c
+exit: 0
+--- stdout
+gen: Round #1
+
+
+--- stderr
+
+--- file gen.trf
+012 AutoTest Tournament 7### 012 Dutch 2025 C9 test001    1      Test0001 Player0001               2720                             1.0    1     3 w 1001    2      Test0002 Player0002               2701                             0.0    4     4 b 0001    3      Test0003 Player0003               2697                             0.0    5     1 b 0001    4      Test0004 Player0004               2689                             1.0    2     2 w 1001    5      Test0005 Player0005               2673                             1.0    3  0000 - UXXR 3

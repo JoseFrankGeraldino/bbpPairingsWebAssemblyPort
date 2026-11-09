@@ -1,0 +1,18 @@
+=== step 1: --dutch model_without_rounds_line.input -g -o gen.trf -s 7
+exit: 0
+--- stdout
+
+--- stderr
+
+=== step 2: --dutch gen.trf -c
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+
+
+--- stderr
+
+--- file gen.trf
+012 AutoTest Tournament 7### 012 Model without rounds line test001    1      Player 0001                       2360                             3.0    1     4 w 1     6 b 1     2 w 1001    2      Player 0002                       2320                             1.5    3     5 b =     3 w 1     1 b 0001    3      Player 0003                       2280                             1.0    5     6 w 0     2 b 0     4 w 1001    4      Player 0004                       2240                             0.0    6     1 b 0     5 w 0     3 b 0001    5      Player 0005                       2200                             2.0    2     2 w =     4 b 1     6 w =001    6      Player 0006                       2160                             1.5    4     3 b 1     1 w 0     5 b =142 3

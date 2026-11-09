@@ -1,0 +1,174 @@
+=== step 1: --dutch gen.trf -c -l check.list
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+gen: Round #4
+gen: Round #5
+
+
+--- stderr
+
+--- file check.list
+Round #1
+
+ID	Pts	-	Pref	C2	C14	C16	  Cur		
+
+ 1	0.0	 	  A 	 Y	   	   	(12B)		
+ 2	0.0	 	  A 	 Y	   	   	(13W)		
+ 3	0.0	 	  A 	 Y	   	   	(14B)		
+ 4	0.0	 	  A 	 Y	   	   	(15W)		
+ 5	0.0	 	  A 	 Y	   	   	(16B)		
+ 6	0.0	 	  A 	 Y	   	   	(17W)		
+ 7	0.0	 	  A 	 Y	   	   	(18B)		
+ 8	0.0	 	  A 	 Y	   	   	(19W)		
+ 9	0.0	 	  A 	 Y	   	   	(20B)		
+10	0.0	 	  A 	 Y	   	   	(21W)		
+11	0.0	 	  A 	 Y	   	   	(22B)		
+12	0.0	 	  A 	 Y	   	   	 (1W)		
+13	0.0	 	  A 	 Y	   	   	 (2B)		
+14	0.0	 	  A 	 Y	   	   	 (3W)		
+15	0.0	 	  A 	 Y	   	   	 (4B)		
+16	0.0	 	  A 	 Y	   	   	 (5W)		
+17	0.0	 	  A 	 Y	   	   	 (6B)		
+18	0.0	 	  A 	 Y	   	   	 (7W)		
+19	0.0	 	  A 	 Y	   	   	 (8B)		
+20	0.0	 	  A 	 Y	   	   	 (9W)		
+21	0.0	 	  A 	 Y	   	   	(10B)		
+22	0.0	 	  A 	 Y	   	   	(11W)		
+
+
+Round #2
+
+ID	Pts	--	Pref	C2	C14	C16	  Cur		R1	
+
+ 1	1.0	 B	 (W)	 Y	   	   	 (8W)		12	
+ 2	1.0	 W	 (B)	 Y	   	   	 (7B)		13	
+ 3	1.0	 B	 (W)	 Y	   	   	(10W)		14	
+ 4	1.0	 W	 (B)	 Y	   	   	 (9B)		15	
+ 6	1.0	 W	 (B)	 Y	   	   	(11B)		17	
+ 7	1.0	 B	 (W)	 Y	   	   	 (2W)		18	
+ 8	1.0	 W	 (B)	 Y	   	   	 (1B)		19	
+ 9	1.0	 B	 (W)	 Y	   	   	 (4W)		20	
+10	1.0	 W	 (B)	 Y	   	   	 (3B)		21	
+11	1.0	 B	 (W)	 Y	   	   	 (6W)		22	
+
+ 5	0.5	 B	 (W)	 Y	   	   	(12W)		16	
+16	0.5	 W	 (B)	 Y	   	   	(13B)		 5	
+
+12	0.0	 W	 (B)	 Y	   	   	 (5B)		 1	
+13	0.0	 B	 (W)	 Y	   	   	(16W)		 2	
+14	0.0	 W	 (B)	 Y	   	   	(19B)		 3	
+15	0.0	 B	 (W)	 Y	   	   	(20W)		 4	
+17	0.0	 B	 (W)	 Y	   	   	(22W)		 6	
+18	0.0	 W	 (B)	 Y	   	   	(21B)		 7	
+19	0.0	 B	 (W)	 Y	   	   	(14W)		 8	
+20	0.0	 W	 (B)	 Y	   	   	(15B)		 9	
+21	0.0	 B	 (W)	 Y	   	   	(18W)		10	
+22	0.0	 W	 (B)	 Y	   	   	(17B)		11	
+
+
+Round #3
+
+ID	Pts	---	Pref	C2	C14	C16	  Cur		R1	R2	
+
+ 3	2.0	 BW	  b 	 Y	   	   	 (1B)		14	10	
+ 4	2.0	 WB	  w 	 Y	   	   	 (6W)		15	 9	
+ 6	2.0	  W	 (B)	 N	  D	   	 (4B)		17	  	
+
+ 1	1.5	 BW	  b 	 Y	   	   	 (3W)		12	 8	
+ 2	1.5	 WB	  w 	 Y	   	   	 (5W)		13	 7	
+ 5	1.5	 BW	  b 	 Y	  D	   	 (2B)		16	12	
+ 7	1.5	 BW	  b 	 Y	   	   	 (8B)		18	 2	
+ 8	1.5	 WB	  w 	 Y	   	   	 (7W)		19	 1	
+
+ 9	1.0	 BW	  b 	 Y	   	   	(18B)		20	 4	
+10	1.0	 WB	  w 	 Y	   	   	(13W)		21	 3	
+11	1.0	  B	 (W)	 Y	   	   	(17W)		22	  	
+13	1.0	 BW	  b 	 Y	  U	   	(10B)		 2	16	
+17	1.0	 BW	  b 	 Y	   	   	(11B)		 6	22	
+18	1.0	 WB	  w 	 Y	   	   	 (9W)		 7	21	
+19	1.0	 BW	  b 	 Y	   	   	(20B)		 8	14	
+
+15	0.5	 BW	  b 	 Y	   	   	(16B)		 4	20	
+16	0.5	 WB	  w 	 Y	  D	   	(15W)		 5	13	
+20	0.5	 WB	  w 	 Y	   	   	(19W)		 9	15	
+
+12	0.0	 WB	  w 	 Y	  U	   	(21W)		 1	 5	
+14	0.0	 WB	  w 	 Y	   	   	(22W)		 3	19	
+21	0.0	 BW	  b 	 Y	   	   	(12B)		10	18	
+22	0.0	 WB	  w 	 Y	   	   	(14B)		11	17	
+
+
+Round #4
+
+ID	Pts	----	Pref	C2	C14	C16	  Cur		R1	R2	R3	
+
+ 3	3.0	 BWB	 (W)	 Y	  D	   	 (6W)		14	10	 1	
+ 6	3.0	  WB	  w 	 N	   	  D	 (3B)		17	  	 4	
+
+ 5	2.5	 BWB	 (W)	 Y	   	  D	 (8W)		16	12	 2	
+ 8	2.5	  WB	  w 	 N	  D	   	 (5B)		19	 1	  	
+
+ 4	2.0	 WBW	 (B)	 Y	   	   	(11B)		15	 9	 6	
+10	2.0	 WBW	 (B)	 Y	   	   	(19B)		21	 3	13	
+11	2.0	  BW	  b 	 Y	   	   	 (4W)		22	  	17	
+19	2.0	 BWB	 (W)	 Y	  D	   	(10W)		 8	14	20	
+
+ 1	1.5	 BWW	  B 	 Y	  U	   	 (7B)		12	 8	 3	
+ 2	1.5	 WBW	 (B)	 Y	   	   	 (9B)		13	 7	 5	
+ 7	1.5	  BW	  b 	 Y	   	   	 (1W)		18	 2	  	
+ 9	1.5	 BWB	 (W)	 Y	   	   	 (2W)		20	 4	18	
+18	1.5	 WBW	 (B)	 Y	   	   	(15B)		 7	21	 9	
+
+12	1.0	 WBW	 (B)	 Y	   	  U	(13B)		 1	 5	21	
+13	1.0	 BWB	 (W)	 Y	   	  U	(12W)		 2	16	10	
+15	1.0	 BWB	 (W)	 Y	   	   	(18W)		 4	20	16	
+16	1.0	 WBW	 (B)	 Y	   	  D	(17B)		 5	13	15	
+17	1.0	 BWB	 (W)	 Y	   	   	(16W)		 6	22	11	
+
+14	0.5	 WBW	 (B)	 Y	   	   	(21B)		 3	19	22	
+20	0.5	 WBW	 (B)	 Y	  U	   	(22B)		 9	15	19	
+22	0.5	 WBB	  W 	 Y	   	   	(20W)		11	17	14	
+
+21	0.0	 BWB	 (W)	 Y	   	   	(14W)		10	18	12	
+
+
+Round #5
+
+ID	Pts	-----	Pref	C2	C14	C16	  Cur		R1	R2	R3	R4	
+
+ 3	4.0	 BWBW	  b 	 Y	   	  D	 (5B)		14	10	 1	 6	
+
+ 5	3.5	 BWBW	  b 	 Y	   	   	 (3W)		16	12	 2	 8	
+
+ 4	3.0	 WBWB	  w 	 Y	   	   	(10W)		15	 9	 6	11	
+ 6	3.0	  WBB	  W 	 N	   	   	 (1W)		17	  	 4	 3	
+10	3.0	 WBWB	  w 	 Y	   	   	 (4B)		21	 3	13	19	
+
+ 1	2.5	 BWWB	  w 	 Y	   	  U	 (6B)		12	 8	 3	 7	
+ 2	2.5	 WBWB	  w 	 Y	   	   	 (8B)		13	 7	 5	 9	
+ 8	2.5	  WBB	  W 	 N	   	  D	 (2W)		19	 1	  	 5	
+
+11	2.0	  BWW	  B 	 Y	   	   	(15B)		22	  	17	 4	
+13	2.0	 BWBW	  b 	 Y	   	   	(19B)		 2	16	10	12	
+15	2.0	 BWBW	  b 	 Y	  U	   	(11W)		 4	20	16	18	
+17	2.0	 BWBW	  b 	 Y	   	   	(18B)		 6	22	11	16	
+19	2.0	 BWBW	  b 	 Y	   	  D	(13W)		 8	14	20	10	
+
+ 7	1.5	  BWW	  B 	 Y	   	   	(20B)		18	 2	  	 1	
+ 9	1.5	 BWBW	  b 	 Y	   	   	(14B)		20	 4	18	 2	
+14	1.5	 WBWB	  w 	 Y	  D	   	 (9W)		 3	19	22	21	
+18	1.5	 WBWB	  w 	 Y	  D	   	(17W)		 7	21	 9	15	
+20	1.5	 WBWB	  w 	 Y	   	  U	 (7W)		 9	15	19	22	
+
+12	1.0	 WBWB	  w 	 Y	   	   	(16W)		 1	 5	21	13	
+16	1.0	 WBWB	  w 	 Y	   	   	(12B)		 5	13	15	17	
+
+22	0.5	 WBBW	  b 	 Y	   	   	(21W)		11	17	14	20	
+
+21	0.0	 BWBW	  b 	 Y	  U	   	(22B)		10	18	12	14	
+
+
+BBP Pairings <build info>

@@ -1,0 +1,11 @@
+=== step 1: --dutch burstein_bye_checklist.input -c
+exit: 0
+--- stdout
+burstein_bye_checklist: Round #1
+  Checker pairings        Tournament pairings 
+      4 -   2                  2 -   4
+
+
+
+--- stderr
+

@@ -2,3 +2,4 @@
 # CR line endings in TRF output. Never let git convert line endings here.
 tests/fixtures/** -text
 tests/golden/** -text
+tests/golden-wasm/** -text

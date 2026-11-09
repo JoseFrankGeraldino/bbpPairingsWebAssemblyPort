@@ -6,14 +6,16 @@ itself is not developed here: it is our fork of bbpPairings, pinned as a git
 submodule and built unmodified. This repository adds our own build entry
 point, an engine-agnostic test suite with golden files, line coverage of the
 engine sources with a 90% gate, a standalone FIDE tie-break tool checked
-against FIDE's reference implementation, and `dist/` packaging with the
-licences.
+against FIDE's reference implementation, WebAssembly builds of both (checked
+by the same suites) with a TypeScript bridge for the browser, and `dist/`
+packaging with the licences.
 
 State: E1 done (native Linux build, suite, coverage, dist). E3 done: the
 tie-break tool for individual tournaments (milestone 1) and team tournaments
 (milestone 2), every tie-break on FIDE's mandatory TRF-26 list, see
-"Tie-break tool" below. Next: E2 (WebAssembly, judged by these same suites;
-see [docs/E2-notes.md](docs/E2-notes.md)).
+"Tie-break tool" below. E2 done: WebAssembly builds of the engine and the
+tie-break tool, the same suites run against them, a browser bridge, see
+"WebAssembly (E2)" below.
 
 ## Repository layout
 
@@ -30,8 +32,11 @@ see [docs/E2-notes.md](docs/E2-notes.md)).
 | `tests/coverage_gate.py` | gcovr report + "no data" and minimum-coverage gates |
 | `tests/fixtures/` | sample TRFs and generator configuration files |
 | `tests/golden/` | golden outputs recorded from the pinned native build |
+| `bridge/` | the browser bridge (TypeScript): `bbp-bridge.ts` runs a WebAssembly program, `bbp-worker.ts` runs it in a Web Worker |
+| `tests/bridge/bridge_test.ts` | tests of the bridge on the browser builds (Node, no packages) |
+| `tests/golden-wasm/` | golden files of the cases whose output depends on the build target (see "WebAssembly (E2)") |
 | `.github/workflows/ci.yml` | CI (GitHub Actions, `ubuntu-latest`) |
-| `docs/E2-notes.md` | pointers for the WebAssembly iteration |
+| `docs/E2-notes.md` | notes from before the WebAssembly iteration (its findings are in "WebAssembly (E2)") |
 
 ## Licensing structure
 
@@ -60,8 +65,8 @@ see [docs/E2-notes.md](docs/E2-notes.md)).
 |---|---|
 | Submodule | `third_party/bbpPairings` |
 | Fork (the source we build) | https://github.com/JoseFrankGeraldino/bbpPairings |
-| Branch | `master` (the fixes below were merged by fork PR #1, merge commit `b4db98e`, same tree as the pin) |
-| Pinned commit | **`0ee9df74304a8ba7febb84811c2771ab1c8def6e`** (`0ee9df7`) = baseline + 6 fix commits (see "Engine fixes in the fork") |
+| Branch | `master` (the first six fixes below were merged by fork PR #1, merge commit `b4db98e`; the last two were committed on `master`) |
+| Pinned commit | **`1b3c79fac8ae82af1ab32dba8c5161bdd702372a`** (`1b3c79f`) = baseline + 8 fix commits (see "Engine fixes in the fork") |
 | Baseline | `8f9e3c5` = upstream `master`, tagged **`v6.0.0-lessader.1`** in the fork; golden files were first recorded there |
 | Upstream | https://github.com/BieremaBoyzProgramming/bbpPairings |
 | Upstream base | tag **v6.0.0** + 5 commits (TRF-26 fixes: line 162 absence points, 2026 tournament type codes) |
@@ -85,6 +90,10 @@ Linux only (WSL2 Ubuntu locally, `ubuntu-latest` in CI); no MSVC build.
   the runner's default GCC), GNU Make, git
 - Python 3 (standard library only) for the suites and for Gacrux
 - `gcovr` for the coverage report (`apt install gcovr`)
+- for the WebAssembly builds: the Emscripten SDK **7.0.0** (emsdk; `make`
+  takes `em++` from `PATH`, else sources `EMSDK_ENV`, default
+  `~/emsdk/emsdk_env.sh`) and the Node.js it installs (24.x; runs TypeScript
+  by type stripping)
 - network access once, for `make gacrux` (clones Gacrux at the pinned commit
   into `build/gacrux`; `GACRUX_DIR=<clone>` uses an existing clone, which must
   be at that commit and clean)
@@ -107,6 +116,9 @@ make test-tiebreak                          # tie-break comparison only
 BBP_GENERATED_COUNT=20 BBP_TIEBREAK_COUNT=3 make test   # quicker local run
 make coverage                               # instrumented builds + suites + reports + gates
 make dist                                   # -> dist/native-linux-x64/
+make wasm                                   # -> build/wasm (Node CLIs), build/wasm/web (modules)
+make test-wasm                              # the suites on the WebAssembly builds + bridge
+make dist-wasm                              # -> dist/wasm/
 git -C third_party/bbpPairings status       # must be clean
 ```
 
@@ -116,9 +128,9 @@ because objects are not rebuilt when only flags change).
 ## Test suite
 
 `tests/run_tests.py --engine <executable>` runs every case against any
-executable that behaves like the bbpPairings command line: today
-`build/native/bbpPairings`, in E2 a Node runner script for the WebAssembly
-build. Each case copies its inputs into a fresh temporary directory, runs the
+executable that behaves like the bbpPairings command line:
+`build/native/bbpPairings`, or `build/wasm/bbpPairings` (the WebAssembly build
+as a Node command line) with `--target wasm`. Each case copies its inputs into a fresh temporary directory, runs the
 engine there with relative file names, and renders exit code, stdout, stderr
 and output files into one block that is compared **byte for byte** with
 `tests/golden/<case>.txt`. Build-dependent text (version string, build date,
@@ -133,6 +145,7 @@ the engine's own path in usage messages) is normalised first.
 | `features` | synthetic TRFs for each input feature: 192 type codes incl. Baku acceleration, XXC/152 colours, XXC rank, 162 and BB* point systems, 250/XXA accelerations, 260/XXP forbidden pairs, 240 byes, result codes, CR/CRLF, UTF-8 names, no valid pairing | all |
 | `errors` | bad arguments, missing/unwritable files, malformed TRF (one defect per case), generator configuration errors, values beyond the build's type limits; exit codes and messages | all |
 | `roundtrip` | TRF read -> write -> read for every sample and upstream input (see below) | all |
+| `parity` | every tournament the native generator wrote into the `generated` and `generator` golden files, checked round by round (`-c`) with checklists: the pairing work behind the generator cases, the same on every build target | all |
 | `limits` | against `ENGINE_LIMITS`, the engine built with small compile-time limits (`LIMITS_VARS` in the Makefile: `max_players=40 max_points=99 max_rating=255 max_rounds=9`, no checker/generator): player IDs, ratings, scores, score sums and rounds beyond the build's types; modes left out of that build | all |
 
 The Burstein system is exercised only because its code is part of the
@@ -148,10 +161,14 @@ only by a reviewed decision (a pin bump). First recorded at the baseline
 `8f9e3c5`; the bump to `0ee9df7` changed exactly two of them
 (`errors/trf-invalid-utf8`, `generator/model-issue_15-dutch`), both as the
 fixes intend, and added cases for the new upstream-style tests and the
-limits group.
+limits group. The bump to `1b3c79f` changed the seven Burstein golden files
+with a checklist (the bye player is now listed and marked, no player twice;
+pairings unchanged) and added the `parity` group and the cases of the new
+upstream-style test.
 
 ```bash
-make golden-record CONFIRM=0ee9df7   # refuses unless CONFIRM equals the submodule's short SHA
+make golden-record CONFIRM=1b3c79f        # refuses unless CONFIRM equals the submodule's short SHA
+make golden-record-wasm CONFIRM=1b3c79f   # tests/golden-wasm, from the WebAssembly build
 ```
 
 `tests/fixtures/**` and `tests/golden/**` are `-text` in `.gitattributes`
@@ -207,7 +224,7 @@ not skipped — what the engine's TRF writers do **not** preserve:
   `uncovered-lines.txt`; uploaded as a CI artifact.
 - **Gates** (`tests/coverage_gate.py`): fails when no `.gcda` data exists or
   gcovr measures zero lines, and when line coverage is below 90%.
-- Result at `0ee9df7`: see the CI artifact; locally (GCC 15.2) 92.7% of
+- Result at `1b3c79f`: see the CI artifact; locally (GCC 15.2) 92.7% of
   lines, nothing excluded.
 - **Tie-break tool:** all of `tiebreak/`, instrumented build in
   `build/obj/coverage-tiebreak`, run through `tests/tiebreak_compare.py`
@@ -217,8 +234,9 @@ not skipped — what the engine's TRF writers do **not** preserve:
 
 ## Engine fixes in the fork
 
-Found by this suite at the baseline `8f9e3c5`, fixed in the fork on branch
-`fix/e1-engine-defects` (one commit each, each with an upstream-style
+Found by this suite (the first six at the baseline `8f9e3c5`, the last two by
+the WebAssembly build), fixed in the fork (on branch `fix/e1-engine-defects`,
+then on `master`; one commit each, each with an upstream-style
 regression test in the fork's `test/tests/` where a default build can reach
 it), then pinned here:
 
@@ -230,6 +248,8 @@ it), then pinned here:
 | `d3bf93f` | a blank `XXA` entry was only accepted as the last entry (`substr` length vs end index) | `upstream/xxa_blank_entry-*` |
 | `14efd0e` | builds with custom limits or `burstein=no` / `dutch=no` / `engine_comparison=no` did not compile under `-Werror` | `limits` group (the build itself) |
 | `0ee9df7` | limit messages for types narrower than `int` (`toString(~T{ })` = `toString(-1)`) looped forever | `limits/rating-beyond-type` |
+| `7462281` | Burstein kept an iterator past the bye player across `erase`; the re-insert was UB: with libstdc++ the checklist listed a player twice and left the bye player out, with libc++ (WebAssembly) the run aborted ("memory access out of bounds", as reported on upstream PR #31) | `samples/*/burstein-pair-file-checklist`, `upstream/burstein_bye_checklist-*` |
+| `1b3c79f` | the limits configuration did not compile with clang (`-Wtautological-constant-out-of-range-compare` on a size guard) | `limits` group on WebAssembly (the build itself) |
 
 ## Known engine limitations (not fixed)
 
@@ -324,6 +344,70 @@ in the summary. 2026-11-09, locally: 711 individual inputs x 9 and 113 team
 inputs x 10 (100 seeds per source), **0 differences**. CI runs 20 seeds per
 source.
 
+## WebAssembly (E2)
+
+The engine and the tie-break tool are compiled with **Emscripten 7.0.0**
+(pinned: `EMSDK_VERSION` in the Makefile, emsdk commit in CI). The engine is
+built by its own Makefile, unmodified: `COMP=clang` (its clang warning set,
+`-Werror`), `CXX="em++ -fwasm-exceptions"` (WebAssembly exception handling:
+the engine reports every error by an exception, which Emscripten aborts on by
+default) and `optional_ldflags` for the link (the default carries a bare `-s`,
+GNU ld's strip, which emcc reads as a setting). The tie-break tool is built
+with our warning set, as natively.
+
+Two shapes of each program:
+
+| Build | Files | Use |
+|---|---|---|
+| Node command line (`make wasm-node`, `wasm-limits`, `wasm-tools`, `wasm-tiebreak`) | `build/wasm/bbpPairings`, `build/wasm/tiebreak`, `build/wasm/trf-roundtrip`, `build/wasm-limits/bbpPairings` (each a loader with a `node` shebang + its `.wasm`) | the same command-line contract as the native programs (real files, exit code), so the suites run against them unchanged |
+| browser module (`make wasm-web`) | `build/wasm/web/bbpPairings.mjs` + `.wasm`, `tiebreak.mjs` + `.wasm` (ES modules, `MODULARIZE`, in-memory file system, web/worker/node) | the main app, through `bridge/` |
+
+**Bridge** (`bridge/bbp-bridge.ts`, `bridge/bbp-worker.ts`, TypeScript with
+erasable syntax only): `runProgram(factory, { args, files, outputs })` runs
+one program on a fresh module instance with the native command-line
+arguments and returns `{ exitCode, stdout, stderr, files }` (bytes);
+`pair`, `check`, `generate` and `tiebreak` wrap the usual calls. A compiled
+`WebAssembly.Module` can be shared between runs. `bbp-worker.ts` is a module
+Web Worker answering `{ id, program, request }` messages, and
+`createWorkerClient(worker)` the page side, so pairing never blocks the UI.
+The app's bundler compiles the `.ts` files; they are tested under Node.
+
+**Tests** (`make test-wasm`):
+
+- `test-wasm-engine`: `tests/run_tests.py --target wasm` against the Node
+  command lines, every group including `limits`, `roundtrip` (the white-box
+  helper compiled to WebAssembly) and `parity`. Every case must equal the
+  native golden file, except the cases listed in `TARGET_DIFFERENCES`
+  (run_tests.py), each with its reason, which compare with
+  `tests/golden-wasm/` (recorded from the WebAssembly build only by `make
+  golden-record-wasm`):
+  - the generator (`generated/`, `generator/`, two generator error cases, and
+    `generated/dutch-seed-0262`): its random distributions are libc++'s, not
+    libstdc++'s, so the same seed gives another tournament (seed 262 gives one
+    whose round 14 has no valid pairing; the native engine agrees on that
+    tournament). The `parity` group still checks, on every target, the
+    pairings of the tournaments the native generator wrote;
+  - two limit messages that print a 32-bit maximum (wasm32 is ILP32);
+  - a directory given as input file, which Emscripten's Node file system opens
+    as an empty file (for these two the overlay golden, exit code included,
+    replaces the exit-code check).
+- `test-wasm-tiebreak`: the Gacrux comparison with the WebAssembly tie-break
+  tool, on tournaments generated by the WebAssembly engine.
+- `test-wasm-bridge`: `tests/bridge/bridge_test.ts`, every run through the
+  bridge compared byte for byte with the native command line (pairing and
+  checking every sample with both systems, usage and errors, tie-breaks of
+  individual and team events) and with the WebAssembly command line for the
+  generator; plus fresh instances, the shared compiled module, the host's
+  exit code left alone, and the worker's message handling.
+
+Result 2026-11-09, locally: engine suite 701/701 on WebAssembly (the same
+cases as natively), tie-break comparison 0 differences, bridge 60/60.
+
+Found on the way and fixed in the fork: the Burstein bye bug (`7462281`, the
+"memory access out of bounds" of upstream PR #31; natively it had silently
+corrupted the Burstein checklist) and a clang build error of the limits
+configuration (`1b3c79f`).
+
 ## Packaging (`make dist`)
 
 `dist/native-linux-x64/`:
@@ -339,6 +423,14 @@ source.
 
 This is the shape the main app consumes for its server.
 
+`make dist-wasm` -> `dist/wasm/`: `bbpPairings.mjs` + `bbpPairings.wasm`,
+`tiebreak.mjs` + `tiebreak.wasm`, `bbp-bridge.ts`, `bbp-worker.ts`, the same
+licence files and `NOTICE`, the licence texts of the Emscripten runtime and
+of the libraries compiled into the `.wasm` files (`EMSCRIPTEN-LICENSE.txt`,
+`LIBCXX-LICENSE.txt`, `LIBCXXABI-LICENSE.txt`, `MUSL-COPYRIGHT.txt`), and
+`VERSION` (fork commit, this repository's commit, Gacrux commit, Emscripten
+version). This is the shape the main app consumes for the browser.
+
 ## CI jobs and their local equivalents
 
 `.github/workflows/ci.yml` runs on every push and pull request (actions
@@ -347,8 +439,10 @@ pinned by commit SHA):
 | Job | Local equivalent (WSL2 Ubuntu, repo root) |
 |---|---|
 | `native` | `git submodule status && test -z "$(git -C third_party/bbpPairings status --porcelain)" && make native && make test ENGINE=build/native/bbpPairings && make dist` |
+| `wasm` | `make wasm && make test-wasm && make dist-wasm` (CI installs emsdk 7.0.0 from its pinned commit into `build/emsdk`; 100 generated tournaments, 5 tie-break seeds per source) |
 | `coverage` | `sudo apt-get install -y gcovr && make coverage` |
 
-Both jobs check out Gacrux at the pinned commit into `build/gacrux` first;
+Every job checks out Gacrux at the pinned commit into `build/gacrux` first;
 locally `make gacrux` clones it. Artifacts: `native-linux-x64` (the `dist/`
-folder) and `coverage-report` (engine and tie-break tool reports).
+folder), `wasm` (`dist/wasm`) and `coverage-report` (engine and tie-break
+tool reports).

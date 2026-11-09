@@ -25,6 +25,12 @@ Gacrux:
   Original repository: https://github.com/OttoMilvang/TieBreakServer
   https://www.gacrux.no
 
-The build scripts, test suite, packaging and tie-break tool of
-bbpPairingsWebAssemblyPort are licensed under the MIT License (see
+The build scripts, test suite, packaging, browser bridge and tie-break tool
+of bbpPairingsWebAssemblyPort are licensed under the MIT License (see
 LICENSE-tiebreak.txt; https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort).
+
+The WebAssembly distribution (.mjs and .wasm files) is built with
+Emscripten and contains its JavaScript runtime (MIT or University of
+Illinois/NCSA, see EMSCRIPTEN-LICENSE.txt), libc++ and libc++abi (Apache
+License 2.0 with LLVM exception, see LIBCXX-LICENSE.txt and
+LIBCXXABI-LICENSE.txt) and musl libc (MIT, see MUSL-COPYRIGHT.txt).

@@ -4,8 +4,9 @@
 Part of bbpPairingsWebAssemblyPort (MIT). Python 3 standard library only.
 
 The engine under test is any executable that behaves like the bbpPairings
-command line (``--engine``): the native build in E1, a Node runner script for
-the WebAssembly build in E2. Every case copies its input files into a fresh
+command line (``--engine``): the native build, or the WebAssembly build as a
+Node command line (``--target wasm``, which compares the cases listed in
+TARGET_DIFFERENCES with ``tests/golden-wasm/``). Every case copies its input files into a fresh
 working directory, runs the engine there with relative file names, and renders
 exit code, stdout, stderr and any output files into one text block. That block
 is compared byte for byte with a golden file under ``tests/golden/``. Golden
@@ -25,6 +26,8 @@ Case groups:
   errors      malformed input, missing files, limits, bad arguments (golden)
   roundtrip   TRF read -> write -> read through tests/roundtrip (golden)
   limits      build-limit errors, against --engine-limits (golden)
+  parity      the tournaments of the generated and generator golden files,
+              checked round by round with checklists (golden)
 """
 
 from __future__ import annotations
@@ -65,6 +68,52 @@ GOLDEN_GENERATED_BURSTEIN_SEEDS = range(1, 6)
 # Empty since the fixes in fix/e1-engine-defects (README.md, "Engine fixes in
 # the fork").
 KNOWN_ENGINE_UB: dict[str, str] = {}
+
+# Cases whose output depends on the build target and not on the engine logic
+# (name or "group/" prefix -> reason). With --target wasm they are compared
+# with tests/golden-wasm/<name>.txt, recorded from the WASM build only through
+# --record --target wasm; every other case must equal the native golden file.
+# The parity group checks the pairing work behind the generator cases on the
+# tournaments the native build generated, so a generator difference cannot
+# hide a pairing difference.
+GENERATOR_DRAWS = (
+    "random distributions: libc++ (Emscripten) and libstdc++ draw different"
+    " numbers from the same minstd_rand seed, so the generator writes another"
+    " tournament"
+)
+TARGET_DIFFERENCES: dict[str, dict[str, str]] = {
+    "native": {},
+    "wasm": {
+        "generated/": GENERATOR_DRAWS,
+        "generator/": GENERATOR_DRAWS,
+        "errors/generator-config-cr-line-endings": GENERATOR_DRAWS,
+        "errors/generator-config-score-overflow": GENERATOR_DRAWS,
+        "errors/generator-seed-out-of-range":
+            "wasm32 is ILP32: the integer type of the seed is 32 bits wide",
+        "errors/trf-xxr-out-of-range": "wasm32: size_t (round index) is 32 bits wide",
+        "errors/file-directory-as-input":
+            "Emscripten's Node file system (NODERAWFS) opens a directory as an"
+            " empty file",
+        "errors/file-directory-as-config":
+            "Emscripten's Node file system (NODERAWFS) opens a directory as an"
+            " empty file",
+        "generated/dutch-seed-0262":
+            GENERATOR_DRAWS + "; with 17 players its round 14 has no valid pairing"
+            " (the native engine agrees on the first 13 rounds and on round 14),"
+            " so the generator stops with exit 1",
+    },
+}
+GOLDEN_BY_TARGET = {"native": GOLDEN, "wasm": TESTS / "golden-wasm"}
+# Listed cases whose exit code itself differs on the target: their overlay
+# golden file (output and exit code) is the whole check.
+TARGET_EXIT_DIFFERENCES: dict[str, set[str]] = {
+    "native": set(),
+    "wasm": {
+        "errors/file-directory-as-input",
+        "errors/file-directory-as-config",
+        "generated/dutch-seed-0262",
+    },
+}
 
 # Inputs the engine rejects on purpose; they cannot serve as generator models.
 UNREADABLE_INPUTS = {
@@ -343,6 +392,52 @@ def generator_cases() -> list[Case]:
     return cases
 
 
+def golden_file(path: Path, name: str) -> Optional[bytes]:
+    """A file section of a rendered golden file, or None if it is missing."""
+    data = path.read_bytes()
+    marker = b"\n--- file " + name.encode() + b"\n"
+    start = data.find(marker)
+    if start < 0:
+        return None
+    start += len(marker)
+    end = data.find(b"\n--- file ", start)
+    content = data[start:] if end < 0 else data[start:end]
+    content = content[:-1] if content.endswith(b"\n") else content
+    return None if content == b"<missing>" else content
+
+
+def parity_cases() -> list[Case]:
+    """Check every tournament the native generator wrote into the golden
+    files of the generated and generator groups, round by round and with
+    checklists, so that the pairing work is compared on every build even
+    where the builds' random distributions make the generators differ."""
+    cases = []
+    for group in ("generated", "generator"):
+        for path in sorted((GOLDEN / group).glob("*.txt")):
+            trf = golden_file(path, "gen.trf")
+            if trf is None:
+                continue
+            flag = "--burstein" if "burstein" in path.stem else "--dutch"
+            cases.append(
+                Case(
+                    "parity/%s-%s" % (group, path.stem),
+                    [[flag, "gen.trf", "-c", "-l", "check.list"]],
+                    {"gen.trf": trf},
+                    outputs=["check.list"],
+                    check=expect_exit(0),
+                )
+            )
+    return cases
+
+
+def target_difference(target: str, name: str) -> Optional[str]:
+    """The reason a case's output differs on this build target, if it does."""
+    for key, reason in TARGET_DIFFERENCES[target].items():
+        if name == key or (key.endswith("/") and name.startswith(key)):
+            return reason
+    return None
+
+
 def inline_cases(group: str, specs: list[dict], tool: str = "engine") -> list[Case]:
     return [
         Case(
@@ -378,7 +473,9 @@ def roundtrip_cases() -> list[Case]:
 # --- runner --------------------------------------------------------------------
 
 
-def run_case(case: Case, tools: dict[str, Path], record: bool) -> Outcome:
+def run_case(
+    case: Case, tools: dict[str, Path], record: bool, build_target: str
+) -> Outcome:
     executable = tools[case.tool]
     engine_names = [str(executable).encode(), str(tools["engine"]).encode()]
     with tempfile.TemporaryDirectory(prefix="bbp-test-") as work:
@@ -413,15 +510,21 @@ def run_case(case: Case, tools: dict[str, Path], record: bool) -> Outcome:
             files[name] = normalize(path.read_bytes(), engine_names) if path.exists() else None
 
     errors = []
-    if case.check:
+    if case.check and case.name not in TARGET_EXIT_DIFFERENCES[build_target]:
         semantic = case.check([r for r in results], files)
         if semantic:
             errors.append(semantic)
 
-    if case.golden:
+    differs = target_difference(build_target, case.name) is not None
+    # A case listed by its full name is pinned by an overlay file even when it
+    # is not golden on the native build.
+    named = case.name in TARGET_DIFFERENCES[build_target]
+    if case.golden or named:
         actual = render(results, files)
-        golden_path = GOLDEN / (case.name + ".txt")
-        if record:
+        root = GOLDEN_BY_TARGET[build_target] if differs else GOLDEN
+        golden_path = root / (case.name + ".txt")
+        # A non-native target records only its listed differences.
+        if record and (build_target == "native" or differs):
             golden_path.parent.mkdir(parents=True, exist_ok=True)
             golden_path.write_bytes(actual)
             return Outcome(case, "; ".join(errors) or None, recorded=True)
@@ -461,6 +564,13 @@ def main() -> int:
         "--instrumented",
         action="store_true",
         help="engine is an unoptimized coverage build: exclude KNOWN_ENGINE_UB cases",
+    )
+    parser.add_argument(
+        "--target",
+        choices=sorted(TARGET_DIFFERENCES),
+        default="native",
+        help="build target of the engine: selects the golden overlay for the"
+        " cases listed in TARGET_DIFFERENCES",
     )
     parser.add_argument("--filter", default="", help="regex on case names")
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 2)
@@ -527,9 +637,24 @@ def main() -> int:
 
     failures = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        for outcome in pool.map(lambda c: run_case(c, tools, args.record), all_cases):
+        for outcome in pool.map(
+            lambda c: run_case(c, tools, args.record, args.target), all_cases
+        ):
             if outcome.error:
                 failures.append(outcome)
+        # The parity inputs are read from the golden files of the first pass,
+        # so that a recording run checks the tournaments it has just written.
+        parity = [
+            case for case in parity_cases()
+            if not pattern or pattern.search(case.name)
+        ]
+        print("parity cases: %d" % len(parity))
+        for outcome in pool.map(
+            lambda c: run_case(c, tools, args.record, args.target), parity
+        ):
+            if outcome.error:
+                failures.append(outcome)
+        all_cases += parity
 
     golden_count = sum(1 for c in all_cases if c.golden)
 
@@ -542,18 +667,41 @@ def main() -> int:
         and "limits" in tools
     )
     if complete:
-        expected = {c.name for c in all_cases + excluded if c.golden}
-        for path in sorted(GOLDEN.rglob("*.txt")):
-            name = path.relative_to(GOLDEN).with_suffix("").as_posix()
-            if name not in expected:
-                failures.append(Outcome(
-                    Case(name, []),
-                    "stale golden file (no such case): %s" % path.relative_to(ROOT)))
+        golden_names = {c.name for c in all_cases + excluded if c.golden}
+        roots = [(GOLDEN, golden_names)]
+        if args.target != "native":
+            # Listed cases that ran, and every case listed by its full name
+            # (a generated seed above BBP_GENERATED_COUNT does not run).
+            listed = {c.name for c in all_cases + excluded
+                      if c.golden and target_difference(args.target, c.name)}
+            listed |= {name for name in TARGET_DIFFERENCES[args.target]
+                       if not name.endswith("/")}
+            roots.append((GOLDEN_BY_TARGET[args.target], listed))
+        for root, expected in roots:
+            for path in sorted(root.rglob("*.txt")):
+                name = path.relative_to(root).with_suffix("").as_posix()
+                if name not in expected:
+                    failures.append(Outcome(
+                        Case(name, []),
+                        "stale golden file (no such case): %s"
+                        % path.relative_to(ROOT)))
 
     for outcome in sorted(failures, key=lambda o: o.case.name):
         print("\nFAIL %s\n%s" % (outcome.case.name, outcome.error))
     if args.record:
-        print("\nrecorded %d golden files under %s" % (golden_count, GOLDEN.relative_to(ROOT)))
+        recorded = sum(
+            1 for c in all_cases
+            if (c.golden and args.target == "native")
+            or (args.target != "native" and target_difference(args.target, c.name)
+                and (c.golden or c.name in TARGET_DIFFERENCES[args.target])))
+        print("\nrecorded %d golden files under %s" % (
+            recorded, GOLDEN_BY_TARGET[args.target].relative_to(ROOT)))
+    differing = sorted({
+        reason for c in all_cases
+        if (reason := target_difference(args.target, c.name))})
+    for reason in differing:
+        print("\nTARGET DIFFERENCE (%s, compared with tests/golden-%s): %s"
+              % (args.target, args.target, reason))
     for case in excluded:
         print("\nEXCLUDED on this instrumented build (known engine UB, runs on release builds): %s\n  %s"
               % (case.name, KNOWN_ENGINE_UB[case.name]))

@@ -1,0 +1,147 @@
+=== step 1: --burstein gen.trf -c -l check.list
+exit: 0
+--- stdout
+gen: Round #1
+gen: Round #2
+gen: Round #3
+gen: Round #4
+gen: Round #5
+gen: Round #6
+gen: Round #7
+
+
+--- stderr
+
+--- file check.list
+Round #1
+
+ID	Pts	-	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		
+
+ 1	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (5W)		
+ 2	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (4B)		
+ 3	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	(10W)		
+ 4	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (2W)		
+ 5	1.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (1B)		
+
+ 6	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (9B)		
+ 7	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (8W)		
+ 8	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (7B)		
+ 9	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (6W)		
+10	0.0	 	  A 	            0.00	          0.00	              0.0	        0.00	            0.0	 (3B)		
+
+
+Round #2
+
+ID	Pts	--	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	
+
+ 2	2.0	 B	 (W)	            1.00	          2.00	              1.0	        0.00	            0.0	 (3W)		 4	
+ 5	2.0	 B	 (W)	            1.00	          2.00	              1.0	        0.00	            0.0	 (9W)		 1	
+ 3	2.0	 W	 (B)	            0.00	          0.00	              0.0	        0.00	            0.0	 (2B)		10	
+
+ 1	1.0	 W	 (B)	            0.00	          2.00	              2.0	        0.00	            0.0	 (7B)		 5	
+ 4	1.0	 W	 (B)	            0.00	          2.00	              2.0	        0.00	            0.0	 (8B)		 2	
+ 7	1.0	 W	 (B)	            0.00	          0.00	              0.0	        0.00	            0.0	 (1W)		 8	
+ 9	1.0	 W	 (B)	            0.00	          0.00	              0.0	        0.00	            0.0	 (5B)		 6	
+
+10	0.0	 B	 (W)	            0.00	          0.00	              2.0	        0.00	            0.0	 (6W)		 3	
+ 6	0.0	 B	 (W)	            0.00	          0.00	              1.0	        0.00	            0.0	(10B)		 9	
+ 8	0.0	 B	 (W)	            0.00	          0.00	              1.0	        0.00	            0.0	 (4W)		 7	
+
+
+Round #3
+
+ID	Pts	---	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	R2	
+
+ 2	2.0	 BW	  b 	            2.00	          4.00	              2.0	        0.00	            0.0	 (5B)		 4	 3	
+ 5	2.0	 BW	  b 	            2.00	          4.00	              2.0	        0.00	            0.0	 (2W)		 1	 9	
+
+ 1	1.0	 WB	  w 	            1.00	          3.00	              3.0	        0.00	            0.0	(10W)		 5	 7	
+ 3	1.0	 WB	  w 	            1.00	          3.00	              3.0	        0.00	            0.0	 (7W)		10	 2	
+ 4	1.0	 WB	  w 	            0.00	          2.00	              2.0	        0.00	            0.0	 (9W)		 2	 8	
+ 9	1.0	 WB	  w 	            0.00	          2.00	              2.0	        0.00	            0.0	 (4B)		 6	 5	
+ 7	1.0	 WW	  B 	            0.00	          1.00	              1.0	        0.00	            0.0	 (3B)		 8	 1	
+10	1.0	 BW	  b 	            0.00	          1.00	              1.0	        0.00	            0.0	 (1B)		 3	 6	
+
+ 6	0.0	 BB	  W 	            0.00	          0.00	              2.0	        0.00	            0.0	 (8W)		 9	10	
+ 8	0.0	 BW	  b 	            0.00	          0.00	              2.0	        0.00	            0.0	 (6B)		 7	 4	
+
+
+Round #4
+
+ID	Pts	----	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	R2	R3	
+
+ 2	3.0	 BWB	 (W)	            6.00	         18.00	              6.0	        6.00	            2.0	(10W)		 4	 3	 5	
+
+ 3	2.0	 WBW	 (B)	            3.00	         12.00	              6.0	        4.00	            2.0	 (4B)		10	 2	 7	
+ 5	2.0	 BWW	  B 	            2.00	         10.00	              5.0	        2.00	            1.0	 (6B)		 1	 9	 2	
+ 4	2.0	 WBW	 (B)	            1.50	          9.00	              4.5	        2.00	            1.0	 (3W)		 2	 8	 9	
+10	2.0	 BWB	 (W)	            1.50	          7.00	              3.5	        2.00	            1.0	 (2B)		 3	 6	 1	
+
+ 1	1.0	 WBW	 (B)	            1.00	          5.00	              5.0	        2.00	            2.0	 (8B)		 5	 7	10	
+ 9	1.0	 WBB	  W 	            0.50	          4.50	              4.5	        2.00	            2.0	 (7W)		 6	 5	 4	
+ 7	1.0	 WWB	 (B)	            0.50	          3.50	              3.5	        1.00	            1.0	 (9B)		 8	 1	 3	
+ 6	1.0	  BB	  W 	            0.00	          3.00	              3.0	        1.00	            1.0	 (5W)		 9	10	  	
+
+ 8	0.0	  BW	  b 	            0.00	          0.00	              4.0	        0.00	            1.0	 (1W)		 7	 4	  	
+
+
+Round #5
+
+ID	Pts	-----	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	R2	R3	R4	
+
+ 2	4.0	 BWBW	  b 	           10.00	         40.00	             10.0	       20.00	            5.0	 (1B)		 4	 3	 5	10	
+
+ 3	3.0	 WBWB	  w 	            5.50	         28.50	              9.5	       12.00	            4.0	 (6B)		10	 2	 7	 4	
+ 5	3.0	 BWWB	  w 	            4.00	         24.00	              8.0	       10.50	            3.5	 (7W)		 1	 9	 2	 6	
+
+10	2.0	 BWBB	  W 	            2.50	         19.00	              9.5	       10.00	            5.0	 (4W)		 3	 6	 1	 2	
+ 4	2.0	 WBWW	  B 	            2.00	         18.00	              9.0	        9.00	            4.5	(10B)		 2	 8	 9	 3	
+ 1	2.0	 WBWB	  w 	            2.00	         14.00	              7.0	        7.00	            3.5	 (2W)		 5	 7	10	 8	
+ 7	2.0	  WWB	 (B)	            1.50	         13.00	              6.5	        6.00	            3.0	 (5B)		 8	 1	 3	  	
+
+ 9	1.0	  WBB	  W 	            0.50	          7.50	              7.5	        4.00	            4.0	 (8W)		 6	 5	 4	  	
+ 6	1.0	  BBW	 (W)	            0.50	          7.00	              7.0	        3.50	            3.5	 (3W)		 9	10	  	 5	
+
+ 8	0.0	  BWW	  B 	            0.00	          0.00	              7.0	        0.00	            3.5	 (9B)		 7	 4	  	 1	
+
+
+Round #6
+
+ID	Pts	------	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	R2	R3	R4	R5	
+
+ 2	4.0	 BWBWB	 (W)	           12.50	         62.00	             15.5	       38.00	            9.5	 (7B)		 4	 3	 5	10	 1	
+ 3	4.0	  WBWB	  w 	            9.50	         54.00	             13.5	       32.00	            8.0	 (5W)		10	 2	 7	 4	  	
+ 5	4.0	 BWWBW	 (B)	            7.00	         44.00	             11.0	       24.00	            6.0	 (3B)		 1	 9	 2	 6	 7	
+
+ 1	3.0	 WBWBW	 (B)	            7.00	         42.00	             14.0	       25.50	            8.5	 (4B)		 5	 7	10	 8	 2	
+10	3.0	 BWBBW	 (W)	            6.00	         40.50	             13.5	       25.50	            8.5	 (9W)		 3	 6	 1	 2	 4	
+
+ 4	2.0	 WBWWB	 (B)	            3.00	         27.00	             13.5	       16.00	            8.0	 (1W)		 2	 8	 9	 3	10	
+ 7	2.0	  WWBB	  W 	            3.00	         27.00	             13.5	       16.00	            8.0	 (2W)		 8	 1	 3	  	 5	
+
+ 8	1.0	  BWWB	  w 	            1.50	         10.00	             10.0	        5.50	            5.5	 (6B)		 7	 4	  	 1	 9	
+ 6	1.0	   BBW	 (W)	            1.00	         11.50	             11.5	        6.50	            6.5	 (8W)		 9	10	  	 5	  	
+ 9	1.0	  WBBW	  b 	            1.00	         11.00	             11.0	        6.00	            6.0	(10B)		 6	 5	 4	  	 8	
+
+
+Round #7
+
+ID	Pts	-------	Pref	Sonneborn-Berger	Buchholz score	Buchholz tiebreak	Median score	Median tiebreak	  Cur		R1	R2	R3	R4	R5	R6	
+
+ 2	5.0	 BWBWBB	  W 	           17.00	        100.00	             20.0	       70.00	           14.0	 (6W)		 4	 3	 5	10	 1	 7	
+ 3	5.0	  WBWBW	 (B)	           16.00	        105.00	             21.0	       72.50	           14.5	 (1B)		10	 2	 7	 4	  	 5	
+
+10	4.0	 BWBBWW	  B 	            9.50	         76.00	             19.0	       50.00	           12.5	 (8B)		 3	 6	 1	 2	 4	 9	
+ 5	4.0	 BWWBWB	  w 	            8.00	         70.00	             17.5	       44.00	           11.0	 (4W)		 1	 9	 2	 6	 7	 3	
+
+ 1	3.0	 WBWBWB	  w 	            8.00	         57.00	             19.0	       37.50	           12.5	 (3W)		 5	 7	10	 8	 2	 4	
+ 4	3.0	 WBWWBW	  B 	            6.00	         58.50	             19.5	       39.00	           13.0	 (5B)		 2	 8	 9	 3	10	 1	
+
+ 7	2.0	  WWBBW	 (B)	            3.50	         40.00	             20.0	       27.00	           13.5	 (9B)		 8	 1	 3	  	 5	 2	
+ 6	2.0	   BBWW	  B 	            3.00	         30.00	             15.0	       19.00	            9.5	 (2B)		 9	10	  	 5	  	 8	
+
+ 9	1.0	  WBBWB	 (W)	            2.00	         17.50	             17.5	       12.00	           12.0	 (7W)		 6	 5	 4	  	 8	10	
+ 8	1.0	  BWWBB	  W 	            1.50	         13.50	             13.5	        9.00	            9.0	(10W)		 7	 4	  	 1	 9	 6	
+
+
+BBP Pairings <build info>
