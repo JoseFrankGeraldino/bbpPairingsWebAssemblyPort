@@ -106,7 +106,7 @@ LIMITS_VARS := engine_comparison=no optimize=no \
 	golden-record clean check-submodule wasm wasm-toolchain wasm-node \
 	wasm-limits wasm-tools wasm-tiebreak wasm-web test-wasm \
 	test-wasm-engine test-wasm-tiebreak test-wasm-bridge dist-wasm \
-	golden-record-wasm package test-package
+	golden-record-wasm package test-package emsdk
 
 check-submodule:
 	@test -f $(ENGINE_DIR)/Makefile || { \
@@ -171,6 +171,19 @@ gacrux:
 	@test "$$(git -C $(GACRUX_DIR) rev-parse HEAD)" = "$(GACRUX_COMMIT)" \
 		&& test -z "$$(git -C $(GACRUX_DIR) status --porcelain)" \
 		|| { echo "$(GACRUX_DIR) is not Gacrux at $(GACRUX_COMMIT)" >&2; exit 1; }
+
+# The pinned Emscripten SDK (see "WebAssembly" below). emsdk install skips a
+# version already installed.
+emsdk:
+	@if [ ! -d $(EMSDK_DIR)/.git ]; then \
+		git clone -q $(EMSDK_URL) $(EMSDK_DIR); fi
+	@if [ "$$(git -C $(EMSDK_DIR) rev-parse HEAD)" != "$(EMSDK_COMMIT)" ]; then \
+		git -C $(EMSDK_DIR) fetch -q origin $(EMSDK_COMMIT) \
+		&& git -C $(EMSDK_DIR) checkout -q --detach $(EMSDK_COMMIT); fi
+	@test "$$(git -C $(EMSDK_DIR) rev-parse HEAD)" = "$(EMSDK_COMMIT)" \
+		|| { echo "$(EMSDK_DIR) is not emsdk at $(EMSDK_COMMIT)" >&2; exit 1; }
+	$(EMSDK_DIR)/emsdk install $(EMSDK_VERSION)
+	$(EMSDK_DIR)/emsdk activate $(EMSDK_VERSION)
 
 # --- test suite -----------------------------------------------------------------
 # ENGINE can be any executable that behaves like the bbpPairings CLI (in E2 a
@@ -318,6 +331,12 @@ golden-record-wasm: wasm-node wasm-limits wasm-tools
 
 EMSDK_VERSION := 7.0.0
 EMSDK_ENV ?= $(HOME)/emsdk/emsdk_env.sh
+# make emsdk installs that version from emsdk's 7.0.0 release commit into
+# EMSDK_DIR (CI, and any pipeline building from this repository, with
+# EMSDK_ENV=<absolute EMSDK_DIR>/emsdk_env.sh).
+EMSDK_URL := https://github.com/emscripten-core/emsdk.git
+EMSDK_COMMIT := 1693ce7359fc9694f198694f902a2cc061239b86
+EMSDK_DIR ?= build/emsdk
 WASM_ENV := $(if $(shell command -v em++ 2>/dev/null),,source $(EMSDK_ENV) > /dev/null &&)
 WASM_CXX := em++ -fwasm-exceptions
 # Node command lines with the bbpPairings and tie-break CLI contract: real
@@ -446,8 +465,9 @@ dist-wasm: wasm-web
 # packaging/make_packages.py turns dist/ into the archives the main app and the
 # downloads consume (README "Release packages"): the npm package of the
 # WebAssembly build and the native Linux archive, plus SHA256SUMS. Every entry
-# carries the commit time, so one commit gives the same bytes. The release tag
-# of a version is v$(PACKAGE_VERSION) (CI publishes a GitHub release for it).
+# carries the commit time, so one commit gives the same bytes. Nothing is
+# published from here: consumers build the packages from a pinned commit of
+# this repository with these targets (README "Release packages").
 
 PACKAGE_VERSION := 0.1.0
 PACKAGES_DIR := dist/packages

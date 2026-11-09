@@ -91,20 +91,11 @@ jobs:
           path: build/gacrux
           persist-credentials: false
 
-      # Emscripten SDK at its 7.0.0 release commit (EMSDK_VERSION in the
-      # Makefile; tests/golden-wasm holds for this version).
-      - name: Checkout emsdk (pinned)
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          repository: emscripten-core/emsdk
-          ref: 1693ce7359fc9694f198694f902a2cc061239b86
-          path: build/emsdk
-          persist-credentials: false
-
-      - name: Install Emscripten 7.0.0
+      # Emscripten SDK at its 7.0.0 release commit (EMSDK_VERSION and
+      # EMSDK_COMMIT in the Makefile; tests/golden-wasm holds for this version).
+      - name: Install Emscripten (make emsdk)
         run: |
-          build/emsdk/emsdk install 7.0.0
-          build/emsdk/emsdk activate 7.0.0
+          make emsdk
           source "$EMSDK_ENV" > /dev/null && em++ --version | head -1 && node --version
 
       - name: WebAssembly builds (make wasm)
@@ -117,7 +108,8 @@ jobs:
         run: make dist-wasm
 
       # The release archives, then the suites on the extracted files
-      # (README "Release packages").
+      # (README "Release packages"). Uploaded for inspection only; the app's
+      # pipeline builds its own from the same commit.
       - name: Release packages and their tests (make test-package)
         run: make test-package
 
@@ -179,46 +171,3 @@ jobs:
             build/coverage/report/
             build/coverage/tiebreak-report/
           if-no-files-found: error
-
-  # Only for a pushed tag v<version>, after every job passed: a GitHub release
-  # with the archives the wasm job built and tested. Pushing a release tag is
-  # Jose's decision (AGENTS.md); nothing else publishes.
-  release:
-    name: GitHub release (tags v*)
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [native, wasm, coverage]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          persist-credentials: false
-
-      - name: Download packages
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
-        with:
-          name: packages
-          path: dist/packages
-
-      - name: Tag is v + PACKAGE_VERSION, archives match SHA256SUMS
-        run: |
-          version=$(sed -n 's/^PACKAGE_VERSION := //p' Makefile)
-          test "$GITHUB_REF_NAME" = "v$version"
-          (cd dist/packages && sha256sum -c SHA256SUMS)
-
-      - name: Create the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          {
-            echo "Built and tested by CI run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}."
-            echo
-            echo '```'
-            tar -xzOf dist/packages/bbppairings-native-linux-x64-*.tar.gz --wildcards '*/VERSION'
-            echo '```'
-          } > build-notes.md
-          gh release create "$GITHUB_REF_NAME" dist/packages/* --verify-tag \
-            --title "$GITHUB_REF_NAME" --notes-file build-notes.md

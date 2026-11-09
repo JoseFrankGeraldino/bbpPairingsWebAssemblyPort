@@ -16,8 +16,9 @@ tie-break tool for individual tournaments (milestone 1) and team tournaments
 "Tie-break tool" below. E2 done: WebAssembly builds of the engine and the
 tie-break tool, the same suites run against them, a browser bridge, see
 "WebAssembly (E2)" below. Packaging done: reproducible release archives (npm
-package of the WebAssembly build, native Linux archive) tested as shipped and
-published as a GitHub release for a version tag, see "Release packages".
+package of the WebAssembly build, native Linux archive) tested as shipped;
+the app's own pipeline builds them from a pinned commit, see "Release
+packages".
 
 ## Repository layout
 
@@ -447,16 +448,16 @@ version).
 | `SHA256SUMS` | `sha256sum -c` format | both |
 
 The version is `PACKAGE_VERSION` in the Makefile (semver, ours, independent
-of the engine's), the release tag is `v<version>`. The archives are
-reproducible: sorted entries, the commit time on every entry, owner 0, gzip
-without name or time; the same commit gives the same bytes.
+of the engine's). The archives are reproducible: sorted entries, the commit
+time on every entry, owner 0, gzip without name or time; the same commit
+gives the same bytes.
 
-**Release.** Pushing the tag `v<PACKAGE_VERSION>` runs CI as usual and then
-the `release` job, which (only after every job passed) checks the tag against
-`PACKAGE_VERSION` and `SHA256SUMS` and creates the GitHub release with the
-three files the `wasm` job built and tested. Download URLs are then stable:
-`https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort/releases/download/v<version>/<file>`.
-For a new version: raise `PACKAGE_VERSION` in a commit, then tag that commit.
+**Who builds them.** Nothing is published from this repository (no GitHub
+releases, no npm registry). The main app's private pipeline checks out a
+pinned commit of this repository and runs `make emsdk`, `make wasm`, `make
+test-package` itself, so what it ships is built and tested in its own
+pipeline, and anyone can rebuild the same commit and compare the bytes. CI
+here uploads the archives as the `packages` artifact for inspection.
 
 **Using the npm package.** `npm install <url or path of the .tgz>` (it is not
 on the npm registry). Exports: `bbppairings-wasm` (the bridge: `runProgram`,
@@ -508,9 +509,8 @@ pinned by commit SHA):
 | Job | Local equivalent (WSL2 Ubuntu, repo root) |
 |---|---|
 | `native` | `git submodule status && test -z "$(git -C third_party/bbpPairings status --porcelain)" && make native && make test ENGINE=build/native/bbpPairings && make dist` |
-| `wasm` | `make wasm && make test-wasm && make dist-wasm && make test-package` (CI installs emsdk 7.0.0 from its pinned commit into `build/emsdk`; 100 generated tournaments, 5 tie-break seeds per source) |
+| `wasm` | `make emsdk EMSDK_DIR=build/emsdk && EMSDK_ENV=$PWD/build/emsdk/emsdk_env.sh make wasm test-wasm dist-wasm test-package` (emsdk 7.0.0 from its pinned commit; 100 generated tournaments, 5 tie-break seeds per source) |
 | `coverage` | `sudo apt-get install -y gcovr && make coverage` |
-| `release` | only for a pushed tag `v*`, after the three jobs above: `(cd dist/packages && sha256sum -c SHA256SUMS)`, then `gh release create` with the `packages` artifact |
 
 Every build job checks out Gacrux at the pinned commit into `build/gacrux`
 first; locally `make gacrux` clones it. Artifacts: `native-linux-x64` (the
