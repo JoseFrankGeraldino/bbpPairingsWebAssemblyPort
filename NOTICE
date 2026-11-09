@@ -14,6 +14,17 @@ The engine is built, unmodified, from the fork
 https://github.com/JoseFrankGeraldino/bbpPairings (branch master); the exact
 commit is recorded in the VERSION file next to this notice.
 
-The build scripts, test suite and packaging of bbpPairingsWebAssemblyPort are
-licensed under the MIT License
-(https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort).
+The tie-break tool (tiebreak) contains a C++ port of the tie-break rules of
+Gacrux:
+
+  Gacrux tiebreak (TieBreakServer)
+  Copyright (c) 2024 FIDE. Source code developed by Otto Milvang and donated
+  to FIDE.
+  Licensed under the MIT License (see GACRUX-LICENSE.txt in this
+  distribution).
+  Original repository: https://github.com/OttoMilvang/TieBreakServer
+  https://www.gacrux.no
+
+The build scripts, test suite, packaging and tie-break tool of
+bbpPairingsWebAssemblyPort are licensed under the MIT License (see
+LICENSE-tiebreak.txt; https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort).

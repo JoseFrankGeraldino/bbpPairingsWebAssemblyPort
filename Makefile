@@ -11,8 +11,11 @@
 #
 # Main targets (Linux: WSL2 Ubuntu locally, ubuntu-latest in CI):
 #   make native             release build -> build/native/bbpPairings
-#   make test               black-box suite against ENGINE (default: native)
-#   make coverage           instrumented build + suite + report + 90% gate
+#   make tiebreak           our tie-break tool -> build/native/tiebreak
+#   make test               engine suite (test-engine) + tie-break comparison
+#                           with Gacrux (test-tiebreak)
+#   make coverage           instrumented builds + both suites + reports + gates
+#                           (engine 90%, tie-break tool 85%)
 #   make dist               dist/native-linux-x64 with licences and VERSION
 #   make golden-record CONFIRM=<submodule short sha>   re-record golden files
 
@@ -42,6 +45,17 @@ COVERAGE_MIN_LINES ?= 90
 BBP_GENERATED_COUNT ?= 300
 export BBP_GENERATED_COUNT
 
+# Tie-break tool (tiebreak/, our code, MIT; rules ported from Gacrux, MIT).
+# Its reference, FIDE's Gacrux (TieBreakServer), is pinned by commit and runs
+# with the Python standard library only.
+GACRUX_URL := https://github.com/OttoMilvang/TieBreakServer.git
+GACRUX_COMMIT := 49b01e67ccb2f94945fa97b97ade66a35584b341
+GACRUX_DIR ?= build/gacrux
+# Generated tournaments per generator source in the comparison.
+BBP_TIEBREAK_COUNT ?= 20
+BBP_TIEBREAK_COVERAGE_COUNT ?= 5
+TIEBREAK_COVERAGE_MIN_LINES ?= 85
+
 OBJ_ROOT := $(CURDIR)/build/obj
 
 NATIVE_BIN := build/native/bbpPairings
@@ -53,9 +67,16 @@ COVERAGE_LIMITS_BIN := build/coverage/bin/bbpPairings-limits
 COVERAGE_ROUNDTRIP_BIN := build/coverage/bin/trf-roundtrip
 COVERAGE_REPORT_DIR := build/coverage/report
 
+TIEBREAK_BIN := build/native/tiebreak
+COVERAGE_TIEBREAK_BIN := build/coverage/bin/tiebreak
+COVERAGE_TIEBREAK_REPORT_DIR := build/coverage/tiebreak-report
+TIEBREAK_SOURCES := $(sort $(wildcard tiebreak/*.cpp))
+TIEBREAK_HEADERS := $(sort $(wildcard tiebreak/*.h))
+
 ENGINE ?= $(NATIVE_BIN)
 ENGINE_LIMITS ?= $(LIMITS_BIN)
 ROUNDTRIP ?= $(ROUNDTRIP_BIN)
+TIEBREAK ?= $(TIEBREAK_BIN)
 
 DIST_DIR := dist/native-linux-x64
 
@@ -75,8 +96,9 @@ NOASSERT := -D_GLIBCXX_NO_ASSERTIONS
 LIMITS_VARS := engine_comparison=no optimize=no \
 	max_players=40 max_points=99 max_rating=255 max_rounds=9
 
-.PHONY: native native-limits tools test coverage coverage-build coverage-run \
-	coverage-report dist golden-record clean check-submodule
+.PHONY: native native-limits tools tiebreak gacrux test test-engine \
+	test-tiebreak coverage coverage-build coverage-run coverage-report dist \
+	golden-record clean check-submodule
 
 check-submodule:
 	@test -f $(ENGINE_DIR)/Makefile || { \
@@ -110,11 +132,44 @@ tools: check-submodule
 	g++ $(NOASSERT) $(HELPER_CXXFLAGS) -o $(ROUNDTRIP_BIN) tests/roundtrip/trf_roundtrip.cpp \
 		$(call ENGINE_LIB_OBJS,$(OBJ_ROOT)/plain)
 
+# --- tie-break tool -------------------------------------------------------------
+# Our own C++ (tiebreak/), so the flags are ours: the engine Makefile's warning
+# set, which the C++ rules (documentation-repo bbpPairings/AGENTS.md) require
+# all C++ in this repository to pass.
+
+TIEBREAK_WARNINGS := -std=c++20 -ftabstop=2 -Werror -Wfatal-errors -pedantic \
+	-pedantic-errors -Wall -Walloca -Wcast-qual -Wctor-dtor-privacy \
+	-Wdisabled-optimization -Wdouble-promotion -Wextra -Wextra-semi -Wformat=2 \
+	-Winvalid-pch -Wmismatched-tags -Wmissing-braces -Wmissing-declarations \
+	-Wmissing-include-dirs -Woverloaded-virtual -Wpacked -Wpointer-arith \
+	-Wredundant-decls -Wsign-promo -Wstrict-overflow=2 -Wsuggest-override \
+	-Wswitch-default -Wundef -Wunknown-pragmas -Wunused-macros -Wvla \
+	-Wzero-as-null-pointer-constant
+
+tiebreak: $(TIEBREAK_BIN)
+
+$(TIEBREAK_BIN): $(TIEBREAK_SOURCES) $(TIEBREAK_HEADERS)
+	mkdir -p $(dir $@)
+	g++ $(TIEBREAK_WARNINGS) -O2 -DNDEBUG -o $@ $(TIEBREAK_SOURCES)
+
+# The reference implementation at the pinned commit (CI checks it out into
+# GACRUX_DIR beforehand; locally it is cloned on first use).
+gacrux:
+	@if [ ! -d $(GACRUX_DIR)/.git ]; then \
+		git clone -q $(GACRUX_URL) $(GACRUX_DIR); fi
+	@if [ "$$(git -C $(GACRUX_DIR) rev-parse HEAD)" != "$(GACRUX_COMMIT)" ]; then \
+		git -C $(GACRUX_DIR) fetch -q origin $(GACRUX_COMMIT) \
+		&& git -C $(GACRUX_DIR) checkout -q --detach $(GACRUX_COMMIT); fi
+	@test "$$(git -C $(GACRUX_DIR) rev-parse HEAD)" = "$(GACRUX_COMMIT)" \
+		&& test -z "$$(git -C $(GACRUX_DIR) status --porcelain)" \
+		|| { echo "$(GACRUX_DIR) is not Gacrux at $(GACRUX_COMMIT)" >&2; exit 1; }
+
 # --- test suite -----------------------------------------------------------------
 # ENGINE can be any executable that behaves like the bbpPairings CLI (in E2 a
 # Node runner script for the WebAssembly build). ENGINE_LIMITS is the same
 # engine built with LIMITS_VARS (limits group); ENGINE_LIMITS= skips that
-# group, and the runner says so.
+# group, and the runner says so. TIEBREAK is any executable with our
+# tie-break tool's command line; ENGINE generates its test tournaments.
 
 TEST_DEPS := tools
 ifeq ($(ENGINE),$(NATIVE_BIN))
@@ -123,10 +178,24 @@ endif
 ifeq ($(ENGINE_LIMITS),$(LIMITS_BIN))
 TEST_DEPS += native-limits
 endif
+TIEBREAK_TEST_DEPS := gacrux
+ifeq ($(ENGINE),$(NATIVE_BIN))
+TIEBREAK_TEST_DEPS += native
+endif
+ifeq ($(TIEBREAK),$(TIEBREAK_BIN))
+TIEBREAK_TEST_DEPS += tiebreak
+endif
 
-test: $(TEST_DEPS)
+test: test-engine test-tiebreak
+
+test-engine: $(TEST_DEPS)
 	$(PYTHON) tests/run_tests.py --engine $(ENGINE) \
 		--engine-limits "$(ENGINE_LIMITS)" --roundtrip $(ROUNDTRIP)
+
+test-tiebreak: $(TIEBREAK_TEST_DEPS)
+	$(PYTHON) tests/tiebreak_compare.py --tool $(TIEBREAK) \
+		--gacrux $(GACRUX_DIR)/gacrux --engine $(ENGINE) \
+		--count $(BBP_TIEBREAK_COUNT)
 
 # --- coverage -------------------------------------------------------------------
 # Instrumented builds through the engine's own Makefile: optimize=no (drops -O3
@@ -145,33 +214,51 @@ coverage-build: check-submodule
 	install -D -m 755 $(OBJ_ROOT)/coverage-limits/bbpPairings.exe $(COVERAGE_LIMITS_BIN)
 	$(COV_CXX) $(HELPER_CXXFLAGS) -o $(COVERAGE_ROUNDTRIP_BIN) \
 		tests/roundtrip/trf_roundtrip.cpp $(call ENGINE_LIB_OBJS,$(OBJ_ROOT)/coverage)
+	mkdir -p $(OBJ_ROOT)/coverage-tiebreak
+	for source in $(TIEBREAK_SOURCES); do \
+		$(COV_CXX) $(TIEBREAK_WARNINGS) -O0 -DNDEBUG -c $$source \
+			-o $(OBJ_ROOT)/coverage-tiebreak/$$(basename $$source .cpp).o || exit 1; \
+	done
+	$(COV_CXX) -o $(COVERAGE_TIEBREAK_BIN) $(OBJ_ROOT)/coverage-tiebreak/*.o
 
-coverage-run: coverage-build
-	find $(OBJ_ROOT)/coverage $(OBJ_ROOT)/coverage-limits build/coverage/bin \
-		-name '*.gcda' -delete
+coverage-run: coverage-build gacrux
+	find $(OBJ_ROOT)/coverage $(OBJ_ROOT)/coverage-limits \
+		$(OBJ_ROOT)/coverage-tiebreak build/coverage/bin -name '*.gcda' -delete
 	$(PYTHON) tests/run_tests.py --instrumented --engine $(COVERAGE_BIN) \
 		--engine-limits $(COVERAGE_LIMITS_BIN) --roundtrip $(COVERAGE_ROUNDTRIP_BIN)
+	$(PYTHON) tests/tiebreak_compare.py --tool $(COVERAGE_TIEBREAK_BIN) \
+		--gacrux $(GACRUX_DIR)/gacrux --engine $(COVERAGE_BIN) \
+		--count $(BBP_TIEBREAK_COVERAGE_COUNT)
 
 # Report and gate only. Fails when no coverage data exists (e.g. after deleting
-# the .gcda files) or when line coverage is below COVERAGE_MIN_LINES. Data of
-# both instrumented builds (same sources) is merged.
+# the .gcda files) or when line coverage is below COVERAGE_MIN_LINES (engine)
+# or TIEBREAK_COVERAGE_MIN_LINES (tie-break tool). Data of both instrumented
+# engine builds (same sources) is merged.
 coverage-report:
 	$(PYTHON) tests/coverage_gate.py --gcovr $(GCOVR) \
 		--min-lines $(COVERAGE_MIN_LINES) --engine-dir $(ENGINE_DIR) \
 		--object-dir $(OBJ_ROOT)/coverage --object-dir $(OBJ_ROOT)/coverage-limits \
 		--report-dir $(COVERAGE_REPORT_DIR)
+	$(PYTHON) tests/coverage_gate.py --gcovr $(GCOVR) \
+		--min-lines $(TIEBREAK_COVERAGE_MIN_LINES) --source-dir tiebreak \
+		--title "tie-break tool coverage (tiebreak/)" \
+		--object-dir $(OBJ_ROOT)/coverage-tiebreak \
+		--report-dir $(COVERAGE_TIEBREAK_REPORT_DIR)
 
 coverage: coverage-run
 	$(MAKE) --no-print-directory coverage-report
 
 # --- packaging ------------------------------------------------------------------
 
-dist: native
+dist: native tiebreak
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)
 	install -m 755 $(NATIVE_BIN) $(DIST_DIR)/bbpPairings
+	install -m 755 $(TIEBREAK_BIN) $(DIST_DIR)/tiebreak
 	install -m 644 $(ENGINE_DIR)/LICENSE.txt $(ENGINE_DIR)/Apache-2.0.txt NOTICE \
 		$(DIST_DIR)/
+	install -m 644 LICENSE $(DIST_DIR)/LICENSE-tiebreak.txt
+	install -m 644 tiebreak/GACRUX-LICENSE.txt $(DIST_DIR)/GACRUX-LICENSE.txt
 	{ \
 		echo "engine_fork=$(ENGINE_FORK_URL)"; \
 		echo "engine_branch=$(ENGINE_BRANCH)"; \
@@ -181,6 +268,7 @@ dist: native
 		echo "upstream=$(UPSTREAM_URL)"; \
 		echo "upstream_base=$(UPSTREAM_BASE)"; \
 		echo "port_repo_commit=$$(git rev-parse HEAD)$$(git diff --quiet HEAD 2>/dev/null || echo -dirty)"; \
+		echo "tiebreak_reference=Gacrux $(GACRUX_URL) $(GACRUX_COMMIT)"; \
 		echo "target=native-linux-x64"; \
 	} > $(DIST_DIR)/VERSION
 	@echo "dist: $(DIST_DIR)"; ls -l $(DIST_DIR)

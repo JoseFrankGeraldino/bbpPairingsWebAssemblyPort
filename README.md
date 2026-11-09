@@ -5,22 +5,28 @@ pairing engine (FIDE Dutch system), as used by TheChessSuperApp. The engine
 itself is not developed here: it is our fork of bbpPairings, pinned as a git
 submodule and built unmodified. This repository adds our own build entry
 point, an engine-agnostic test suite with golden files, line coverage of the
-engine sources with a 90% gate, and `dist/` packaging with the licences.
+engine sources with a 90% gate, a standalone FIDE tie-break tool checked
+against FIDE's reference implementation, and `dist/` packaging with the
+licences.
 
-Iteration E1 (this state): native Linux build only. WebAssembly (E2) and the
-standalone FIDE tie-break tool (E3) come later and will be judged by this same
-suite; see [docs/E2-notes.md](docs/E2-notes.md).
+State: E1 done (native Linux build, suite, coverage, dist). E3 milestone 1
+done: the tie-break tool for **individual** tournaments (every individual
+tie-break on FIDE's mandatory TRF-26 list), see "Tie-break tool" below. Next:
+E3 milestone 2 (team tie-breaks), then E2 (WebAssembly, judged by these same
+suites; see [docs/E2-notes.md](docs/E2-notes.md)).
 
 ## Repository layout
 
 | Path | What |
 |---|---|
 | `third_party/bbpPairings/` | git submodule: our fork of the engine (Apache 2.0). **Never edited from this repository.** |
-| `Makefile` | our build entry point (`native`, `test`, `coverage`, `dist`, `golden-record`) |
-| `tests/run_tests.py` | black-box test suite (Python 3 standard library only) |
+| `Makefile` | our build entry point (`native`, `tiebreak`, `test`, `coverage`, `dist`, `golden-record`) |
+| `tiebreak/` | our tie-break tool (C++20, MIT; rules ported from Gacrux, MIT, see `tiebreak/GACRUX-LICENSE.txt`) |
+| `tests/run_tests.py` | black-box engine suite (Python 3 standard library only) |
+| `tests/tiebreak_compare.py` | differential test of the tie-break tool against Gacrux, plus its error cases |
 | `tests/cases_inline.py`, `tests/trf_builder.py` | synthetic feature and error cases |
 | `tests/roundtrip/trf_roundtrip.cpp` | the one white-box helper: TRF read -> write -> read |
-| `tests/coverage_gate.py` | gcovr report + "no data" and 90% gates |
+| `tests/coverage_gate.py` | gcovr report + "no data" and minimum-coverage gates |
 | `tests/fixtures/` | sample TRFs and generator configuration files |
 | `tests/golden/` | golden outputs recorded from the pinned native build |
 | `.github/workflows/ci.yml` | CI (GitHub Actions, `ubuntu-latest`) |
@@ -36,8 +42,14 @@ suite; see [docs/E2-notes.md](docs/E2-notes.md).
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) lists every third-party
   component, test-data origin and tool. [`NOTICE`](NOTICE) is the notice for
   our distribution; it credits BBP Pairings.
-- Every built artifact ships with the fork's `LICENSE.txt` + `Apache-2.0.txt`
-  and our `NOTICE` next to it (`make dist`).
+- **The tie-break rules** in `tiebreak/` are a C++ port of Gacrux
+  (TieBreakServer), Copyright (c) 2024 FIDE, MIT License
+  ([`tiebreak/GACRUX-LICENSE.txt`](tiebreak/GACRUX-LICENSE.txt)); the port is
+  MIT as well. As Gacrux's licence asks, products embedding it link to
+  www.gacrux.no in their about section.
+- Every built artifact ships with the fork's `LICENSE.txt` + `Apache-2.0.txt`,
+  our `LICENSE` (as `LICENSE-tiebreak.txt`), `GACRUX-LICENSE.txt` and our
+  `NOTICE` next to it (`make dist`).
 - No GPL-sourced content is used anywhere, test data included. GCC and Make
   are used as tools only.
 
@@ -47,7 +59,7 @@ suite; see [docs/E2-notes.md](docs/E2-notes.md).
 |---|---|
 | Submodule | `third_party/bbpPairings` |
 | Fork (the source we build) | https://github.com/JoseFrankGeraldino/bbpPairings |
-| Branch | `master` (the fixes below are on `fix/e1-engine-defects` until merged into `master` by fast-forward) |
+| Branch | `master` (the fixes below were merged by fork PR #1, merge commit `b4db98e`, same tree as the pin) |
 | Pinned commit | **`0ee9df74304a8ba7febb84811c2771ab1c8def6e`** (`0ee9df7`) = baseline + 6 fix commits (see "Engine fixes in the fork") |
 | Baseline | `8f9e3c5` = upstream `master`, tagged **`v6.0.0-lessader.1`** in the fork; golden files were first recorded there |
 | Upstream | https://github.com/BieremaBoyzProgramming/bbpPairings |
@@ -70,8 +82,11 @@ Linux only (WSL2 Ubuntu locally, `ubuntu-latest` in CI); no MSVC build.
 
 - `g++` with C++20 (GCC 11 or newer; tested locally with GCC 15.2, CI uses
   the runner's default GCC), GNU Make, git
-- Python 3 (standard library only) for the suite
+- Python 3 (standard library only) for the suites and for Gacrux
 - `gcovr` for the coverage report (`apt install gcovr`)
+- network access once, for `make gacrux` (clones Gacrux at the pinned commit
+  into `build/gacrux`; `GACRUX_DIR=<clone>` uses an existing clone, which must
+  be at that commit and clean)
 
 ## Build and test locally (WSL2 Ubuntu)
 
@@ -82,10 +97,14 @@ git clone --recurse-submodules https://github.com/JoseFrankGeraldino/bbpPairings
 cd ~/src/bbpPairingsWebAssemblyPort
 
 make native                                 # -> build/native/bbpPairings
-make test ENGINE=build/native/bbpPairings   # full suite (300 generated tournaments);
-                                            # also builds build/native-limits (test only)
-BBP_GENERATED_COUNT=20 make test            # quicker local run
-make coverage                               # instrumented build + suite + report + gate
+make tiebreak                               # -> build/native/tiebreak
+make test ENGINE=build/native/bbpPairings   # engine suite (300 generated tournaments;
+                                            # also builds build/native-limits, test
+                                            # only) + tie-break comparison
+make test-engine                            # engine suite only
+make test-tiebreak                          # tie-break comparison only
+BBP_GENERATED_COUNT=20 BBP_TIEBREAK_COUNT=3 make test   # quicker local run
+make coverage                               # instrumented builds + suites + reports + gates
 make dist                                   # -> dist/native-linux-x64/
 git -C third_party/bbpPairings status       # must be clean
 ```
@@ -189,6 +208,11 @@ not skipped — what the engine's TRF writers do **not** preserve:
   gcovr measures zero lines, and when line coverage is below 90%.
 - Result at `0ee9df7`: see the CI artifact; locally (GCC 15.2) 92.7% of
   lines, nothing excluded.
+- **Tie-break tool:** all of `tiebreak/`, instrumented build in
+  `build/obj/coverage-tiebreak`, run through `tests/tiebreak_compare.py`
+  (`BBP_TIEBREAK_COVERAGE_COUNT` seeds per source), gate 85% lines (the
+  workspace rule for new code), report `build/coverage/tiebreak-report/`.
+  Locally 90.3%.
 
 ## Engine fixes in the fork
 
@@ -220,6 +244,63 @@ it), then pinned here:
   the build pairs 41 players (`limits/player-count-above-max-players`) and only
   rejects IDs beyond the 8-bit type, while the message says "up to 40".
 
+## Tie-break tool (E3)
+
+`build/native/tiebreak` computes FIDE tie-breaks (Handbook C.07) and the
+resulting standings from a TRF16 or TRF-2026 file. It is a faithful C++20
+port of the tie-break part of **Gacrux** (FIDE's reference implementation,
+https://github.com/OttoMilvang/TieBreakServer, MIT, Copyright (c) 2024 FIDE),
+pinned at commit `49b01e67ccb2f94945fa97b97ade66a35584b341` (2026-10-15); the
+port keeps Gacrux's function names (`tiebreak/tiebreak.cpp` reads side by
+side with `gacrux/tiebreak.py`) and Python's decimal arithmetic
+(`tiebreak/decimal.h`), so values print exactly as Gacrux prints them.
+
+```bash
+build/native/tiebreak -i tournament.trf                 # rank order of record 202/212
+build/native/tiebreak -i tournament.trf -t PTS DE BH/C1 BH SB
+build/native/tiebreak -i tournament.trf -c -t PTS BH    # also check the file's ranks
+```
+
+Options (same meaning as Gacrux's `tiebreakchecker.py`): `-t <descriptor>...`
+rank order descriptors (`BH/C1`, `SB/P`, `KS/L+1`, ...; default: the file's
+record 202 or 212, else `PTS`), `-c` compare the computed ranks with the file,
+`-p` / `-s` treat as pre-determined (round robin) / Swiss, `-u <rating>` rating
+for unrated players, `-n <round>` standings after that round, `-r` rows in
+rank order, `-d T|S|C|B` delimiter, `-o <file>` output. Output is the table
+`tiebreakchecker.py -d T` writes (`StartNo`, `Rank`, one column per
+descriptor; an empty value prints as `-0`).
+
+Exit codes: 0 success, 1 the `-c` check found a rank that differs from the file
+(**deliberate difference**: Gacrux exits 0 and reports this only in its JSON
+status), 3 invalid file or request, 4 a number too large, 5 file not readable or
+output not writable, 2 unexpected error.
+
+**Milestone 1 scope (this state):** individual tournaments, every individual
+tie-break of FIDE's mandatory list: DE, WIN, WON, BPG, BWG, REP, PS, BH, FB,
+SB, AOB, KS, ARO, TPR, PTP, APRO, APPO with the C1/C2/M1/M2/P/F/Lx variants,
+plus the helpers PTS, SNO/TPN, RANK, RTG, NUM, RIP, VUR, GE, COD, RTNG, ABH,
+AFB. Rules version by start date (record 042): before 2026-03-01 the 2024
+rules, otherwise the 2026 rules (C.07 16.4).
+
+**Not supported yet, refused with exit 3:** team tournaments and team
+tie-breaks (milestone 2: MP/GP, EDE*, E*SB, BC, TBR, BBE, SSSC, MPVGP), national
+rating records (172/FID), a TRF16 file whose points only fit a score system
+that has to be derived (add record 162), and Gacrux's non-tie-break helpers
+(ACC, FLT, RFP, TOP, RND, STD, CSQ, RSES).
+
+**Verification:** `tests/tiebreak_compare.py` runs every input through Gacrux
+and through the tool with the same arguments and requires identical output:
+all samples plus tournaments generated by the pinned engine with fixed seeds
+(default generator and every `tests/fixtures/generator` configuration) and
+the synthetic tournaments of `tests/tiebreak_inputs.py` (records 042, 162,
+202/212, 240, 299, XXZ; single, odd and double round robins; unrated players
+and result codes; CRLF and a byte order mark), each in 9 variants (all
+mandatory descriptors; the same for an intermediate round, as pre-determined,
+as Swiss, with `-u 1400`; the file's own order; a checked and a rank-sorted
+standing; helper values and non-mandatory modifiers). 2026-11-08, locally: 711
+inputs (100 seeds per source) x 9 variants, **0 differences**. CI runs 20
+seeds per source.
+
 ## Packaging (`make dist`)
 
 `dist/native-linux-x64/`:
@@ -227,9 +308,11 @@ it), then pinned here:
 | File | |
 |---|---|
 | `bbpPairings` | the native release binary |
+| `tiebreak` | the tie-break tool |
 | `LICENSE.txt`, `Apache-2.0.txt` | the engine's licence, copied from the fork |
-| `NOTICE` | our notice, crediting BBP Pairings |
-| `VERSION` | fork URL, branch, commit SHA, fork tag at that commit (or `none`), the baseline tag, upstream base, this repository's commit (`-dirty` if uncommitted changes) |
+| `LICENSE-tiebreak.txt`, `GACRUX-LICENSE.txt` | the tie-break tool's licence (ours, MIT) and the licence of the Gacrux code it ports (MIT) |
+| `NOTICE` | our notice, crediting BBP Pairings and Gacrux |
+| `VERSION` | fork URL, branch, commit SHA, fork tag at that commit (or `none`), the baseline tag, upstream base, this repository's commit (`-dirty` if uncommitted changes), the Gacrux commit the tool is checked against |
 
 This is the shape the main app consumes for its server.
 
@@ -243,4 +326,6 @@ pinned by commit SHA):
 | `native` | `git submodule status && test -z "$(git -C third_party/bbpPairings status --porcelain)" && make native && make test ENGINE=build/native/bbpPairings && make dist` |
 | `coverage` | `sudo apt-get install -y gcovr && make coverage` |
 
-Artifacts: `native-linux-x64` (the `dist/` folder) and `coverage-report`.
+Both jobs check out Gacrux at the pinned commit into `build/gacrux` first;
+locally `make gacrux` clones it. Artifacts: `native-linux-x64` (the `dist/`
+folder) and `coverage-report` (engine and tie-break tool reports).

@@ -12,18 +12,29 @@ permissions:
 
 jobs:
   native:
-    name: native build, test suite, dist
+    name: native build, test suites, tie-break comparison, dist
     runs-on: ubuntu-latest
     env:
       # The full generated set (300 random tournaments) runs here, on the
       # release build.
       BBP_GENERATED_COUNT: "300"
+      # Generated tournaments per generator source compared with Gacrux.
+      BBP_TIEBREAK_COUNT: "20"
     steps:
       - name: Checkout (with the engine submodule)
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           submodules: true
           fetch-depth: 0
+
+      # Must match GACRUX_COMMIT in the Makefile; make gacrux verifies it.
+      - name: Checkout Gacrux (tie-break reference, pinned)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          repository: OttoMilvang/TieBreakServer
+          ref: 49b01e67ccb2f94945fa97b97ade66a35584b341
+          path: build/gacrux
+          persist-credentials: false
 
       - name: Toolchain versions
         run: g++ --version && make --version | head -1 && python3 --version
@@ -38,7 +49,7 @@ jobs:
       - name: Build (make native)
         run: make native
 
-      - name: Test suite (make test)
+      - name: Engine suite and tie-break comparison (make test)
         run: make test ENGINE=build/native/bbpPairings
 
       - name: Package (make dist)
@@ -55,7 +66,7 @@ jobs:
           if-no-files-found: error
 
   coverage:
-    name: coverage (gate 90% lines of third_party/bbpPairings/src)
+    name: coverage (gates 90% engine src, 85% tie-break tool)
     runs-on: ubuntu-latest
     env:
       # The coverage job only measures lines; the native job above runs the full
@@ -63,12 +74,22 @@ jobs:
       # all give the same 92.74% (4355/4696); 300 at -O0 + gcov took ~25 min on
       # the 2-vCPU runner. 20 keeps the generated path exercised instrumented.
       BBP_GENERATED_COUNT: "20"
+      BBP_TIEBREAK_COVERAGE_COUNT: "5"
     steps:
       - name: Checkout (with the engine submodule)
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           submodules: true
           fetch-depth: 0
+
+      # Must match GACRUX_COMMIT in the Makefile; make gacrux verifies it.
+      - name: Checkout Gacrux (tie-break reference, pinned)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          repository: OttoMilvang/TieBreakServer
+          ref: 49b01e67ccb2f94945fa97b97ade66a35584b341
+          path: build/gacrux
+          persist-credentials: false
 
       - name: Install gcovr
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gcovr
@@ -81,5 +102,7 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: coverage-report
-          path: build/coverage/report/
+          path: |
+            build/coverage/report/
+            build/coverage/tiebreak-report/
           if-no-files-found: error
