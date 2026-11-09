@@ -7,7 +7,7 @@
  *
  *   node tests/bridge/bridge_test.ts --modules build/wasm/web \
  *     --engine build/native/bbpPairings --wasm-engine build/wasm/bbpPairings \
- *     --tiebreak build/native/tiebreak
+ *     --tiebreak build/native/tiebreak [--bridge <extracted package folder>]
  *
  * Every run through the bridge is compared byte for byte with the same run of
  * a command-line program in a working directory: the native engine and the
@@ -25,23 +25,8 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 
-import {
-  check,
-  generate,
-  pair,
-  runProgram,
-  tiebreak,
-  type ModuleFactory,
-  type RunRequest,
-  type RunResult,
-} from "../../bridge/bbp-bridge.ts";
-import {
-  createWorkerClient,
-  handleRequest,
-  transferables,
-  type WorkerRequest,
-  type WorkerResponse,
-} from "../../bridge/bbp-worker.ts";
+import type { ModuleFactory, RunRequest, RunResult } from "../../bridge/bbp-bridge.ts";
+import type { WorkerRequest, WorkerResponse } from "../../bridge/bbp-worker.ts";
 
 const ROOT = resolve(import.meta.dirname, "..", "..");
 const { values: options } = parseArgs({
@@ -50,6 +35,7 @@ const { values: options } = parseArgs({
     engine: { type: "string" },
     "wasm-engine": { type: "string" },
     tiebreak: { type: "string" },
+    bridge: { type: "string" },
   },
 });
 for (const name of ["modules", "engine", "wasm-engine", "tiebreak"] as const) {
@@ -62,6 +48,19 @@ const modules = resolve(options.modules as string);
 const nativeEngine = resolve(options.engine as string);
 const wasmEngine = resolve(options["wasm-engine"] as string);
 const nativeTiebreak = resolve(options.tiebreak as string);
+
+// The bridge under test: the TypeScript sources in bridge/, or with --bridge
+// the JavaScript of an extracted package (make test-package), whose worker
+// then also loads the modules next to it.
+const packaged = options.bridge !== undefined;
+const bridgeDir = packaged ? resolve(options.bridge as string) : join(ROOT, "bridge");
+const extension = packaged ? ".js" : ".ts";
+const { check, generate, pair, runProgram, tiebreak } = await import(
+  pathToFileURL(join(bridgeDir, "bbp-bridge" + extension)).href
+) as typeof import("../../bridge/bbp-bridge.ts");
+const { createWorkerClient, handleRequest, transferables } = await import(
+  pathToFileURL(join(bridgeDir, "bbp-worker" + extension)).href
+) as typeof import("../../bridge/bbp-worker.ts");
 
 const BUILD_INFO = /BBP Pairings \(https:\/\/github\.com\/BieremaBoyzProgramming\/bbpPairings\) - [^\n]*?\(Built [^)\n]*\)/g;
 
@@ -297,6 +296,17 @@ expect(
       .equals(Buffer.from(first.files["pairings.txt"]))
 );
 expect("worker transferables", transferables(response).length === 3);
+if (packaged) {
+  // The default loader: bbpPairings.mjs next to bbp-worker.js in the package.
+  const shipped = await handleRequest({ ...request, id: 9 });
+  expect(
+    "packaged worker loads its modules",
+    "result" in shipped
+      && Buffer.from(shipped.result.files["pairings.txt"])
+        .equals(Buffer.from(first.files["pairings.txt"])),
+    "error" in shipped ? shipped.error : ""
+  );
+}
 const unknown = await handleRequest(
   { id: 8, program: "nothing" as never, request: { args: [] } }, loader);
 expect("worker unknown program", "error" in unknown && unknown.id === 8);

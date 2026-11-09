@@ -15,14 +15,18 @@ tie-break tool for individual tournaments (milestone 1) and team tournaments
 (milestone 2), every tie-break on FIDE's mandatory TRF-26 list, see
 "Tie-break tool" below. E2 done: WebAssembly builds of the engine and the
 tie-break tool, the same suites run against them, a browser bridge, see
-"WebAssembly (E2)" below.
+"WebAssembly (E2)" below. Packaging done: reproducible release archives (npm
+package of the WebAssembly build, native Linux archive) tested as shipped and
+published as a GitHub release for a version tag, see "Release packages".
 
 ## Repository layout
 
 | Path | What |
 |---|---|
 | `third_party/bbpPairings/` | git submodule: our fork of the engine (Apache 2.0). **Never edited from this repository.** |
-| `Makefile` | our build entry point (`native`, `tiebreak`, `test`, `coverage`, `dist`, `golden-record`) |
+| `Makefile` | our build entry point (`native`, `tiebreak`, `test`, `coverage`, `dist`, `golden-record`, `wasm`, `test-wasm`, `dist-wasm`, `package`, `test-package`) |
+| `packaging/` | `make_packages.py` (release archives from `dist/`) and `strip-types.mjs` (the bridge's JavaScript) |
+| `tests/package_check.py` | checks of the release archives (see "Release packages") |
 | `tiebreak/` | our tie-break tool (C++20, MIT; rules ported from Gacrux, MIT, see `tiebreak/GACRUX-LICENSE.txt`) |
 | `tests/run_tests.py` | black-box engine suite (Python 3 standard library only) |
 | `tests/tiebreak_compare.py` | differential test of the tie-break tool against Gacrux, plus its error cases |
@@ -419,9 +423,9 @@ configuration (`1b3c79f`).
 | `LICENSE.txt`, `Apache-2.0.txt` | the engine's licence, copied from the fork |
 | `LICENSE-tiebreak.txt`, `GACRUX-LICENSE.txt` | the tie-break tool's licence (ours, MIT) and the licence of the Gacrux code it ports (MIT) |
 | `NOTICE` | our notice, crediting BBP Pairings and Gacrux |
-| `VERSION` | fork URL, branch, commit SHA, fork tag at that commit (or `none`), the baseline tag, upstream base, this repository's commit (`-dirty` if uncommitted changes), the Gacrux commit the tool is checked against |
+| `VERSION` | fork URL, branch, commit SHA, fork tag at that commit (or `none`), the baseline tag, upstream base, this repository's commit (`-dirty` if uncommitted changes), the Gacrux commit the tool is checked against, `requires=` (the highest glibc and libstdc++ symbol versions the binaries need) |
 
-This is the shape the main app consumes for its server.
+The main app takes these files from the release archive (next section).
 
 `make dist-wasm` -> `dist/wasm/`: `bbpPairings.mjs` + `bbpPairings.wasm`,
 `tiebreak.mjs` + `tiebreak.wasm`, `bbp-bridge.ts`, `bbp-worker.ts`, the same
@@ -429,7 +433,72 @@ licence files and `NOTICE`, the licence texts of the Emscripten runtime and
 of the libraries compiled into the `.wasm` files (`EMSCRIPTEN-LICENSE.txt`,
 `LIBCXX-LICENSE.txt`, `LIBCXXABI-LICENSE.txt`, `MUSL-COPYRIGHT.txt`), and
 `VERSION` (fork commit, this repository's commit, Gacrux commit, Emscripten
-version). This is the shape the main app consumes for the browser.
+version).
+
+## Release packages (`make package`)
+
+`make package` (after `dist` and `dist-wasm`) runs
+`packaging/make_packages.py` and writes `dist/packages/`:
+
+| File | What | For |
+|---|---|---|
+| `bbppairings-wasm-<version>.tgz` | npm package (`package/` folder): every file of `dist/wasm`, the bridge as JavaScript (`bbp-bridge.js`, `bbp-worker.js`, made by Node's own type stripping, `packaging/strip-types.mjs`) next to its TypeScript source, and `package.json` (`"private": true`, licence `MIT AND Apache-2.0 AND (MIT OR NCSA) AND Apache-2.0 WITH LLVM-exception`) | the app's browser side (PWA) |
+| `bbppairings-native-linux-x64-<version>.tar.gz` | `dist/native-linux-x64` in a folder of the same name | the app's server, and the command-line download (Linux x86-64) |
+| `SHA256SUMS` | `sha256sum -c` format | both |
+
+The version is `PACKAGE_VERSION` in the Makefile (semver, ours, independent
+of the engine's), the release tag is `v<version>`. The archives are
+reproducible: sorted entries, the commit time on every entry, owner 0, gzip
+without name or time; the same commit gives the same bytes.
+
+**Release.** Pushing the tag `v<PACKAGE_VERSION>` runs CI as usual and then
+the `release` job, which (only after every job passed) checks the tag against
+`PACKAGE_VERSION` and `SHA256SUMS` and creates the GitHub release with the
+three files the `wasm` job built and tested. Download URLs are then stable:
+`https://github.com/JoseFrankGeraldino/bbpPairingsWebAssemblyPort/releases/download/v<version>/<file>`.
+For a new version: raise `PACKAGE_VERSION` in a commit, then tag that commit.
+
+**Using the npm package.** `npm install <url or path of the .tgz>` (it is not
+on the npm registry). Exports: `bbppairings-wasm` (the bridge: `runProgram`,
+`pair`, `check`, `generate`, `tiebreak`), `bbppairings-wasm/worker` (the Web
+Worker and `createWorkerClient`), and the four `.mjs`/`.wasm` files. The
+worker loads `bbpPairings.mjs`/`tiebreak.mjs` from its own folder, so keep
+the package's files together, e.g. copied as they are under the PWA's
+`wwwroot`:
+
+```js
+import { createWorkerClient } from "/lib/bbppairings-wasm/bbp-worker.js";
+
+const worker = new Worker("/lib/bbppairings-wasm/bbp-worker.js", { type: "module" });
+const client = createWorkerClient(worker);
+const result = await client.run("bbpPairings", {
+  args: ["--dutch", "input.trf", "-p", "pairings.txt"],
+  files: { "input.trf": trfBytes },
+  outputs: ["pairings.txt"],
+});
+```
+
+Serve `.wasm` as `application/wasm`, and list the `.mjs` and `.wasm` files in
+the PWA's offline cache. Plain JavaScript, no bundler needed; a TypeScript
+build can import the `.ts` sources instead (no `.d.ts` files are shipped:
+there is no TypeScript compiler in this repository).
+
+**Using the native archive** (server container): extract it and call the
+binaries with the command line documented upstream (`bbpPairings`) and in
+"Tie-break tool" (`tiebreak`). They link glibc and GCC's `libstdc++.so.6`
+dynamically: the image needs at least the versions in `VERSION`'s
+`requires=` line (built on `ubuntu-latest`, so an Ubuntu 24.04 or Debian 13
+base or newer; not Alpine/musl).
+
+**Tests** (`make test-package`, in the CI `wasm` job): the shipped files
+themselves. `tests/package_check.py` checks `SHA256SUMS`, the exact entry
+list, modes, owner and time, every file byte-identical to `dist/`,
+`package.json` (name, version, licence, every export present), no TypeScript
+import left in the JavaScript, the same commits in both `VERSION` files;
+then a second build must give the same bytes; then, on the extracted files,
+the engine suite (`run_tests.py`), the Gacrux comparison, and the bridge test
+on the package's JavaScript (`bridge_test.ts --bridge`, including the worker
+loading its modules from the package folder).
 
 ## CI jobs and their local equivalents
 
@@ -439,10 +508,11 @@ pinned by commit SHA):
 | Job | Local equivalent (WSL2 Ubuntu, repo root) |
 |---|---|
 | `native` | `git submodule status && test -z "$(git -C third_party/bbpPairings status --porcelain)" && make native && make test ENGINE=build/native/bbpPairings && make dist` |
-| `wasm` | `make wasm && make test-wasm && make dist-wasm` (CI installs emsdk 7.0.0 from its pinned commit into `build/emsdk`; 100 generated tournaments, 5 tie-break seeds per source) |
+| `wasm` | `make wasm && make test-wasm && make dist-wasm && make test-package` (CI installs emsdk 7.0.0 from its pinned commit into `build/emsdk`; 100 generated tournaments, 5 tie-break seeds per source) |
 | `coverage` | `sudo apt-get install -y gcovr && make coverage` |
+| `release` | only for a pushed tag `v*`, after the three jobs above: `(cd dist/packages && sha256sum -c SHA256SUMS)`, then `gh release create` with the `packages` artifact |
 
-Every job checks out Gacrux at the pinned commit into `build/gacrux` first;
-locally `make gacrux` clones it. Artifacts: `native-linux-x64` (the `dist/`
-folder), `wasm` (`dist/wasm`) and `coverage-report` (engine and tie-break
-tool reports).
+Every build job checks out Gacrux at the pinned commit into `build/gacrux`
+first; locally `make gacrux` clones it. Artifacts: `native-linux-x64` (the
+`dist/` folder), `wasm` (`dist/wasm`), `packages` (`dist/packages`) and
+`coverage-report` (engine and tie-break tool reports).

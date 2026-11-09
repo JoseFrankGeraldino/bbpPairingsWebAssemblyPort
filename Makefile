@@ -106,7 +106,7 @@ LIMITS_VARS := engine_comparison=no optimize=no \
 	golden-record clean check-submodule wasm wasm-toolchain wasm-node \
 	wasm-limits wasm-tools wasm-tiebreak wasm-web test-wasm \
 	test-wasm-engine test-wasm-tiebreak test-wasm-bridge dist-wasm \
-	golden-record-wasm
+	golden-record-wasm package test-package
 
 check-submodule:
 	@test -f $(ENGINE_DIR)/Makefile || { \
@@ -278,6 +278,7 @@ dist: native tiebreak
 		echo "port_repo_commit=$$(git rev-parse HEAD)$$(git diff --quiet HEAD 2>/dev/null || echo -dirty)"; \
 		echo "tiebreak_reference=Gacrux $(GACRUX_URL) $(GACRUX_COMMIT)"; \
 		echo "target=native-linux-x64"; \
+		echo "requires=$$(objdump -T $(NATIVE_BIN) $(TIEBREAK_BIN) | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -1) $$(objdump -T $(NATIVE_BIN) $(TIEBREAK_BIN) | grep -o 'GLIBCXX_[0-9.]*' | sort -uV | tail -1) (glibc and GCC libstdc++.so.6, linked dynamically; not musl)"; \
 	} > $(DIST_DIR)/VERSION
 	@echo "dist: $(DIST_DIR)"; ls -l $(DIST_DIR)
 
@@ -440,6 +441,47 @@ dist-wasm: wasm-web
 		echo "target=wasm32-emscripten (ES modules, web/worker/node)"; \
 	} > $(DIST_WASM_DIR)/VERSION
 	@echo "dist: $(DIST_WASM_DIR)"; ls -l $(DIST_WASM_DIR)
+
+# --- release packages -------------------------------------------------------------
+# packaging/make_packages.py turns dist/ into the archives the main app and the
+# downloads consume (README "Release packages"): the npm package of the
+# WebAssembly build and the native Linux archive, plus SHA256SUMS. Every entry
+# carries the commit time, so one commit gives the same bytes. The release tag
+# of a version is v$(PACKAGE_VERSION) (CI publishes a GitHub release for it).
+
+PACKAGE_VERSION := 0.1.0
+PACKAGES_DIR := dist/packages
+PACKAGE_TEST_DIR := build/package-test
+PACKAGE_ARGS = --native $(DIST_DIR) --wasm $(DIST_WASM_DIR) \
+	--version $(PACKAGE_VERSION) --mtime $$(git log -1 --format=%ct HEAD)
+PACKAGED_NATIVE := $(PACKAGE_TEST_DIR)/native/bbppairings-native-linux-x64-$(PACKAGE_VERSION)
+PACKAGED_WASM := $(PACKAGE_TEST_DIR)/wasm/package
+
+package: dist dist-wasm
+	rm -rf $(PACKAGES_DIR)
+	$(WASM_ENV) $(PYTHON) packaging/make_packages.py $(PACKAGE_ARGS) --out $(PACKAGES_DIR)
+
+# The shipped files themselves are tested: the archive checks, a second build
+# of the archives (same bytes), the engine suite and the Gacrux comparison on
+# the extracted native binaries, and the bridge test on the extracted npm
+# package (its JavaScript bridge, its worker loading the modules next to it).
+test-package: package native-limits tools gacrux wasm-node
+	$(PYTHON) tests/package_check.py --packages $(PACKAGES_DIR) \
+		--version $(PACKAGE_VERSION) --native $(DIST_DIR) --wasm $(DIST_WASM_DIR) \
+		--extract $(PACKAGE_TEST_DIR)
+	$(WASM_ENV) $(PYTHON) packaging/make_packages.py $(PACKAGE_ARGS) \
+		--out $(PACKAGE_TEST_DIR)/again > /dev/null
+	for file in $(PACKAGES_DIR)/*; do \
+		cmp "$$file" $(PACKAGE_TEST_DIR)/again/$$(basename "$$file") || exit 1; \
+	done
+	$(PYTHON) tests/run_tests.py --engine $(PACKAGED_NATIVE)/bbpPairings \
+		--engine-limits $(LIMITS_BIN) --roundtrip $(ROUNDTRIP_BIN)
+	$(PYTHON) tests/tiebreak_compare.py --tool $(PACKAGED_NATIVE)/tiebreak \
+		--gacrux $(GACRUX_DIR)/gacrux --engine $(PACKAGED_NATIVE)/bbpPairings \
+		--count $(BBP_TIEBREAK_COUNT)
+	$(WASM_ENV) node tests/bridge/bridge_test.ts --modules $(PACKAGED_WASM) \
+		--bridge $(PACKAGED_WASM) --engine $(PACKAGED_NATIVE)/bbpPairings \
+		--wasm-engine $(WASM_BIN) --tiebreak $(PACKAGED_NATIVE)/tiebreak
 
 clean:
 	rm -rf build dist
